@@ -1,0 +1,28 @@
+# 从固件/设备导出的中间产物（可用 tools/ 里的脚本重新生成）
+rom/out/
+
+# adb/fastboot 工具与临时文件
+scripts/adb-platform-tools-latest-windows/
+scripts/_tmp/
+
+# Python
+__pycache__/
+*.pyc
+
+# 编辑器
+.vscode/
+.idea/
+*.log
+rom/xnu/qemu-payload.bin
+rom/xnu/payload.bin
+rom/xnu/*.bin
+
+# 编译产物
+loader-shim-fuxi/*.o
+loader-shim-fuxi/*.elf
+loader-shim-fuxi/Image
+loader-shim-fuxi/Image2.bin
+loader-shim-fuxi/strcmp_stub.c
+
+# 临时生成的中间包
+vendor/uefi-sheng-fuxi.tar.gz

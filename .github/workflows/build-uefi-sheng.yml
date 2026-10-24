@@ -1,0 +1,294 @@
+name: build-uefi-sheng
+
+# 目标：用 UniXNU 的 uefi-sheng (Mu-Silicium) 编出 SM8550 的 UEFI 固件。
+#
+# 关键：不走 `build_uefi.py`（它经过 Mu 的 stuart 框架，其中的
+# OverrideValidation 插件在 CI 环境下会 normpath(None) 崩溃），
+# 而是照抄 UniXNU-sheng/scripts/build-uefi-sheng.sh 的环境变量，
+# 直接调用 EDK2 的 `build` 命令。
+#
+# 同时跳过该脚本里的 check-sheng.py（它要求从 sheng 官方固件提取的厂商
+# 二进制，我们拿不到）。SHENG_VENDOR_HW 因此是默认值 0，走通用驱动：
+# 面板保持常亮 + SimpleFbDxe 发布 GOP，足以验证引导链路。
+#
+# 产物：SILICIUM_UEFI.fd
+
+concurrency:
+  group: uefi-sheng-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    paths:
+      - "xnu/uefi/**"
+      - ".github/workflows/build-uefi-sheng.yml"
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+    inputs:
+      device:
+        description: "要编译的设备（默认 sheng）"
+        required: false
+        default: "sheng"
+
+permissions:
+  contents: read
+
+env:
+  UEFI_SRC_KEY: uefi-src-v5
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+
+    steps:
+      # 必须先 checkout：vendor/ 里的两个 tarball（UniXNU、uefi-sheng）是本仓库
+      # 自带的完整源码，上游 zip 里缺 DarwinBoot.inf 和 shengPkg。没有这一步
+      # CI 里连 repo 都没有，"vendor/UniXNU.tar.gz: No such file" 就是这个原因。
+      - name: 取本仓库（vendor/ 里的源码包在这里）
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            vendor
+          sparse-checkout-cone-mode: false
+
+      # ── 缓存整棵源码树（约 5GB），命中后跳过所有克隆 ──
+      - name: 恢复源码缓存
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            UniXNU
+            UniXNU-sheng
+            uefi-sheng
+          key: ${{ env.UEFI_SRC_KEY }}-${{ hashFiles('.github/workflows/build-uefi-sheng.yml') }}
+
+      - name: 安装依赖
+        run: |
+          set -eux
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential uuid-dev iasl nasm python3 python3-pip \
+            gcc-aarch64-linux-gnu g++-aarch64-linux-gnu \
+            device-tree-compiler git-lfs clang llvm lld curl unzip
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r uefi-sheng/pip-requirements.txt || true
+          python3 -m pip install coloredlogs || true
+
+      # ── 复刻 build-uefi-sheng.sh 的环境，跳过 check-sheng.py ──
+      - name: 下载全部源码（zip 包，不用 git clone）
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          set -eux
+          # GitHub 的 zip 包下载比 clone 更快也更可靠（不受 submodule / LFS / 浅克隆限制）
+          fetch_zip() {
+            local name="$1"; local url="$2"
+            for attempt in 1 2 3; do
+              rm -rf "$name" "${name}.zip"
+              if curl -fsSL --retry 3 --retry-delay 10 -o "${name}.zip" "$url"; then
+                unzip -q "${name}.zip" && rm -f "${name}.zip"
+                return 0
+              fi
+              echo "下载 $name 失败（第 $attempt 次），重试…"
+              sleep 20
+            done
+            echo "下载 $name 彻底失败"; return 1
+          }
+
+          # 框架（UniXNU）：仓库自带 vendor 包（上游 zip 里 drivers/DarwinBoot 是空目录）
+          tar -xzf vendor/UniXNU.tar.gz -C .
+          ls UniXNU/drivers/DarwinBoot/DarwinBootPkg/Driver/DarwinBoot.inf
+
+          # 板级配置
+          fetch_zip UniXNU-sheng-main https://github.com/UniXNU/UniXNU-sheng/archive/refs/heads/main.zip
+          mv UniXNU-sheng-main UniXNU-sheng
+
+          # Mu-Silicium UEFI 端口：仓库自带 vendor 包（上游 zip 里没有 shengPkg）
+          tar -xzf vendor/uefi-sheng.tar.gz -C .
+          ls uefi-sheng/Platforms/Xiaomi/shengPkg/sheng.dsc
+
+          # Mu 基座：EDK_TOOLS_PATH 指向 UniXNU/package/Mu_Basecore/BaseTools
+          mkdir -p UniXNU/package
+          fetch_zip mu_basecore-release-202608 \
+            https://github.com/microsoft/mu_basecore/archive/refs/heads/release/202608.zip
+          mv mu_basecore-release-202608 UniXNU/package/Mu_Basecore
+          ls UniXNU/package/Mu_Basecore/BaseTools/Conf/target.template
+
+          # Common/Mu 等 submodule 不在 vendor 包里，从公开仓库补齐
+          for spec in \
+            "Common/Mu|https://github.com/microsoft/mu_plus/archive/refs/heads/release/202608.zip" \
+            "Common/Mu_OEM_Sample|https://github.com/microsoft/mu_oem_sample/archive/refs/heads/release/202608.zip" \
+            "Silicium-ACPI|https://github.com/Project-Silicium/Silicium-ACPI/archive/refs/heads/main.zip" \
+            "Binaries|https://github.com/Project-Silicium/Device-Binaries/archive/refs/heads/main.zip"
+          do
+            dst="uefi-sheng/${spec%%|*}"
+            url="${spec##*|}"
+            if [ -d "$dst" ] && [ -n "$(ls -A "$dst" 2>/dev/null)" ]; then
+              echo "$dst 已存在，跳过"
+              continue
+            fi
+            fetch_zip _sub "$url" || { echo "跳过 $dst"; continue; }
+            mkdir -p "$dst"
+            mv _sub/* "$dst/" 2>/dev/null || true
+            rm -rf _sub
+            echo "$dst 补齐: $(ls "$dst" | head -3 | tr '\n' ' ')"
+          done
+
+          # openssl 是按 commit 钉死的 submodule：只是 Silicon/Silicium 里
+          # OpensslLib 的依赖，静态库已经从发布包自带，一般不参与编译。
+          # 但 PACKAGES_PATH 一旦指向不存在的目录 build 会直接报 000E，
+          # 所以这里至少让它存在（有 .dec 就行）。
+          if [ ! -d uefi-sheng/Silicon/Silicium/OpensslPkg/Library/OpensslLib/openssl ]; then
+            mkdir -p uefi-sheng/Silicon/Silicium/OpensslPkg/Library/OpensslLib/openssl
+            echo "openssl submodule 占位目录已创建"
+          fi
+
+          du -sh UniXNU UniXNU-sheng uefi-sheng UniXNU/package/Mu_Basecore
+
+      # 缓存命中时也要保证关键路径存在
+      - name: 校验关键路径
+        run: |
+          set -eux
+          W="$GITHUB_WORKSPACE"
+          # vendor 包是最可靠来源，缺了就地重新解压（不再走 git clone）
+          if [ ! -f "$W/UniXNU/drivers/DarwinBoot/DarwinBootPkg/Driver/DarwinBoot.inf" ]; then
+            echo "UniXNU 不完整，从 vendor 包重新解压"
+            rm -rf "$W/UniXNU"
+            tar -xzf "$W/vendor/UniXNU.tar.gz" -C "$W"
+          fi
+          if [ ! -f "$W/uefi-sheng/Platforms/Xiaomi/shengPkg/sheng.dsc" ]; then
+            echo "uefi-sheng 不完整，从 vendor 包重新解压"
+            rm -rf "$W/uefi-sheng"
+            tar -xzf "$W/vendor/uefi-sheng.tar.gz" -C "$W"
+          fi
+
+          ls -l "$W/UniXNU/drivers/DarwinBoot/DarwinBootPkg/Driver/DarwinBoot.inf"
+          ls -l "$W/uefi-sheng/Platforms/Xiaomi/shengPkg/sheng.dsc"
+          ls "$W/UniXNU/package/Mu_Basecore/BaseTools" | head
+          for d in UniXNU UniXNU-sheng uefi-sheng; do
+            ls -d "$W/$d" || { echo "缺少 $d"; exit 1; }
+          done
+
+      - name: 准备 EDK2 BaseTools 与 Conf
+        run: |
+          set -eux
+          ROOT="$GITHUB_WORKSPACE/UniXNU-sheng"
+          UNIXNU_ROOT="$GITHUB_WORKSPACE/UniXNU"
+          MU_BASE="$UNIXNU_ROOT/package/Mu_Basecore"
+
+          # uefi-sheng 要放在 UniXNU-sheng/uefi-sheng（脚本就是按这个路径找的）
+          if [ ! -d "$ROOT/uefi-sheng" ]; then
+            ln -sfn "$GITHUB_WORKSPACE/uefi-sheng" "$ROOT/uefi-sheng"
+          fi
+
+          export EDK_TOOLS_PATH="$MU_BASE/BaseTools"
+          echo "EDK_TOOLS_PATH=$EDK_TOOLS_PATH"
+          ls "$EDK_TOOLS_PATH"
+
+          # 编译 BaseTools（提供 build/GenFw/GenFfs 等）
+          make -C "$EDK_TOOLS_PATH" -j"$(nproc)" || true
+          ls "$EDK_TOOLS_PATH/Source/C/bin" | head -20
+
+          CONF="$GITHUB_WORKSPACE/.uefi-conf"
+          mkdir -p "$CONF"
+          for NAME in target tools_def build_rule; do
+            [ -f "$CONF/$NAME.txt" ] || cp "$EDK_TOOLS_PATH/Conf/$NAME.template" "$CONF/$NAME.txt"
+          done
+          ls "$CONF"
+          echo "CONF_PATH=$CONF" >> "$GITHUB_ENV"
+          echo "EDK_TOOLS_PATH=$EDK_TOOLS_PATH" >> "$GITHUB_ENV"
+
+      - name: 编译 UEFI（直接调用 EDK2 build）
+        run: |
+          set -eux
+          ROOT="$GITHUB_WORKSPACE/UniXNU-sheng"
+          UNIXNU_ROOT="$GITHUB_WORKSPACE/UniXNU"
+          UES="$ROOT/uefi-sheng"
+          MU_BASE="$UNIXNU_ROOT/package/Mu_Basecore"
+
+          export WORKSPACE="$UES"
+          export CONF_PATH="$GITHUB_WORKSPACE/.uefi-conf"
+          export PYTHON_COMMAND=python3
+          export EDK_TOOLS_PATH="$MU_BASE/BaseTools"
+          export PATH="$EDK_TOOLS_PATH/BinWrappers/PosixLike:$EDK_TOOLS_PATH/Source/C/bin:$PATH"
+          # 注意：必须单行 —— 用反斜杠续行时，缩进空格会被当成路径的一部分
+          PP=""
+          for d in \
+            "$UES" \
+            "$UES/Platforms/Xiaomi" \
+            "$UNIXNU_ROOT/package" \
+            "$UNIXNU_ROOT/drivers/DarwinBoot" \
+            "$MU_BASE" \
+            "$UES/Common/Mu" \
+            "$UES/Common/Mu_OEM_Sample" \
+            "$UES/Silicon/Qualcomm" \
+            "$UES/Silicon/Silicium" \
+            "$UES/Silicium-ACPI" \
+            "$UES/Silicium-ACPI/Platforms/Xiaomi" \
+            "$UES/Silicium-ACPI/Silicon/Qualcomm"
+          do
+            PP="${PP:+$PP:}$d"
+          done
+          export PACKAGES_PATH="$PP"
+          echo "PACKAGES_PATH=$PACKAGES_PATH"
+          # EDK2 对 PACKAGES_PATH 里任何不存在的目录都直接报 000E，先自查一遍
+          IFS=':' read -ra DIRS <<< "$PACKAGES_PATH"
+          for d in "${DIRS[@]}"; do
+            if [ ! -d "$d" ]; then
+              echo "PACKAGES_PATH 里的目录不存在: $d"
+              exit 1
+            fi
+          done
+          # 逐项确认 EDK2 能找到包（DarwinBootPkg 在 UniXNU/drivers/DarwinBoot 下）
+          for d in $UNIXNU_ROOT/package $UNIXNU_ROOT/drivers/DarwinBoot $MU_BASE; do
+            ls -d "$d" || { echo "缺少 $d"; exit 1; }
+          done
+          ls "$UNIXNU_ROOT/drivers/DarwinBoot/DarwinBootPkg/Driver/DarwinBoot.inf"
+
+          cd "$UES"
+          # 板级补丁（GIC spurious），仅编译期应用
+          if [ -f "$UES/Resources/MuPatches/Gic-Spurious.patch" ]; then
+            git -C "$MU_BASE" apply --check "$UES/Resources/MuPatches/Gic-Spurious.patch" \
+              && git -C "$MU_BASE" apply "$UES/Resources/MuPatches/Gic-Spurious.patch" \
+              || echo "Gic-Spurious 补丁未应用（可能已包含）"
+          fi
+
+          DEVICE="${{ github.event.inputs.device || 'sheng' }}"
+          echo "编译设备: $DEVICE"
+
+          # 编译前确认 DSC 存在（之前有几次 build 直接报 F001，看不出是路径问题）
+          DSC="Platforms/Xiaomi/${DEVICE}Pkg/${DEVICE}.dsc"
+          if [ ! -f "$DSC" ]; then
+            echo "找不到 $DSC"
+            ls Platforms/Xiaomi/ || true
+            exit 1
+          fi
+
+          build -p "$DSC" \
+                -a AARCH64 -b DEBUG -t CLANGPDB -n "$(nproc)" \
+                -D FD_BASE=0xA7100000 -D FD_SIZE=0x300000 -D FD_BLOCKS=768 \
+                -D ENABLE_SECUREBOOT=1 -D DEVICE_MODEL="$DEVICE" \
+                -D MEMORY_PROTECTION=TRUE -D SHIP_MODE=FALSE \
+                -D BUILDID_STRING="${DEVICE}-research" 2>&1 | tee build.log
+
+          echo "---- 产物 ----"
+          find Build -name "*.fd" | head -20
+          # 没有任何 .fd 说明链接或封装阶段失败，虽然 build 可能返回 0
+          if ! find Build -name "*.fd" | grep -q .; then
+            echo "没有生成 .fd，构建失败"
+            exit 1
+          fi
+
+      - name: 上传产物
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: uefi-sheng-fd
+          path: |
+            UniXNU-sheng/uefi-sheng/Build/**/*.fd
+            uefi-sheng/Build/**/*.fd
+            UniXNU-sheng/uefi-sheng/build.log
+            uefi-sheng/build.log
+          if-no-files-found: warn
+          retention-days: 14

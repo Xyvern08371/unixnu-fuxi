@@ -1,0 +1,38 @@
+diff --git a/osfmk/vm/vm_compressor.c b/osfmk/vm/vm_compressor.c
+--- a/osfmk/vm/vm_compressor.c
++++ b/osfmk/vm/vm_compressor.c
+@@ -3214,6 +3214,6 @@
+ #else /* XNU_TARGET_OS_OSX */
+-	if (memorystatus_swap_all_apps) {
+-		special_swappedin_list_head = &c_late_swappedin_list_head;
++	if (0) { /* fuxi: app swap is a macOS path; its extern is #if CONFIG_JETSAM */
++		special_swappedin_list_head = &c_late_swappedin_list_head;
+ 	} else {
+ 		/* called on unsupported config*/
+ 		return;
+@@ -4131,6 +4131,6 @@
+ #else /* XNU_TARGET_OS_OSX */
+-			if (memorystatus_swap_all_apps) {
+-				donate_queue_head = (c_segment_t*) &(pgo_iothread_internal_state[i].current_late_swapout_chead);
++			if (0) { /* fuxi: same */
++				donate_queue_head = (c_segment_t*) &(pgo_iothread_internal_state[i].current_late_swapout_chead);
+ 			} else {
+ 				donate_queue_head = NULL;
+ 			}
+diff --git a/bsd/vm/vm_unix.c b/bsd/vm/vm_unix.c
+--- a/bsd/vm/vm_unix.c
++++ b/bsd/vm/vm_unix.c
+@@ -1761,7 +1761,11 @@
+  * When a process is specified, this call is blocking, otherwise we wake up the
+  * freezer thread and do not block on a process being frozen.
+  */
+-kern_return_t
+-pid_hibernate(struct proc *p __unused, struct pid_hibernate_args *args, int *ret)
++/* fuxi: the struct is in a closed Apple header, and this whole function is
++ * #if !XNU_TARGET_OS_OSX, so a macOS build never needed it. It only reads pid. */
++struct pid_hibernate_args { int pid; };
++
++kern_return_t
++pid_hibernate(struct proc *p __unused, struct pid_hibernate_args *args, int *ret)
+ {
+ 	int     error = 0;

@@ -1,0 +1,22 @@
+diff --git a/makedefs/MakeInc.def b/makedefs/MakeInc.def
+index 5bd6f23..993a1dc 100644
+--- a/makedefs/MakeInc.def
++++ b/makedefs/MakeInc.def
+@@ -334,6 +334,17 @@ ARM64_PLKSEG_ADDR  =0xfffffe0004004000
+ ARM64_LINK_ADDR    =0xfffffe0007004000
+ endif
+ 
++# FUXI: 4 KiB pages, so keep the 39-bit address space layout.
++# ARM_LARGE_MEMORY would put the kernel at -2TB, and reaching that
++# needs a 47-bit TTBR1 walk that starts at level 0; the bootstrap page
++# tables are built at level 1 (T1SZ=25). At 0xfffffff007004000 the
++# level-1 walk works and still leaves a large prelinked kext region.
++ifneq ($(filter FUXI,$(CURRENT_MACHINE_CONFIG)),)
++LARGE_MEMORY_DEFINE=-UARM_LARGE_MEMORY
++ARM64_LINK_ADDR    =0xfffffff007004000
++ARM64_PLKSEG_ADDR  =0xfffffff004004000
++endif
++
+ 
+ CFLAGS_ARM64	= -Darm64 -DARM64 -D__ARM64__ -DLP64 -DPAGE_SIZE_FIXED -DVM_KERNEL_LINK_ADDRESS=$(ARM64_LINK_ADDR) \
+ 			$(LARGE_MEMORY_DEFINE) -momit-leaf-frame-pointer -fno-strict-aliasing -D__API__=v4 -mkernel

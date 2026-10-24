@@ -1,0 +1,107 @@
+name: fuxi-fw
+
+# 正规构建 fuxi 的 UEFI 固件：
+#   uefi-sheng（上游）+ 我们自己的 fuxiPkg / fuxi.toml / fuxi.dtb（仓库内 uefi-fuxi-pkg/）
+#   + 当前 UniXNU/DarwinBoot，用 build_uefi.py 完整构建（会产出 FD 和 Mu-fuxi.img）。
+#
+# 之前手工拼「3 MiB 固件卷 + ESP」的做法破坏了 FD 结构，刷进去必掉 fastboot。
+# 这次交给 build_uefi.py 自己生成。
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/fuxi-fw.yml"
+
+permissions:
+  contents: write
+
+env:
+  UNIXNU_REPO: https://github.com/UniXNU/UniXNU
+  DARWINBOOT_REPO: https://github.com/UniXNU/DarwinBoot
+  SHENG_REPO: https://github.com/UniXNU/uefi-sheng
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    steps:
+      - name: 取本仓库
+        uses: actions/checkout@v4
+        with:
+          path: ourrepo
+
+      - name: 克隆 uefi-sheng + 覆盖 fuxi 文件 + 构建（全程日志）
+        env:
+          UNIXNU_ROOT: ${{ github.workspace }}/UniXNU
+        run: |
+          set -x
+          mkdir -p "$GITHUB_WORKSPACE/ourrepo/ci-logs-fw"
+          LOG="$GITHUB_WORKSPACE/ourrepo/ci-logs-fw/build.log"
+          : > "$LOG"
+          {
+            echo "=== 克隆 uefi-sheng ==="
+            git clone --depth 1 "$SHENG_REPO" uefi
+            cd uefi
+            echo "=== 子模块 ==="
+            git submodule update --init --depth 1 \
+              Common/Mu Common/Mu_OEM_Sample Mu_Basecore Silicium-ACPI \
+              Silicon/Silicium/OpensslPkg/Library/OpensslLib/openssl
+            echo "=== 覆盖我们的 fuxi 文件 ==="
+            cp -rv "$GITHUB_WORKSPACE/ourrepo/uefi-fuxi-pkg/." .
+            ls -l Platforms/Xiaomi/fuxiPkg/fuxi.dsc Resources/Configs/fuxi.toml Resources/DTBs/fuxi.dtb
+            echo "=== 装工具链 ==="
+            ./setup_env.sh -p apt
+            echo "=== 克隆 UniXNU + DarwinBoot ==="
+            git clone --depth 1 "$UNIXNU_REPO" "$UNIXNU_ROOT"
+            mkdir -p "$UNIXNU_ROOT/drivers"
+            git clone "$DARWINBOOT_REPO" "$UNIXNU_ROOT/drivers/DarwinBoot"
+            # 钉住 10-21 的版本（我们 10-23 能跑的固件用的就是它；10-22 的 d099354 起不来）
+            git -C "$UNIXNU_ROOT/drivers/DarwinBoot" checkout -q 85332b3
+            git -C "$UNIXNU_ROOT/drivers/DarwinBoot" log -1 --format='DARWINBOOT %h %s'
+            echo "=== 构建 ==="
+            ./build_uefi.py -d fuxi -r DEBUG -c
+            echo "BUILD_EXIT=$?"
+          } >> "$LOG" 2>&1
+          echo "done, log at $LOG ($(wc -c < "$LOG") bytes)"
+
+      - name: 收集产物
+        if: always()
+        run: |
+          set +e
+          mkdir -p "$GITHUB_WORKSPACE/ourrepo/ci-logs-fw"
+          ls -l uefi/Mu-fuxi*.img 2>/dev/null
+          ls -l uefi/Build/fuxiPkg/*/FV/SILICIUM_UEFI.fd 2>/dev/null
+          cp uefi/Mu-fuxi*.img "$GITHUB_WORKSPACE/ourrepo/ci-logs-fw/" 2>/dev/null
+          cp uefi/Build/fuxiPkg/*/FV/SILICIUM_UEFI.fd "$GITHUB_WORKSPACE/ourrepo/ci-logs-fw/" 2>/dev/null
+          ls -l "$GITHUB_WORKSPACE/ourrepo/ci-logs-fw/"
+          true
+
+      - name: 推产物到 Release
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set +e
+          TAG="fuxi-fw-$(date +%Y%m%d-%H%M%S)"
+          echo "$TAG" > "$GITHUB_WORKSPACE/ourrepo/ci-logs-fw/tag.txt"
+          gh release create "$TAG" \
+            uefi/Mu-fuxi*.img uefi/Build/fuxiPkg/*/FV/SILICIUM_UEFI.fd \
+            --repo "$GITHUB_REPOSITORY" --title "fuxi firmware $TAG" \
+            --notes "uefi-sheng + our fuxiPkg + current DarwinBoot" || echo "release failed"
+
+      - name: 推日志到 ci-logs
+        if: always()
+        working-directory: ourrepo
+        run: |
+          set +e
+          git config user.name "xnu-bot"
+          git config user.email "xnu-bot@users.noreply.github.com"
+          git checkout -f --orphan fw-logs-tmp
+          git add -f ci-logs-fw
+          git commit -qm "fuxi firmware build" || true
+          git push -f origin HEAD:ci-logs || echo "push failed"

@@ -1,0 +1,288 @@
+name: build-uefi-fuxi
+
+# 编 fuxi（小米 13）的 Mu-Silicium UEFI 固件。
+#
+# 参考 sheng 的做法（UniXNU-sheng/README.md → uefi-sheng）：
+#   设备包 Platforms/Xiaomi/<device>Pkg/<device>.dsc
+#   板级参数 Resources/Configs/<device>.toml
+#   FD 基址/尺寸由 -D FD_BASE/FD_SIZE/FD_BLOCKS 传入
+#
+# fuxi 与 sheng 同为 SM8550，fuxiPkg 由 shengPkg 复制改造而来：
+#   PLATFORM_NAME=fuxi, OUTPUT_DIRECTORY=Build/fuxiPkg
+#   帧缓冲 1080x2400, SMBIOS "Xiaomi 13", 栈基址 0xCE50D000
+#
+# 产物：Build/fuxiPkg/{target}_CLANGPDB/FV/SILICIUM_UEFI.fd
+
+on:
+  push:
+    paths:
+      - ".github/workflows/build-uefi-fuxi.yml"
+      - "vendor/uefi-sheng.tar.gz"
+  workflow_dispatch:
+    inputs:
+      device:
+        description: "设备名（默认 fuxi）"
+        required: false
+        default: "fuxi"
+      fd_base:
+        description: "FD 基址（默认 0xCE000000，与 fuxi.dsc 的栈基址 0xCE50D000 对应）"
+        required: false
+        default: "0xCE000000"
+
+concurrency:
+  group: uefi-fuxi-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  UEFI_SRC_KEY: uefi-fuxi-src-v1
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+
+    steps:
+      - name: 取本仓库（vendor/ 里的 uefi-sheng 源码包）
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            vendor
+          sparse-checkout-cone-mode: false
+
+      - name: 恢复源码缓存
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            uefi-sheng
+            UniXNU
+            mu_basecore
+          key: ${{ env.UEFI_SRC_KEY }}-${{ hashFiles('.github/workflows/build-uefi-fuxi.yml') }}
+
+      - name: 安装依赖
+        run: |
+          set -eux
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential uuid-dev iasl nasm python3 python3-pip \
+            gcc-aarch64-linux-gnu g++-aarch64-linux-gnu \
+            device-tree-compiler git curl unzip
+          python3 -m pip install --upgrade pip
+
+      - name: 下载源码
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          set -eux
+          fetch_zip() {
+            local name="$1"; local url="$2"
+            for attempt in 1 2 3; do
+              rm -rf "$name" "${name}.zip"
+              if curl -fsSL --retry 3 --retry-delay 10 -o "${name}.zip" "$url"; then
+                unzip -q "${name}.zip" && rm -f "${name}.zip"
+                return 0
+              fi
+              echo "下载 $name 失败（第 $attempt 次），重试…"
+              sleep 20
+            done
+            echo "下载 $name 彻底失败"; return 1
+          }
+
+          # uefi-sheng：仓库自带完整包
+          tar -xzf vendor/uefi-sheng.tar.gz -C .
+          test -f uefi-sheng/Platforms/Xiaomi/shengPkg/sheng.dsc
+
+          # fuxiPkg 是后加的（由 shengPkg 复制改造），单独一个小包
+          tar -xzf vendor/uefi-sheng-fuxi-addon.tar.gz -C .
+          test -f uefi-sheng/Platforms/Xiaomi/fuxiPkg/fuxi.dsc
+          test -f uefi-sheng/Platforms/Xiaomi/fuxiPkg/fuxi.fdf
+          test -f uefi-sheng/Resources/Configs/fuxi.toml
+
+          # UniXNU：提供 DarwinBootPkg 和 UniXNUPkg（fuxi.dsc 会引用）
+          tar -xzf vendor/UniXNU.tar.gz -C .
+          test -f UniXNU/drivers/DarwinBoot/DarwinBootPkg/Driver/DarwinBoot.inf
+
+          # Qualcomm 预编译二进制：fuxi 的设备代号是 marble，
+          # fuxi.dsc 通过 Binaries/marble/ 引用 DevicePathDxe 等 INF。
+          # 上游 Device-Binaries 仓库很大（555MB，含所有机型），只取 marble。
+          tar -xzf vendor/uefi-sheng-binaries-marble.tar.gz -C .
+          test -f uefi-sheng/Binaries/marble/MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
+
+          # 子模块（Silicium-ACPI / Common/Mu / Mu_OEM_Sample）
+          # 直接从 vendor 解包，不依赖 GitHub zip 下载是否完整
+          tar -xzf vendor/uefi-sheng-submodules.tar.gz -C .
+          test -d uefi-sheng/Silicium-ACPI/Silicon/Qualcomm
+          test -d uefi-sheng/Common/Mu
+
+          # Mu 基座
+          mkdir -p UniXNU/package
+          fetch_zip mu_basecore-release-202608 \
+            https://github.com/microsoft/mu_basecore/archive/refs/heads/release/202608.zip
+          mv mu_basecore-release-202608 UniXNU/package/Mu_Basecore
+
+          # 子模块
+          for spec in \
+            "Common/Mu|https://github.com/microsoft/mu_plus/archive/refs/heads/release/202608.zip" \
+            "Common/Mu_OEM_Sample|https://github.com/microsoft/mu_oem_sample/archive/refs/heads/release/202608.zip" \
+            "Silicium-ACPI|https://github.com/Project-Silicium/Silicium-ACPI/archive/refs/heads/main.zip"
+          do
+            dst="uefi-sheng/${spec%%|*}"
+            url="${spec##*|}"
+            if [ -d "$dst" ] && [ -n "$(ls -A "$dst" 2>/dev/null)" ]; then
+              echo "$dst 已存在，跳过"; continue
+            fi
+            if ! fetch_zip _sub "$url"; then
+              echo "!! 下载失败，跳过 $dst"
+              continue
+            fi
+            # zip 解压后可能多一层同名目录，找到实际的根再搬
+            root="_sub"
+            if [ "$(ls -A _sub | wc -l)" -eq 1 ] && [ -d "_sub/$(ls -A _sub | head -1)" ]; then
+              root="_sub/$(ls -A _sub | head -1)"
+              echo "  多一层目录，根改为 $root"
+            fi
+            mkdir -p "$dst"
+            # 注意：mv dir/* 不包含隐藏文件（如 .github），所以用 cp -a + .
+            cp -a "$root/." "$dst/" 2>/dev/null || cp -a "$root"/* "$dst/" 2>/dev/null || true
+            rm -rf _sub
+            echo "$dst 补齐: $(ls "$dst" 2>/dev/null | head -5 | tr '\n' ' ')"
+            echo "$dst 条目数: $(find "$dst" -type f 2>/dev/null | wc -l)"
+          done
+
+          # 逐个确认关键子目录确实到位（EDK2 对不存在的 PACKAGES_PATH 目录直接报 000E）
+          echo "---- 子模块内容检查 ----"
+          for d in uefi-sheng/Common/Mu uefi-sheng/Common/Mu_OEM_Sample \
+                   uefi-sheng/Silicium-ACPI/Silicon/Qualcomm; do
+            if [ -d "$d" ]; then
+              echo "OK   $d ($(find "$d" -type f | wc -l) 文件)"
+            else
+              echo "MISS $d"
+            fi
+          done
+
+          # openssl 是钉死 commit 的 submodule；PACKAGES_PATH 一旦指向不存在的
+          # 目录，EDK2 直接报 000E，所以这里至少让目录存在
+          mkdir -p uefi-sheng/Silicon/Silicium/OpensslPkg/Library/OpensslLib/openssl
+
+          du -sh uefi-sheng UniXNU UniXNU/package/Mu_Basecore
+
+      - name: 准备 EDK2 BaseTools 与 Conf
+        run: |
+          set -eux
+          WORK="$GITHUB_WORKSPACE"
+          UES="$WORK/uefi-sheng"
+          MU="$WORK/UniXNU/package/Mu_Basecore"
+
+          export EDK_TOOLS_PATH="$MU/BaseTools"
+          make -C "$EDK_TOOLS_PATH" -j"$(nproc)" || true
+          ls "$EDK_TOOLS_PATH/Source/C/bin" | head -20
+
+          CONF="$WORK/.uefi-conf"
+          mkdir -p "$CONF"
+          for NAME in target tools_def build_rule; do
+            [ -f "$CONF/$NAME.txt" ] || cp "$EDK_TOOLS_PATH/Conf/$NAME.template" "$CONF/$NAME.txt"
+          done
+          echo "CONF_PATH=$CONF" >> "$GITHUB_ENV"
+          echo "EDK_TOOLS_PATH=$EDK_TOOLS_PATH" >> "$GITHUB_ENV"
+
+      - name: 编 UEFI（fuxiPkg）
+        run: |
+          set -euo pipefail
+          WORK="$GITHUB_WORKSPACE"
+          UES="$WORK/uefi-sheng"
+          UNI="$WORK/UniXNU"
+          MU="$UNI/package/Mu_Basecore"
+
+          export WORKSPACE="$UES"
+          export CONF_PATH="$WORK/.uefi-conf"
+          export PYTHON_COMMAND=python3
+          export EDK_TOOLS_PATH="$MU/BaseTools"
+          export PATH="$EDK_TOOLS_PATH/BinWrappers/PosixLike:$EDK_TOOLS_PATH/Source/C/bin:$PATH"
+
+          # Silicium-ACPI 上游（Project-Silicium/Silicium-ACPI）的 Platforms/ 下
+          # 只有 Asus/Lenovo/LG/Motorola/Nintendo，没有 Xiaomi。所以只把确实存在
+          # 的两个目录放进 PACKAGES_PATH —— EDK2 对任何不存在的路径直接报 000E。
+          ACPI="$UES/Silicium-ACPI"
+          PP=""
+          for d in \
+            "$UES" \
+            "$UES/Platforms/Xiaomi" \
+            "$UNI/package" \
+            "$UNI/drivers/DarwinBoot" \
+            "$MU" \
+            "$UES/Common/Mu" \
+            "$UES/Common/Mu_OEM_Sample" \
+            "$UES/Silicon/Qualcomm" \
+            "$UES/Silicon/Silicium" \
+            "$ACPI" \
+            "$ACPI/Silicon/Qualcomm"
+          do
+            PP="${PP:+$PP:}$d"
+          done
+          export PACKAGES_PATH="$PP"
+          echo "PACKAGES_PATH=$PACKAGES_PATH"
+
+          IFS=':' read -ra DIRS <<< "$PACKAGES_PATH"
+          for d in "${DIRS[@]}"; do
+            [ -d "$d" ] || { echo "PACKAGES_PATH 里的目录不存在: $d"; exit 1; }
+          done
+
+          cd "$UES"
+          if [ -f "$UES/Resources/MuPatches/Gic-Spurious.patch" ]; then
+            git -C "$MU" apply --check "$UES/Resources/MuPatches/Gic-Spurious.patch" \
+              && git -C "$MU" apply "$UES/Resources/MuPatches/Gic-Spurious.patch" \
+              || echo "Gic-Spurious 补丁未应用（可能已包含）"
+          fi
+
+          DEVICE="${{ github.event.inputs.device || 'fuxi' }}"
+          FD_BASE="${{ github.event.inputs.fd_base || '0xCE000000' }}"
+          FD_SIZE=0x300000
+          FD_BLOCKS=768
+
+          DSC="Platforms/Xiaomi/${DEVICE}Pkg/${DEVICE}.dsc"
+          [ -f "$DSC" ] || { echo "找不到 $DSC"; ls Platforms/Xiaomi/ || true; exit 1; }
+          echo "编译: $DSC  FD_BASE=$FD_BASE"
+
+          build -p "$DSC" \
+                -a AARCH64 -b DEBUG -t CLANGPDB -n "$(nproc)" \
+                -D FD_BASE="$FD_BASE" -D FD_SIZE="$FD_SIZE" -D FD_BLOCKS="$FD_BLOCKS" \
+                -D ENABLE_SECUREBOOT=1 -D DEVICE_MODEL="$DEVICE" \
+                -D MEMORY_PROTECTION=TRUE -D SHIP_MODE=FALSE \
+                -D BUILDID_STRING="${DEVICE}-research" 2>&1 | tee build.log
+
+          echo "---- 产物 ----"
+          find Build -name "*.fd" | head -20
+          find Build -name "*.fd" | grep -q . || { echo "没有生成 .fd"; exit 1; }
+
+      - name: 列出并校验产物
+        if: always()
+        run: |
+          set -eux
+          cd "$GITHUB_WORKSPACE/uefi-sheng"
+          find . -name "SILICIUM_UEFI.fd" -exec ls -l {} \; || true
+          FD=$(find . -name "SILICIUM_UEFI.fd" | head -1 || true)
+          if [ -n "${FD:-}" ]; then
+            echo "FD=$FD  size=$(stat -c%s "$FD")"
+            python3 - "$FD" <<'PY'
+          import sys
+          d = open(sys.argv[1], 'rb').read()
+          print('大小:', len(d))
+          for s in (b'UniXNU', b'DarwinBoot', b'fuxi', b'FUXI'):
+              print('  %-12s %s' % (s.decode(), '有' if s in d else '没有(压缩内)'))
+          PY
+          fi
+
+      - name: 上传产物
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: uefi-fuxi-${{ github.run_number }}
+          path: |
+            uefi-sheng/Build/fuxiPkg/**/FV/*.fd
+            uefi-sheng/Build/**/FV/*.fd
+            uefi-sheng/build.log
+            uefi-sheng/Build/fuxiPkg/**/FD_REPORT.HTML
+          if-no-files-found: warn
+          retention-days: 14

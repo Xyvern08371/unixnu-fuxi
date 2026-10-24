@@ -1,0 +1,123 @@
+diff --git a/osfmk/arm64/start.s b/osfmk/arm64/start.s
+--- a/osfmk/arm64/start.s
++++ b/osfmk/arm64/start.s
+@@ -233,38 +233,83 @@
+ 	.global	EXT(LowExceptionVectorBase)
+-LEXT(LowExceptionVectorBase)
+-	/* EL1 SP 0 */
+-	b		.
+-	.align	7
+-	b		.
+-	.align	7
+-	b		.
+-	.align	7
+-	b		.
+-	/* EL1 SP1 */
+-	.align	7
+-	b		.
+-	.align	7
+-	b		.
+-	.align	7
+-	b		.
+-	.align	7
+-	b		.
+-	/* EL0 64 */
+-	.align	7
+-	b		.
+-	.align	7
+-	b		.
+-	.align	7
+-	b		.
+-	.align	7
+-	b		.
+-	/* EL0 32 */
+-	.align	7
+-	b		.
+-	.align	7
+-	b		.
+-	.align	7
+-	b		.
+-	.align	7
+-	b		.
++LEXT(LowExceptionVectorBase)
++	/* EL1 SP 0 */
++	b	Lfuxi_early_exception
++	.align	7
++	b	Lfuxi_early_exception
++	.align	7
++	b	Lfuxi_early_exception
++	.align	7
++	b	Lfuxi_early_exception
++	/* EL1 SP1 */
++	.align	7
++	b	Lfuxi_early_exception
++	.align	7
++	b	Lfuxi_early_exception
++	.align	7
++	b	Lfuxi_early_exception
++	.align	7
++	b	Lfuxi_early_exception
++	/* EL0 64 */
++	.align	7
++	b	Lfuxi_early_exception
++	.align	7
++	b	Lfuxi_early_exception
++	.align	7
++	b	Lfuxi_early_exception
++	.align	7
++	b	Lfuxi_early_exception
++	/* EL0 32 */
++	.align	7
++	b	Lfuxi_early_exception
++	.align	7
++	b	Lfuxi_early_exception
++	.align	7
++	b	Lfuxi_early_exception
++	.align	7
++	b	Lfuxi_early_exception
++
++/* fuxi 0051 early exception reporter: ESR/ELR/FAR encoded as bar widths.
++ * y=900 w=200+EC*8, y=940 w=200+ELR[33:28]*8, y=980 w=200+FAR[33:28]*8.
++ * No stack use. Code is in the kernel image, covered by the V=P map. */
++Lfuxi_early_exception:
++	mrs	x9, ESR_EL1
++	mrs	x10, ELR_EL1
++	mrs	x11, FAR_EL1
++	lsr	x12, x9, #26
++	and	x12, x12, #0x3F
++	lsl	x12, x12, #3
++	add	x12, x12, #200
++	MOV64	x0, (0xB8000000 + 900 * 4320)
++	bl	Lfuxi_bar
++	lsr	x12, x10, #28
++	and	x12, x12, #0x3F
++	lsl	x12, x12, #3
++	add	x12, x12, #200
++	MOV64	x0, (0xB8000000 + 940 * 4320)
++	bl	Lfuxi_bar
++	lsr	x12, x11, #28
++	and	x12, x12, #0x3F
++	lsl	x12, x12, #3
++	add	x12, x12, #200
++	MOV64	x0, (0xB8000000 + 980 * 4320)
++	bl	Lfuxi_bar
++	dsb	sy
++Lfuxi_halt:
++	b	Lfuxi_halt
++
++Lfuxi_bar:
++	mov	w1, #-1
++	mov	x2, #24
++	mov	x4, #4320
++Lfuxi_bar_row:
++	mov	x3, x12
++	mov	x5, x0
++Lfuxi_bar_pixel:
++	str	w1, [x5], #4
++	subs	x3, x3, #1
++	b.ne	Lfuxi_bar_pixel
++	add	x0, x0, x4
++	subs	x2, x2, #1
++	b.ne	Lfuxi_bar_row
++	ret
+ 	.align 12, 0

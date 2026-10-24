@@ -1,0 +1,33 @@
+#
+# Xiaomi 13 (fuxi, SM8550) UEFI config
+# boot_image parameters follow UniXNU-sheng (same SM8550 SoC, header_version=0
+# with full offset set) so the ABL can locate kernel/dtb.
+#
+# Boot Shim Configs
+#
+[boot_shim]
+requires_kernel_header = true
+
+#
+# UEFI FD Configs
+#
+[uefi_fd]
+base = 0xC0000000
+size = 0x1400000
+
+#
+# Android Boot Image Kernel Configs
+#
+[boot_image_kernel]
+kernel_compression = "gzip"
+append_dtb         = true
+
+#
+# Android Boot Image Configs
+#
+[boot_image]
+header_version = 0
+base = 0x00000000
+kernel_offset = 0x00008000
+tags_offset = 0x01e00000
+pagesize = 4096

@@ -1,0 +1,13 @@
+diff --git a/osfmk/arm64/start.s b/osfmk/arm64/start.s
+--- a/osfmk/arm64/start.s
++++ b/osfmk/arm64/start.s
+@@ -274,3 +274,9 @@
+ Lfuxi_early_exception:
++	/* 0053: leave ESR/ELR/FAR where DarwinBoot can read them next boot (framebuffer tail). */
++	MOV64	x0, 0xB89E0000
++	MOV64	x1, 0x45544C4649585546
++	stp	x1, x9, [x0, #0]
++	stp	x10, x11, [x0, #16]
++	dsb	sy
+ 	mrs	x9, ESR_EL1
+ 	mrs	x10, ELR_EL1
