@@ -1,0 +1,214 @@
+name: build-xnu
+
+# 0055 诊断版：开 MMU 前保留物理地址低向量，异常才能上报。
+
+# 用 blacktop/darwin-xnu-build 构建开源 XNU，并打上 fuxi 板级补丁序列。
+#
+# 路线参考：dipa-studio/ios-sweet（他们把 xnu-8796 移植到骁龙 732G 并跑起 iOS 16 用户态）。
+# 我们把他们的板级标识 SWEET 换成 FUXI，硬件常量按 SM8550 调整。
+#
+# 产物：kernel.*（Mach-O 内核）+ 构建日志
+
+permissions:
+  contents: write
+  actions: write
+
+on:
+  push:
+    paths:
+      - ".github/workflows/build-xnu.yml"
+      - "xnu/patches/**"
+  workflow_dispatch:
+    inputs:
+      kernel_config:
+        description: "RELEASE / DEVELOPMENT / DEBUG"
+        default: "DEVELOPMENT"
+      machine_config:
+        description: "xnu MACHINE_CONFIG"
+        default: "BCM2837"
+
+concurrency:
+  group: xnu-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DXB_REPO: https://github.com/blacktop/darwin-xnu-build
+  DXB_SHA: 663906528d1cd5ea8fde7de6f16de73db9511549
+  MACOS_VERSION: "13.5"
+  KERNEL_CONFIG: ${{ inputs.kernel_config || 'DEVELOPMENT' }}
+  # 我们的补丁集（FUXI.h、sleh.c 的 GICv3 处理、fbcon、boot trace）都是
+  # 按 MACHINE_CONFIG=FUXI 写的。DXB 默认 VMAPPLE，本 workflow 之前用
+  # BCM2837，结果 caches_asm.s（conf/files.arm64 里标着 optional nos_arm_asm）
+  # 那种平台层文件没被编进来，链接时 CleanPoC_Dcache / Idle_context /
+  # __bcopyin 这些全成了 undefined。
+  MACHINE_CONFIG: ${{ inputs.machine_config || 'FUXI' }}
+
+jobs:
+  build:
+    # macos-14 自带 Xcode 15.x，它的 iig 与 xnu-8796 的 IORPC ABI 匹配
+    runs-on: macos-14
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 取构建脚本
+        run: |
+          git init -q dxb
+          git -C dxb fetch -q --depth 1 "$DXB_REPO" "$DXB_SHA"
+          git -C dxb checkout -q FETCH_HEAD
+          mkdir -p dxb/patches
+          cp xnu/patches/*.patch xnu/patches/*.sh dxb/patches/ 2>/dev/null || cp xnu/patches/*.patch dxb/patches/
+          # libfirehose_kernel 默认只出 x86_64/arm64e（build.sh 里那行
+          # xcodebuild ... ARCHS="x86_64 arm64e"）。我们的内核是普通 arm64，
+          # 链接时会因为这 5 个符号找不到而失败：
+          #   ___firehose_buffer_create / ___firehose_buffer_tracepoint_flush
+          #   ___firehose_buffer_tracepoint_reserve
+          #   ___firehose_kernel_configuration_valid / ___firehose_merge_updates
+          # 所以把 arm64 也加进这个库的 ARCHS。
+          sed -i '' 's/ARCHS="x86_64 arm64e" VALID_ARCHS="x86_64 arm64e"/ARCHS="x86_64 arm64e arm64" VALID_ARCHS="x86_64 arm64e arm64"/' dxb/build.sh
+          grep -c 'VALID_ARCHS="x86_64 arm64e arm64"' dxb/build.sh
+          ls dxb/patches
+
+      - name: 依赖
+        run: |
+          brew install jq gum bash cmake ninja || true
+          printf '#!/bin/sh\nexit 0\n' | sudo tee /usr/local/bin/xcodes >/dev/null
+          sudo chmod +x /usr/local/bin/xcodes
+          sw_vers
+          XC=$(ls -d /Applications/Xcode_*.app | sort -V | head -1)
+          echo "DEVELOPER_DIR=$XC/Contents/Developer" >> "$GITHUB_ENV"
+          sudo xcode-select -s "$XC"
+          xcodebuild -version
+          xcrun --find iig
+
+      - name: 构建
+        working-directory: dxb
+        env:
+          MAKEFLAGS: "-k"
+          # makedefs/MakeInc.def 里：
+          #   ARCH_STRING_FOR_CURRENT_MACHINE_CONFIG := $(shell echo $(CURRENT_ARCH_CONFIG) | tr A-Z a-z)
+          #   ifneq ($(filter arm64,$(ARCH_STRING_FOR_CURRENT_MACHINE_CONFIG)),)
+          #     export ARCH_STRING_FOR_CURRENT_MACHINE_CONFIG := arm64e
+          #   endif
+          # 任何 ARM64 都会变成 arm64e，而 ARCH_FLAGS_ARM64 直接等于
+          # -arch $(ARCH_STRING_FOR_CURRENT_MACHINE_CONFIG)。arm64e 让
+          # __has_feature(ptrauth_calls) 为真，XNU 就编进 Apple 专有的 JOP
+          # 代码（pmap->disable_jop / task->jop_pid / pmap_sign_user_ptr），
+          # 而 HAS_APPLE_PAC=0 的板上这些字段根本不存在，编译必然失败。
+          # 这个变量第一次赋值是 ?=，所以从环境里预设成 arm64 就能绕过。
+          ARCH_STRING_FOR_CURRENT_MACHINE_CONFIG: "arm64"
+        run: |
+          set +e
+          bash build.sh > ../build.log 2>&1
+          echo "退出码: $?"
+          tail -60 ../build.log
+
+      - name: 收集产物
+        if: always()
+        run: |
+          mkdir -p out
+          cp -R dxb/fakeroot/System/Library/Kernels/. out/ 2>/dev/null || true
+          ls -la out
+          (cd out && shasum -a 256 kernel.* > SHA256SUMS) || true
+          echo "=== 关键错误 ==="
+          grep -nE "(^|\s)error:" build.log 2>/dev/null | head -40 || true
+          echo "=== 未定义符号 ==="
+          grep -n "Undefined symbols" -A 30 build.log 2>/dev/null | head -40 || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xnu-kernel
+          path: |
+            out/
+            build.log
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: 把构建日志提交回仓库（失败时也能看到原因）
+        if: always()
+        continue-on-error: true
+        run: |
+          set -e
+          mkdir -p ci-logs
+          cp build.log ci-logs/build.log 2>/dev/null || echo 'no build.log' > ci-logs/build.log
+          { echo '=== out/ ==='; ls -la out 2>&1 || true; } > ci-logs/out-listing.txt
+          {
+            echo "kernel:"; ls -la out/kernel.development.fuxi 2>/dev/null || echo "  MISSING"
+            echo; echo "sha256:"; (cd out 2>/dev/null && shasum -a 256 kernel.development.fuxi) 2>/dev/null || echo "  n/a"
+            echo; echo "flags:"
+            echo "  IOS:       $(grep -c -- '-DXNU_TARGET_OS_IOS' build.log 2>/dev/null || echo 0)"
+            echo "  OSX:       $(grep -c -- '-DXNU_TARGET_OS_OSX' build.log 2>/dev/null || echo 0)"
+            echo "  iphoneos:  $(grep -c -- '-DXNU_PLATFORM_iphoneos' build.log 2>/dev/null || echo 0)"
+            echo; echo "error count: $(grep -c 'error:' build.log 2>/dev/null || echo 0)"
+            echo; echo "compile/link errors:"
+            grep -E '\.(c|cpp|m|s|h):[0-9]+:[0-9]+: (error|fatal error):' build.log 2>/dev/null | head -10 || true
+            echo; echo "ld errors:"
+            grep -E '^(ld|clang\+\+): error|Undefined symbols' build.log 2>/dev/null | head -6 || true
+            echo; echo "no such file:"
+            grep -m 6 'fatal error: .*file not found' build.log 2>/dev/null || true
+            echo; echo "tail:"
+            tail -12 build.log 2>/dev/null || true
+          } > ci-logs/summary.txt
+          { echo '=== 错误摘要 ==='; grep -nE '(^|[[:space:]])error:|Premature EOF|Parse failure' build.log 2>/dev/null | head -120 || true; } >> ci-logs/out-listing.txt
+          git config user.name "xnu-bot"
+          git config user.email "xnu-bot@users.noreply.github.com"
+          git add ci-logs
+          if git diff --cached --quiet; then echo "log unchanged"; exit 0; fi
+          git commit -m "ci: build log $(date -u +%Y-%m-%dT%H:%MZ)"
+          for i in 1 2 3 4 5; do
+            git fetch origin main || true
+            if ! git rebase origin/main; then git rebase --abort || true; sleep 3; continue; fi
+            if git push origin HEAD:main; then echo "log pushed (attempt $i)"; exit 0; fi
+            sleep 5
+          done
+          echo "::warning::log push failed"
+
+      - name: commit kernel back to repo (firmware build uses same binary)
+        if: success()
+        continue-on-error: true
+        run: |
+          set -e
+          if [ ! -f out/kernel.development.fuxi ]; then
+            echo "no kernel artifact, skip"
+            exit 0
+          fi
+          mkdir -p rom/xnu
+          cp out/kernel.development.fuxi rom/xnu/kernel.development.fuxi
+          git config user.name "xnu-bot"
+          git config user.email "xnu-bot@users.noreply.github.com"
+          git add rom/xnu/kernel.development.fuxi
+          if git diff --cached --quiet; then
+            echo "kernel unchanged, skip commit"
+          else
+            git commit -m "rom/xnu: auto-update kernel $(date -u +%Y-%m-%dT%H:%MZ)"
+            # 和人工提交赛跑：先 rebase 再推，被拒就重试
+            pushed=0
+            for i in 1 2 3 4 5; do
+              git fetch origin main || true
+              if ! git rebase origin/main; then
+                git rebase --abort || true
+                sleep 3
+                continue
+              fi
+              if git push origin HEAD:main; then
+                echo "committed (attempt $i)"
+                pushed=1
+                break
+              fi
+              echo "push rejected, retrying..."
+              sleep 5
+            done
+            if [ "$pushed" = "0" ]; then
+              echo "::warning::kernel commit push failed after retries (artifact still uploaded)"
+            fi
+          fi
+
+      - name: dispatch firmware build (after kernel committed)
+        if: success()
+        run: |
+          curl -sS -X POST \
+            -H "Authorization: Bearer ${{ github.token }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/build-fuxi-uefi.yml/dispatches" \
+            -d '{"ref":"main"}' -o /dev/null -w "dispatch http=%{http_code}\n"

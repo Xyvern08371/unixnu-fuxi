@@ -1,0 +1,23 @@
+diff --git a/osfmk/arm64/start.s b/osfmk/arm64/start.s
+--- a/osfmk/arm64/start.s
++++ b/osfmk/arm64/start.s
+@@ -850,3 +850,19 @@
+ 	isb		sy
++	/* 0049 probe C: after MMU enable, y=1100 */
++	MOV64	x2, (0xB8000000 + 1100 * 4320)
++	mov	w3, #-1
++	mov	x4, #24
++	mov	x5, #4320
++Lfuxi_probeC_row:
++	mov	x6, #300
++	mov	x9, x2
++Lfuxi_probeC_pixel:
++	str	w3, [x9], #4
++	subs	x6, x6, #1
++	b.ne	Lfuxi_probeC_pixel
++	add	x2, x2, x5
++	subs	x4, x4, #1
++	b.ne	Lfuxi_probeC_row
++	dsb	sy
+ 
+ #if !VMAPPLE && !defined(ARM64_BOARD_CONFIG_FUXI)

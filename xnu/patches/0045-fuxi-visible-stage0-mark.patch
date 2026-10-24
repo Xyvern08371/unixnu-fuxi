@@ -1,0 +1,13 @@
+diff --git a/osfmk/arm64/start.s b/osfmk/arm64/start.s
+--- a/osfmk/arm64/start.s
++++ b/osfmk/arm64/start.s
+@@ -467,3 +467,3 @@
+ 	/* Stage 0: white 64x32 band, no stack or page tables needed. */
+-	MOV64	x0, (0xB8000000 + 2368 * 4320)
++MOV64	x0, (0xB8000000 + 1700 * 4320)	/* 0045: 移到可见位置 */
+ 	mov		w1, #-1
+@@ -472,3 +472,3 @@
+ Lfuxi_mark_row:
+-	mov		x3, #64
++mov	x3, #400	/* 0045: 加宽，拍照能看清 */
+ 	mov		x5, x0
