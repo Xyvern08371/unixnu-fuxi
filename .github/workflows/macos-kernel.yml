@@ -42,7 +42,7 @@ jobs:
         working-directory: UniXNU
         run: |
           set -o pipefail
-          python3 unixnu kernel -D ../UniXNU-fuxi-merged -j 8 2>&1 | tail -120
+          set +e; python3 unixnu kernel -D ../UniXNU-fuxi-merged -j 8 > ../kernel-build.log 2>&1; echo "kernel rc=$?"; tail -60 ../kernel-build.log; exit 0
 
       - name: Collect outputs
         if: always()
@@ -58,5 +58,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: fuxi-kernel
-          path: artifacts
+          path: |
+            artifacts
+            UniXNU-fuxi-merged/kernel-build.log
           if-no-files-found: warn
