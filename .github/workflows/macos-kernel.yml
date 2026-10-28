@@ -48,8 +48,8 @@ jobs:
         if: always()
         run: |
           mkdir -p artifacts
-          cp -v UniXNU-fuxi-merged/kernel-build.log artifacts/ 2>/dev/null || true
-          find UniXNU/out -type f \( -name 'kernel*' -o -name '*.im4p' -o -name '*.kernelcache' \) -exec cp -v {} artifacts/ \; 2>/dev/null || true
+          cp -v ../kernel-build.log artifacts/ 2>/dev/null || true
+          find UniXNU/out/fuxi -type f \( -name 'kernel' -o -name '*.im4p' -o -name '*.kernelcache' \) -exec cp -v {} artifacts/ \; 2>/dev/null || true
           ls -la artifacts
           du -sh artifacts
 
