@@ -1,0 +1,139 @@
+"schema_version" = 2
+
+["board"]
+"name" = "fuxi"
+"soc" = "SM8550"
+"description" = "Xiaomi 13"
+"kit" = "sheng"
+"soc_source" = "sm8550"
+"os_profile" = "ipados-17.7.11-21H461"
+
+
+["userdata"]
+"first_lba" = 3110976
+"last_lba" = 61850618
+"lba_bytes" = 4096
+"windows" = [{ "name" = "OS", "component" = "OS" }, { "name" = "SystemOS", "component" = "Cryptex1,SystemOS" }]
+
+
+["kernel"]
+"defconfig" = "fuxi_defconfig"
+"archives" = [
+  "build-corecrypto-14.py",
+  "build-corecrypto-14.py --namespace",
+  "component:ArmDTPlatform",
+  "component:ArmCpu",
+  "component:SoftwareAES",
+  "build-software-aes-bindings.py",
+  "component:ShengUfs",
+  "component:VirtioMmioBlock",
+  "component:RamBlock",
+  "build-virtio-mmio-bindings.py --component RamBlock --directory build/ram-block",
+  "build-virtio-mmio-bindings.py --component VirtioMmioBlock",
+  "build-mockfs-fixture.py",
+  "build-sheng-platform-power.py",
+  "build-boot-progress.py",
+  "build-libpthread-kernel.py",
+  "component:Adreno740",
+  "build-adreno740-kits.py",
+  "build-adreno740-accelerator.py",
+  "component:ShengHidInput",
+  "component:AppleKeyStoreState",
+  "build-gop-legacy-display.py",
+]
+"config_fragments" = ["arch:configs/common.config", "soc:configs/sm8550.config", "os:configs/ipados.config"]
+"patch_series" = ["arch:patches/xnu/series", "soc:patches/xnu/series", "os:patches/xnu/series", "device:patches/xnu/series"]
+
+
+["firmware"]
+"config" = "fuxi"
+"dsc" = "Platforms/Xiaomi/fuxiPkg/fuxi.dsc"
+"fd" = "Build/fuxiPkg/{target}_CLANGPDB/FV/SILICIUM_UEFI.fd"
+"preflight" = ["scripts/check-sheng.py"]
+"submodules" = ["Common/Mu", "Common/Mu_OEM_Sample", "Silicium-ACPI", "Silicon/Silicium/OpensslPkg/Library/OpensslLib/openssl"]
+"patches" = ["Resources/MuPatches/Gic-Spurious.patch"]
+"packages" = ["{uefi}", "{uefi}/Platforms/Xiaomi", "{tree}/package", "{tree}/drivers/DarwinBoot", "{edk2}", "{uefi}/Common/Mu", "{uefi}/Common/Mu_OEM_Sample", "{uefi}/Silicon/Qualcomm", "{uefi}/Silicon/Silicium", "{uefi}/Silicium-ACPI", "{uefi}/Silicium-ACPI/Platforms/Xiaomi", "{uefi}/Silicium-ACPI/Silicon/Qualcomm"]
+
+["firmware"."defines"]
+"ENABLE_SECUREBOOT" = "1"
+"DEVICE_MODEL" = "fuxi"
+"MEMORY_PROTECTION" = "TRUE"
+"SHIP_MODE" = "FALSE"
+"BUILDID_STRING" = "fuxi-research"
+
+
+
+["payload"]
+"volume" = "FUXIPAYL"
+"size_mib" = 208
+"loader" = "firmware"
+"title" = "Boot"
+"dram_size" = "0x80000000"
+"skip_setup_tool" = "scripts/seed-data-skip-setup.py"
+"panic_screen" = true
+"kernel_args" = ["-v", "serial=3", "debug=0x14e", "kt_fixed_zones=120", "offline-legacy-register=1", "offline-legacy-gop=1", "offline-legacy-unit-scale=2", "offline-legacy-pm=1", "offline-legacy-validate=1", "offline-legacy-transfer=1", "offline-legacy-cpu-present=1", "offline-hid-home=1", "offline-hid-input=1", "offline-legacy-phase=4", "offline-mobile-graphics-client=1", "offline-mobile-graphics-load=1", "offline-apfs-load=1", "boot-progress=2", "-apfs_shared_datavolume", "offline-key-events=1", "native-ufs-root=1", "sheng-pmgr=2", "sheng-disable-watchdogd=1", "sheng-lite=1", "boot-ui-focus4=SpringBoard", "sheng-smp=1", "sheng-cpufreq=4", "sheng-touch=4", "sheng-aks=1", "sheng-gpu-power=9", "sheng-gpu-metal=1", "sheng-fb-gpu=1", "sheng-banner=0", "sheng-gpu-dcvs=1", "sheng-gpu-addon=1", "armcpu-spi-ipi=1", "-no_slto_panic", "ml-timeout-lock-panic-scale=40", "sheng-touch-hid=1", "sheng-data-persist=2", "sheng-staged-apps=1", "sheng-buttons=1", "sheng-backlight=1", "sheng-wifi=5", "sheng-vsync=120"]
+
+["payload"."install"]
+"title" = "Install and boot"
+"confirm" = "ERASE all iPadOS user data and install again?"
+"confirm_titles" = ["Erase Data, skip Hello, boot", "Erase Data, show Hello, boot"]
+"confirm_args" = ["sheng-data-reset=1", "sheng-data-reset=2"]
+
+
+["payload"."adt"]
+"chip_id" = "207"
+"owned_memory_size" = "0x130000000"
+"root_match_volume_uuid" = "04769D26-2CA0-4825-B443-E2E5F88300F2"
+"packed_data_ramdisk" = true
+"persistent_data" = true
+"unique_chip_id" = "required"
+
+
+
+["bootimg"]
+"dtb_node" = [{ "path" = "/reserved-memory/splash_region", "props" = [{ "name" = "label", "type" = "s", "value" = "cont_splash_region" }, { "name" = "reg", "type" = "x", "value" = ["0x0", "0xb8000000", "0x0", "0x2b00000"] }] }]
+
+
+["device_tree"]
+"source" = "device:dts/fuxi.dts"
+"include_dirs" = ["soc:dts"]
+
+
+["components"]
+"include" = ["ArmDTPlatform", "ArmCpu", "SoftwareAES", "ShengUfs", "VirtioMmioBlock", "RamBlock", "Adreno740", "AdrenoMetal", "GopFramebuffer", "ShengHidInput", "ShengNovatekTouch", "QcomGeniSpi", "AppleKeyStoreState", "XnuPrelink", "DarwinBoot", "VerifiedRoot", "ShengPreflight", "AirNir", "Ath12kWifi"]
+
+
+["adt"]
+
+["adt"."product"]
+
+["adt"."product"."string"]
+"model" = "J120AP"
+"artwork-display-gamut" = "sRGB"
+
+
+["adt"."product"."u32"]
+"thin-bezel" = 1
+
+
+
+["adt"."defaults"]
+
+["adt"."defaults"."u32"]
+"sleep-disabled" = 1
+
+
+
+["adt"."buttons"]
+
+["adt"."buttons"."string"]
+"compatible" = "buttons"
+"device_type" = "buttons"
+
+
+["adt"."buttons"."strings"]
+"button-names" = ["hold", "voldown", "volup"]
+
+
+["adt"."buttons"."u32"]
+"home-button-type" = 2
