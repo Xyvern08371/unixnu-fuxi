@@ -1,0 +1,62 @@
+name: macos-kernel
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [merged]
+
+jobs:
+  kernel:
+    runs-on: macos-14
+    timeout-minutes: 180
+    steps:
+      - name: Checkout UniXNU
+        uses: actions/checkout@v4
+        with:
+          repository: UniXNU/UniXNU
+          path: UniXNU
+          submodules: recursive
+
+      - name: Checkout device repo
+        uses: actions/checkout@v4
+        with:
+          path: UniXNU-fuxi-merged
+
+      - name: Toolchain info
+        run: |
+          xcodebuild -version
+          xcrun --find clang
+          xcrun clang --version | head -2
+
+      - name: Fetch sources
+        working-directory: UniXNU
+        run: |
+          python3 unixnu fetch -D ../UniXNU-fuxi-merged 2>&1 | tail -30
+
+      - name: Defconfig
+        working-directory: UniXNU
+        run: |
+          python3 unixnu defconfig fuxi_defconfig -D ../UniXNU-fuxi-merged
+
+      - name: Build kernel
+        working-directory: UniXNU
+        run: |
+          set -o pipefail
+          python3 unixnu kernel -D ../UniXNU-fuxi-merged -j 8 2>&1 | tail -120
+
+      - name: Collect outputs
+        if: always()
+        run: |
+          mkdir -p artifacts
+          find UniXNU/out -name 'kernel*' -o -name '*.kernelcache' -o -name '*.im4p' 2>/dev/null | head -20
+          find UniXNU/out -type f \( -name 'kernel*' -o -name '*.im4p' \) -exec cp -v {} artifacts/ \; 2>/dev/null || true
+          tar czf artifacts/logs.tar.gz -C UniXNU/out . 2>/dev/null || true
+          ls -la artifacts
+
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuxi-kernel
+          path: artifacts
+          if-no-files-found: warn

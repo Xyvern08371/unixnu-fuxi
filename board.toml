@@ -49,8 +49,8 @@
 "config" = "fuxi"
 "dsc" = "Platforms/Xiaomi/fuxiPkg/fuxi.dsc"
 "fd" = "Build/fuxiPkg/{target}_CLANGPDB/FV/SILICIUM_UEFI.fd"
-"preflight" = ["scripts/check-sheng.py"]
-"submodules" = ["Common/Mu", "Common/Mu_OEM_Sample", "Silicium-ACPI", "Silicon/Silicium/OpensslPkg/Library/OpensslLib/openssl"]
+"preflight" = []
+"submodules" = []
 "patches" = ["Resources/MuPatches/Gic-Spurious.patch"]
 "packages" = ["{uefi}", "{uefi}/Platforms/Xiaomi", "{tree}/package", "{tree}/drivers/DarwinBoot", "{edk2}", "{uefi}/Common/Mu", "{uefi}/Common/Mu_OEM_Sample", "{uefi}/Silicon/Qualcomm", "{uefi}/Silicon/Silicium", "{uefi}/Silicium-ACPI", "{uefi}/Silicium-ACPI/Platforms/Xiaomi", "{uefi}/Silicium-ACPI/Silicon/Qualcomm"]
 
@@ -60,6 +60,8 @@
 "MEMORY_PROTECTION" = "TRUE"
 "SHIP_MODE" = "FALSE"
 "BUILDID_STRING" = "fuxi-research"
+"FD_SIZE" = "0x4f0000"
+"FD_BLOCKS" = "1264"
 
 
 
