@@ -48,12 +48,10 @@ jobs:
         if: always()
         run: |
           mkdir -p artifacts
-          find UniXNU/out -name 'kernel*' -o -name '*.kernelcache' -o -name '*.im4p' 2>/dev/null | head -20
-          find UniXNU/out -type f \( -name 'kernel*' -o -name '*.im4p' \) -exec cp -v {} artifacts/ \; 2>/dev/null || true
-          tar czf artifacts/logs.tar.gz -C UniXNU/out . 2>/dev/null || true
+          cp -v UniXNU-fuxi-merged/kernel-build.log artifacts/ 2>/dev/null || true
+          find UniXNU/out -type f \( -name 'kernel*' -o -name '*.im4p' -o -name '*.kernelcache' \) -exec cp -v {} artifacts/ \; 2>/dev/null || true
           ls -la artifacts
-
-      - name: Upload
+          du -sh artifacts      - name: Upload
         if: always()
         uses: actions/upload-artifact@v4
         with:
