@@ -6,7 +6,7 @@ name: official-kernel
 #   ./unixnu build kernel
 #
 # 驱动仓库：UniXNU/UniXNU（官方框架）
-# 设备仓库：hanzi123-bilp/unixnu-fuxi（官方设备页指定的 fuxi 端口）
+# 设备仓库：Xyvern08371/fuxi-dev（官方设备页指定的 fuxi 端口）
 # 日志无论成败都推到 ci-logs 分支，方便本地读取。
 
 # trigger: ufs pass
@@ -56,7 +56,7 @@ jobs:
       - name: 取设备仓库（官方 fuxi 端口）
         uses: actions/checkout@v4
         with:
-          repository: hanzi123-bilp/unixnu-fuxi
+          repository: Xyvern08371/fuxi-dev
           path: device
           persist-credentials: false
 
@@ -147,21 +147,13 @@ jobs:
             https://api.github.com/repos/Xyvern08371/fuxi-zap/contents/a740_zap.mbn -o "$ZAP"
           wc -c "$ZAP"
           echo "fd107982f9b06b40c85474c6c7288f43f77ea9b02f210df05f501cb2ee296e13  $ZAP" | sha256sum -c -
-          echo "=== device/scripts/data ==="
-          ls -la device/scripts/data || true
-          echo "=== any adreno inputs json ==="
-          find device -name '*adreno*inputs*.json' -o -name 'adreno-inputs.json' | head -20 || true
+          find device -name '*adreno*inputs*.json' | head -10 || true
           python3 - <<'PY'
           import io, json, glob, sys
-          cands = []
-          for pat in ('device/scripts/data/*adreno*inputs*.json',
-                      'device/scripts/data/adreno-inputs.json',
-                      'device/**/adreno-inputs.json'):
-              cands += glob.glob(pat, recursive=True)
-          cands = sorted(set(cands))
+          cands = sorted(set(glob.glob('device/scripts/data/*adreno*inputs*.json')))
           print('candidates:', cands)
           if not cands:
-              sys.exit('no adreno inputs json found in device repo')
+              sys.exit('no adreno inputs json found')
           newpin = {
               'repository': 'https://github.com/Xyvern08371/fuxi-zap',
               'git_blob_sha1': '626393afe52f647089754638a909834bd37a8604',
@@ -172,17 +164,16 @@ jobs:
               d = json.load(io.open(p, encoding='utf-8'))
               files = d.get('firmware', {}).get('files')
               if not isinstance(files, dict):
-                  print('skip (no firmware.files):', p); continue
+                  print('skip', p); continue
               hits = [k for k in files if 'zap' in k.lower()]
               if hits:
                   for k in hits:
-                      print(p, 'old', k, files[k])
+                      print(p, 'old', k, files[k].get('bytes'), files[k].get('sha256'))
                       files[k] = newpin
-                      print(p, 'new', k, files[k])
+                      print(p, 'new', k, newpin['bytes'], newpin['sha256'])
               else:
-                  key = 'qcom/sm8550/fuxi/a740_zap.mbn'
-                  files[key] = newpin
-                  print(p, 'added', key)
+                  files['qcom/sm8550/fuxi/a740_zap.mbn'] = newpin
+                  print(p, 'added key')
               io.open(p, 'w', encoding='utf-8', newline='\n').write(json.dumps(d, indent=2) + '\n')
           PY
           ln -sfn uefi-sheng unixnu/out/fuxi/tree/uefi-fuxi || true
