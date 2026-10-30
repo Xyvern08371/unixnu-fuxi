@@ -296,6 +296,10 @@ jobs:
           curl -fsSL "https://chromium.googlesource.com/external/gitlab.freedesktop.org/mesa/mesa/+/85fda3b36405bcaea8bffc64aa4f2651dc90770d/src/freedreno/common/freedreno_pm4.h?format=TEXT" | base64 -d > "$AC/mesa/src/freedreno/common/freedreno_pm4.h" || echo "MESA FAIL"
           find "$AC" -type f | wc -l | tee -a "$LOG2"
           sha256sum "$FW"/sheng-gpu/qcom/a740_sqe.fw "$FW"/sheng-gpu/qcom/gmu_gen70200.bin "$FW"/sheng-gpu/qcom/sm8550/sheng/a740_zap.mbn "$FW"/fuxi-gpu/qcom/gmu_gen70200.bin "$FW"/fuxi-gpu/qcom/sm8550/fuxi/a740_sqe.fw "$FW"/fuxi-gpu/qcom/sm8550/fuxi/a740_zap.mbn | tee -a "$LOG2"
+          echo "=== IPSW: fetch the pinned volumes for the verified-root archive ===" | tee -a "$LOG2"
+          ./unixnu ipsw 2>&1 | tail -25 | tee -a "$LOG2"
+          echo "IPSW_EXIT=$?" | tee -a "$LOG2"
+          ls -l out/ipsw/*/*.dmg 2>/dev/null | tee -a "$LOG2" || true
           echo "=== BUILD: compile -> archives -> link ===" | tee -a "$LOG2"
           rm -f out/fuxi/tree/scripts/data/adreno-inputs.json out/fuxi/tree/scripts/data/fuxi-adreno-inputs.json
           echo "pins patched earlier; see the zap step output" | tee -a "$LOG2"
