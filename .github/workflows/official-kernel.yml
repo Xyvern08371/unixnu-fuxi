@@ -234,7 +234,7 @@ jobs:
           ls -l "$FUXI_DTB" || echo "DTB MISSING"
           ln -sfn uefi-sheng out/fuxi/tree/uefi-fuxi || true
           ./unixnu defconfig fuxi_full_defconfig 2>&1 | tee -a "$LOG2"
-          FW=out/fuxi/tree/.cache/firmware
+          FW=device/.cache/firmware
           mkdir -p "$FW/sheng-gpu/qcom/sm8550/sheng" "$FW/fuxi-gpu/qcom/sm8550/fuxi"
           SB=https://raw.githubusercontent.com/ianchb/sheng-firmware/2c1e2729a085c7f0470c855d236e49455c4601f0
           FB=https://raw.githubusercontent.com/hanzi123-bilp/uefi-fuxi/fuxi/fuxi-loader-build
