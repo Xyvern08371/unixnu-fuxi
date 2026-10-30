@@ -54,6 +54,9 @@ jobs:
           repository: ljhhkx529/uefi-fuxi
           path: uefi-fuxi
 
+      - name: Install host tools
+        run: brew install dtc mtools || true
+
       - name: Report the toolchain
         run: |
           uname -a
