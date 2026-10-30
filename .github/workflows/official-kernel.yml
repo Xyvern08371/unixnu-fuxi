@@ -51,7 +51,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ljhhkx529/uefi-fuxi
-          path: unixnu/uefi-fuxi
+          path: uefi-fuxi
 
       - name: Report the toolchain
         run: |
@@ -131,7 +131,7 @@ jobs:
           python3 uefi-fuxi/scripts/bootimage.py \
             --unixnu-root "$PWD" \
             --device ../device \
-            --uefi uefi-fuxi \
+            --uefi ../uefi-fuxi \
             --ramdisk out/fuxi/payload/payload.img \
             -o out/fuxi/boot/boot.img 2>&1 | tail -40
           cat out/fuxi/boot/bootimage.json
