@@ -234,6 +234,13 @@ jobs:
           ls -l "$FUXI_DTB" || echo "DTB MISSING"
           ln -sfn uefi-sheng out/fuxi/tree/uefi-fuxi || true
           ./unixnu defconfig fuxi_full_defconfig 2>&1 | tee -a "$LOG2"
+          FW=out/fuxi/tree/.cache/firmware/sheng-gpu
+          mkdir -p "$FW/qcom/sm8550/sheng"
+          B=https://raw.githubusercontent.com/ianchb/sheng-firmware/2c1e2729a085c7f0470c855d236e49455c4601f0
+          curl -fsSL "$B/qcom/a740_sqe.fw" -o "$FW/qcom/a740_sqe.fw" || echo "SQE FAIL"
+          curl -fsSL "$B/qcom/gmu_gen70200.bin" -o "$FW/qcom/gmu_gen70200.bin" || echo "GMU FAIL"
+          curl -fsSL "$B/qcom/sm8550/sheng/a740_zap.mbn" -o "$FW/qcom/sm8550/sheng/a740_zap.mbn" || echo "ZAP FAIL"
+          ls -l "$FW/qcom" "$FW/qcom/sm8550/sheng" | tee -a "$LOG2"
           echo "=== BUILD: compile -> archives -> link ===" | tee -a "$LOG2"
           ./unixnu build kernel 2>&1 | tee -a "$LOG2"
           echo "KERNEL_EXIT=$?" | tee -a "$LOG2"
