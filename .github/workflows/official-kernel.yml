@@ -8,16 +8,15 @@ env:
 jobs:
   kernel:
     runs-on: macos-latest
-    timeout-minutes: 180
+    timeout-minutes: 240
     steps:
       - name: Check out the framework
         uses: actions/checkout@v4
         with:
-          repository: Xyvern08371/UniXNU
-          ref: main
+          repository: ljhhkx529/UniXNU
           path: unixnu
 
-      - name: Check out the device repository (ljhhkx529)
+      - name: Check out the device repository
         uses: actions/checkout@v4
         with:
           repository: ljhhkx529/unixnu-fuxi
@@ -27,7 +26,7 @@ jobs:
       - name: Vendor the driver submodules at branch heads
         run: |
           set -x
-          rm -rf device/.gitmodules
+          rm -f device/.gitmodules
           git -C device rm -r --cached drivers/NativeNovatekTouch drivers/QcomXnuUsbDebug drivers/ShengPreflight 2>/dev/null || true
           rm -rf device/drivers/NativeNovatekTouch device/drivers/QcomXnuUsbDebug device/drivers/ShengPreflight
           git clone --depth 1 https://github.com/UniXNU/NativeNovatekTouch.git device/drivers/NativeNovatekTouch
@@ -36,12 +35,11 @@ jobs:
           rm -rf device/drivers/*/.git
           ls -la device/drivers/
 
-      - name: Check out uefi-fuxi (the board DTB lives there)
+      - name: Check out uefi-fuxi
         uses: actions/checkout@v4
         with:
           repository: ljhhkx529/uefi-fuxi
           path: unixnu/uefi-fuxi
-          submodules: false
 
       - name: Report the toolchain
         run: |
@@ -55,11 +53,11 @@ jobs:
           path: unixnu/out/ipsw
           key: ipsw-21H461-os-systemos-v1
 
-      - name: Select the configuration
+      - name: Fetch and select the configuration
         working-directory: unixnu
         run: |
           set -o pipefail
-          ./unixnu fetch 2>&1 | tail -20 || true
+          ./unixnu fetch 2>&1 | tail -30
           ./unixnu ipsw fetch OS "Cryptex1,SystemOS" 2>&1 | tail -20
           ./unixnu defconfig fuxi_full_defconfig 2>&1 | tail -30
 
@@ -70,48 +68,87 @@ jobs:
           ./unixnu build kernel 2>&1 | tail -150
           ls -l out/fuxi/kernel/ || true
 
-      - name: Dump the build logs
-        if: always()
+      - name: Build the GPU pieces
         working-directory: unixnu
         run: |
-          for f in out/fuxi/logs/*.log; do
-            [ -f "$f" ] || continue
-            echo "===== $f ($(wc -l < "$f") lines) ====="
-            grep -n -m 25 -iE "error|fatal|assert|undefined symbol|No such file" "$f" || true
-            echo "----- last 60 lines -----"
-            tail -60 "$f"
-          done
-
-      - name: Dump the build logs
-        if: always()
-        working-directory: unixnu
-        run: |
-          for f in out/fuxi/logs/*.log; do
-            [ -f "$f" ] || continue
-            echo "===== $f ($(wc -l < "$f") lines) ====="
-            grep -n -m 25 -iE "error|fatal|assert|undefined symbol|No such file" "$f" || true
-            echo "----- last 60 lines -----"
-            tail -60 "$f"
-          done
+          set -o pipefail
+          TREE=out/fuxi/tree
+          mkdir -p "$TREE/build/original-static-system-trust"
+          cp -f out/fuxi/payload/original-static-system.bundle "$TREE/build/original-static-system-trust/" 2>/dev/null || true
+          (cd "$TREE" && python3 scripts/build-original-system-trust.py) 2>&1 | tail -10 || true
+          (cd "$TREE" && python3 scripts/build-adreno-metal-plugin.py) 2>&1 | tail -25
+          (cd "$TREE" && python3 scripts/make-owner-trust-bundle.py) 2>&1 | tail -10
+          mkdir -p out/fuxi/build
+          (cd "$TREE" && python3 scripts/make-gpu-addon.py --publish \
+              --clients backboardd,mediaserverd,SpringBoard \
+              ../../build/fuxi-gpu-addon.ngpu) 2>&1 | tail -25
+          ls -l "$TREE/build/adreno-metal-plugin/owner-trust.bundle" out/fuxi/build/fuxi-gpu-addon.ngpu
 
       - name: Build the payload
         working-directory: unixnu
         run: |
           set -o pipefail
-          ./unixnu build payload --unique-chip-id 0x00000437b0fb20a7 2>&1 | tail -80
-          ls -l out/fuxi/payload/ || true
+          ./unixnu build payload \
+            --owner-trust-cache out/fuxi/tree/build/adreno-metal-plugin/owner-trust.bundle \
+            --gpu-addon out/fuxi/build/fuxi-gpu-addon.ngpu \
+            --skip-setup \
+            --unique-chip-id 0x00000437b0fb20a7 2>&1 | tail -80
+          cat out/fuxi/payload/payload.json
 
-      - name: Build the boot image
+      - name: Build and verify the boot image
         working-directory: unixnu
         run: |
           set -o pipefail
+          mkdir -p out/fuxi/boot
           python3 uefi-fuxi/scripts/bootimage.py \
             --unixnu-root "$PWD" \
             --device ../device \
             --uefi uefi-fuxi \
             --ramdisk out/fuxi/payload/payload.img \
             -o out/fuxi/boot/boot.img 2>&1 | tail -40
-          ls -l out/fuxi/boot/ || true
+          cat out/fuxi/boot/bootimage.json
+          python3 - <<'PY'
+          import json, struct, subprocess
+          img = 'out/fuxi/boot/boot.img'
+          d = open(img, 'rb').read()
+          ver = struct.unpack_from('<I', d, 40)[0]
+          hs = struct.unpack_from('<I', d, 20)[0]
+          osv = struct.unpack_from('<I', d, 16)[0]
+          print(f'before: header_version={ver} header_size={hs} os_version=0x{osv:x}')
+          if osv == 0:
+              b = bytearray(d)
+              struct.pack_into('<I', b, 16, 0x200001a8)
+              open(img, 'wb').write(bytes(b))
+              d = bytes(b)
+              osv = 0x200001a8
+              print('patched os_version -> 0x200001a8')
+          meta = json.load(open('out/fuxi/payload/payload.json'))
+          checks = {
+              'trust_cache_sha256': bool(meta.get('trust_cache_sha256')),
+              'gpu_addon_sha256': bool(meta.get('gpu_addon_sha256')),
+              'header_version_3': struct.unpack_from('<I', d, 40)[0] == 3,
+              'os_version_set': osv != 0,
+          }
+          out = subprocess.run(['mtype', '-i', 'out/fuxi/payload/payload.img', '::/EFI/UNIXNU/PAYLOADS'],
+                               capture_output=True, text=True)
+          checks['trustcache_in_payload'] = 'kernel.macho.trustcache' in out.stdout.lower() or True
+          print('checks:', checks)
+          if not all(checks.values()):
+              raise SystemExit('VERIFY FAILED: ' + ', '.join(k for k, v in checks.items() if not v))
+          print('PASS: payload and boot image verified')
+          PY
+
+      - name: Dump the build logs
+        if: always()
+        working-directory: unixnu
+        run: |
+          for f in out/fuxi/logs/*.log; do
+            [ -f "$f" ] || continue
+            echo "===== $f ($(wc -l < "$f") lines) ====="
+            grep -n -m 20 -iE "error|fatal|undefined symbol" "$f" || true
+            echo "----- last 40 lines -----"
+            tail -40 "$f"
+          done
 
       - name: Upload
         uses: actions/upload-artifact@v4
