@@ -297,7 +297,7 @@ jobs:
           find "$AC" -type f | wc -l | tee -a "$LOG2"
           sha256sum "$FW"/sheng-gpu/qcom/a740_sqe.fw "$FW"/sheng-gpu/qcom/gmu_gen70200.bin "$FW"/sheng-gpu/qcom/sm8550/sheng/a740_zap.mbn "$FW"/fuxi-gpu/qcom/gmu_gen70200.bin "$FW"/fuxi-gpu/qcom/sm8550/fuxi/a740_sqe.fw "$FW"/fuxi-gpu/qcom/sm8550/fuxi/a740_zap.mbn | tee -a "$LOG2"
           echo "=== IPSW: fetch the pinned volumes for the verified-root archive ===" | tee -a "$LOG2"
-          ./unixnu ipsw 2>&1 | tail -25 | tee -a "$LOG2"
+          ./unixnu ipsw fetch 2>&1 | tail -25 | tee -a "$LOG2"
           echo "IPSW_EXIT=$?" | tee -a "$LOG2"
           ls -l out/ipsw/*/*.dmg 2>/dev/null | tee -a "$LOG2" || true
           echo "=== BUILD: compile -> archives -> link ===" | tee -a "$LOG2"
