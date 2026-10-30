@@ -148,7 +148,7 @@ jobs:
           echo "fd107982f9b06b40c85474c6c7288f43f77ea9b02f210df05f501cb2ee296e13  $ZAP" | sha256sum -c -
           python3 - <<'PY'
           import io, json, glob, sys
-          cands = sorted(set(glob.glob('device/scripts/data/*adreno*inputs*.json')))
+          cands = sorted(set(glob.glob('device/scripts/data/*adreno*inputs*.json')) | set(glob.glob('unixnu/scripts/data/adreno-inputs.json')))
           print('candidates:', cands)
           if not cands:
               sys.exit('no adreno inputs json found')
