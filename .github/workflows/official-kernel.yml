@@ -49,6 +49,12 @@ jobs:
           xcodebuild -version
           python3 --version
 
+      - name: Cache the IPSW extraction
+        uses: actions/cache@v4
+        with:
+          path: unixnu/out/ipsw
+          key: ipsw-21H461-os-systemos-v1
+
       - name: Select the configuration
         working-directory: unixnu
         run: |
