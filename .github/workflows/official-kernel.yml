@@ -171,12 +171,6 @@ jobs:
               'bytes': 76724,
               'sha256': '96fee336424b139100fc60b5b45a907360e4b3936d7e1d00406b9bd80ca48473',
           }
-          sqepin = {
-              'repository': 'https://github.com/ljhhkx529/fuxi-firmware',
-              'git_blob_sha1': '0000000000000000000000000000000000000000',
-              'bytes': 74804,
-              'sha256': '2b49a17244c0527a2d9728af2e255d4b26d18111bb595f010f167823ce5c5c1f',
-          }
           for p in cands:
               d = json.load(io.open(p, encoding='utf-8'))
               files = d.get('firmware', {}).get('files')
