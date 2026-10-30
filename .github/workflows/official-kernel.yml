@@ -61,6 +61,13 @@ jobs:
           ./unixnu ipsw fetch OS "Cryptex1,SystemOS" 2>&1 | tail -20
           ./unixnu defconfig fuxi_full_defconfig 2>&1 | tail -30
 
+      - name: Build the prelink candidates
+        working-directory: unixnu
+        run: |
+          set -o pipefail
+          ./unixnu build prelink 2>&1 | tail -40 || true
+          ls -l out/fuxi/tree/build/native-prelink/ 2>/dev/null || true
+
       - name: Build the kernel
         working-directory: unixnu
         run: |
