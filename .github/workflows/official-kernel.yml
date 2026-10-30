@@ -10,7 +10,8 @@ jobs:
       - name: Check out the framework
         uses: actions/checkout@v4
         with:
-          ref: gpu-ci
+          repository: Xyvern08371/UniXNU
+          ref: main
           path: unixnu
 
       - name: Check out the device repository (ljhhkx529)
