@@ -229,6 +229,8 @@ jobs:
           mkdir -p "$GITHUB_WORKSPACE/ourrepo/ci-logs-official"
           LOG2="$GITHUB_WORKSPACE/ourrepo/ci-logs-official/pass2.log"
           : > "$LOG2"
+          export FUXI_DTB="$PWD/out/fuxi/tree/uefi-sheng/Resources/DTBs/fuxi.dtb"
+          ls -l "$FUXI_DTB" || echo "DTB MISSING"
           ln -sfn uefi-sheng out/fuxi/tree/uefi-fuxi || true
           ./unixnu defconfig fuxi_full_defconfig 2>&1 | tee -a "$LOG2"
           echo "=== BUILD: compile -> archives -> link ===" | tee -a "$LOG2"
