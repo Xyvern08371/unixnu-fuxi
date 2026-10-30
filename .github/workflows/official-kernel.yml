@@ -245,6 +245,40 @@ jobs:
           curl -fsSL "$FB/gmu_gen70200.bin" -o "$FW/fuxi-gpu/qcom/gmu_gen70200.bin" || echo "fuxi GMU FAIL"
           curl -fsSL "$FB/a740_sqe.fw" -o "$FW/fuxi-gpu/qcom/sm8550/fuxi/a740_sqe.fw" || echo "fuxi SQE FAIL"
           curl -fsSL "$ZB" -o "$FW/fuxi-gpu/qcom/sm8550/fuxi/a740_zap.mbn" || echo "fuxi ZAP FAIL"
+          AC=device/.cache/adreno-source
+          LC=https://raw.githubusercontent.com/ianchb/sm8550-mainline/42f3b40c702abbc37c3a04c95af008cd283aeaf3
+          for f in \
+            drivers/gpu/drm/msm/adreno/a6xx_catalog.c \
+            drivers/gpu/drm/msm/adreno/a6xx_gpu.c \
+            drivers/gpu/drm/msm/adreno/a6xx_gmu.c \
+            drivers/gpu/drm/msm/adreno/a6xx_gmu.h \
+            drivers/gpu/drm/msm/adreno/adreno_gpu.h \
+            drivers/gpu/drm/msm/msm_iommu.c \
+            drivers/gpu/drm/msm/registers/adreno/adreno_pm4.xml \
+            drivers/gpu/drm/msm/registers/adreno/a6xx.xml \
+            drivers/iommu/io-pgtable-arm.c \
+            drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c \
+            drivers/iommu/arm/arm-smmu/arm-smmu.c \
+            drivers/iommu/arm/arm-smmu/arm-smmu.h \
+            include/linux/io-pgtable.h \
+            drivers/gpu/drm/msm/adreno/a6xx_hfi.c \
+            drivers/gpu/drm/msm/adreno/a6xx_hfi.h \
+            drivers/gpu/drm/msm/registers/adreno/a6xx_gmu.xml \
+            drivers/gpu/drm/msm/adreno/a6xx_gpu.h \
+            include/soc/qcom/tcs.h \
+            drivers/soc/qcom/cmd-db.c \
+            include/soc/qcom/cmd-db.h \
+            drivers/gpu/drm/msm/msm_gem.c \
+            drivers/gpu/drm/msm/msm_gem_vma.c \
+            include/linux/iommu.h \
+            drivers/gpu/drm/msm/registers/adreno/adreno_common.xml \
+          ; do
+            mkdir -p "$AC/$(dirname "$f")"
+            curl -fsSL "$LC/$f" -o "$AC/$f" || echo "SRC FAIL $f"
+          done
+          mkdir -p "$AC/mesa/src/freedreno/common"
+          curl -fsSL "https://chromium.googlesource.com/external/gitlab.freedesktop.org/mesa/mesa/+/85fda3b36405bcaea8bffc64aa4f2651dc90770d/src/freedreno/common/freedreno_pm4.h?format=TEXT" | base64 -d > "$AC/mesa/src/freedreno/common/freedreno_pm4.h" || echo "MESA FAIL"
+          find "$AC" -type f | wc -l | tee -a "$LOG2"
           sha256sum "$FW"/sheng-gpu/qcom/a740_sqe.fw "$FW"/sheng-gpu/qcom/gmu_gen70200.bin "$FW"/sheng-gpu/qcom/sm8550/sheng/a740_zap.mbn "$FW"/fuxi-gpu/qcom/gmu_gen70200.bin "$FW"/fuxi-gpu/qcom/sm8550/fuxi/a740_sqe.fw "$FW"/fuxi-gpu/qcom/sm8550/fuxi/a740_zap.mbn | tee -a "$LOG2"
           echo "=== BUILD: compile -> archives -> link ===" | tee -a "$LOG2"
           rm -f out/fuxi/tree/scripts/data/adreno-inputs.json out/fuxi/tree/scripts/data/fuxi-adreno-inputs.json
