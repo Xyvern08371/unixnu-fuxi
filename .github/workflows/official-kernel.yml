@@ -22,6 +22,7 @@ jobs:
         with:
           repository: ljhhkx529/UniXNU
           path: unixnu
+          submodules: recursive
 
       - name: Check out the device repository
         uses: actions/checkout@v4
