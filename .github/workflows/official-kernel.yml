@@ -147,24 +147,45 @@ jobs:
             https://api.github.com/repos/Xyvern08371/fuxi-zap/contents/a740_zap.mbn -o "$ZAP"
           wc -c "$ZAP"
           echo "fd107982f9b06b40c85474c6c7288f43f77ea9b02f210df05f501cb2ee296e13  $ZAP" | sha256sum -c -
+          echo "=== device/scripts/data ==="
+          ls -la device/scripts/data || true
+          echo "=== any adreno inputs json ==="
+          find device -name '*adreno*inputs*.json' -o -name 'adreno-inputs.json' | head -20 || true
           python3 - <<'PY'
-          import io, json
-          p = 'device/scripts/data/fuxi-adreno-inputs.json'
-          d = json.load(io.open(p, encoding='utf-8'))
-          key = 'qcom/sm8550/fuxi/a740_zap.mbn'
-          files = d['firmware']['files']
-          print('old pin:', files.get(key))
-          files[key] = {
+          import io, json, glob, sys
+          cands = []
+          for pat in ('device/scripts/data/*adreno*inputs*.json',
+                      'device/scripts/data/adreno-inputs.json',
+                      'device/**/adreno-inputs.json'):
+              cands += glob.glob(pat, recursive=True)
+          cands = sorted(set(cands))
+          print('candidates:', cands)
+          if not cands:
+              sys.exit('no adreno inputs json found in device repo')
+          newpin = {
               'repository': 'https://github.com/Xyvern08371/fuxi-zap',
               'git_blob_sha1': '626393afe52f647089754638a909834bd37a8604',
               'bytes': 12088,
               'sha256': 'fd107982f9b06b40c85474c6c7288f43f77ea9b02f210df05f501cb2ee296e13',
           }
-          io.open(p, 'w', encoding='utf-8', newline='\n').write(json.dumps(d, indent=2) + '\n')
-          print('new pin:', files[key])
+          for p in cands:
+              d = json.load(io.open(p, encoding='utf-8'))
+              files = d.get('firmware', {}).get('files')
+              if not isinstance(files, dict):
+                  print('skip (no firmware.files):', p); continue
+              hits = [k for k in files if 'zap' in k.lower()]
+              if hits:
+                  for k in hits:
+                      print(p, 'old', k, files[k])
+                      files[k] = newpin
+                      print(p, 'new', k, files[k])
+              else:
+                  key = 'qcom/sm8550/fuxi/a740_zap.mbn'
+                  files[key] = newpin
+                  print(p, 'added', key)
+              io.open(p, 'w', encoding='utf-8', newline='\n').write(json.dumps(d, indent=2) + '\n')
           PY
           ln -sfn uefi-sheng unixnu/out/fuxi/tree/uefi-fuxi || true
-          ls -l unixnu/out/fuxi/tree/ | grep -i uefi || true
 
       - name: 选择设备
         working-directory: unixnu
