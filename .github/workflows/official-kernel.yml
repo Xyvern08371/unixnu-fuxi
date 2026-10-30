@@ -283,6 +283,9 @@ jobs:
           echo "=== BUILD: compile -> archives -> link ===" | tee -a "$LOG2"
           rm -f out/fuxi/tree/scripts/data/adreno-inputs.json out/fuxi/tree/scripts/data/fuxi-adreno-inputs.json
           echo "pins patched earlier; see the zap step output" | tee -a "$LOG2"
+          ls out/fuxi/tree/drivers | head -30 | tee -a "$LOG2"
+          ln -sfn AdrenoMetal out/fuxi/tree/drivers/NativeMetal || true
+          ls -l out/fuxi/tree/drivers/NativeMetal/OriginalAcceleratorABI.h || echo "ABI HEADER MISSING"
           ./unixnu build kernel 2>&1 | tee -a "$LOG2"
           echo "KERNEL_EXIT=$?" | tee -a "$LOG2"
           echo "=== payload ===" | tee -a "$LOG2"
