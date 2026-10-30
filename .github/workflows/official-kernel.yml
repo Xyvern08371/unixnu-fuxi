@@ -77,7 +77,7 @@ jobs:
         working-directory: unixnu
         run: |
           set -o pipefail
-          python3 ../self/.github/scripts/drop_prelink_archives.py device/board.toml phase1
+          python3 ../self/.github/scripts/drop_prelink_archives.py ../device/board.toml phase1
           ./unixnu build kernel 2>&1 | tail -120
           ls -l out/fuxi/tree/build/xnu/ios-obj/DEVELOPMENT_ARM64_BCM2837/*.noctf 2>/dev/null || true
 
@@ -92,7 +92,7 @@ jobs:
         working-directory: unixnu
         run: |
           set -o pipefail
-          python3 ../self/.github/scripts/drop_prelink_archives.py device/board.toml restore
+          python3 ../self/.github/scripts/drop_prelink_archives.py ../device/board.toml restore
           ./unixnu build kernel 2>&1 | tail -150
           ls -l out/fuxi/kernel/ || true
 
