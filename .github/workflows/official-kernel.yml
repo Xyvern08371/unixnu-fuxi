@@ -44,14 +44,14 @@ jobs:
         working-directory: unixnu
         run: |
           set -x
-          python3 unixnu ipsw fetch OS "Cryptex1,SystemOS" 2>&1 | tail -20
-          python3 unixnu defconfig fuxi_full_defconfig -D ../device 2>&1 | tail -30
+          ./unixnu ipsw fetch OS "Cryptex1,SystemOS" 2>&1 | tail -20
+          ./unixnu defconfig fuxi_full_defconfig -D ../device 2>&1 | tail -30
 
       - name: Build the kernel
         working-directory: unixnu
         run: |
           set -o pipefail
-          python3 unixnu build kernel -D ../device 2>&1 | tail -150
+          ./unixnu build kernel -D ../device 2>&1 | tail -150
           echo "KERNEL_EXIT=$?"
           ls -l out/fuxi/kernel/ || true
 
@@ -59,7 +59,7 @@ jobs:
         working-directory: unixnu
         run: |
           set -o pipefail
-          python3 unixnu build payload -D ../device --unique-chip-id 0x00000437b0fb20a7 2>&1 | tail -80
+          ./unixnu build payload -D ../device --unique-chip-id 0x00000437b0fb20a7 2>&1 | tail -80
           echo "PAYLOAD_EXIT=$?"
           ls -l out/fuxi/payload/ || true
 
