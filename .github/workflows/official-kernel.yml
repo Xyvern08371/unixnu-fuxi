@@ -117,16 +117,6 @@ jobs:
               "build-native-aes-bindings.py",
               "build-libpthread-kernel.py",
               "build-legacy-stub.py",
-              "build-sheng-platform-power.py",
-              "build-native-legacy-display.py",
-              "build-boot-log.py",
-              "build-fuxi-usb-debug.py",
-              "prepare-fuxi-gmu.py --dtb {tree}/uefi-fuxi/Resources/DTBs/fuxi.dtb",
-              "prepare-fuxi-gmu-votes.py --dtb {tree}/uefi-fuxi/Resources/DTBs/fuxi.dtb",
-              "prepare-fuxi-command-db-oracle.py",
-              "build-arm-driver.py Adreno740",
-              "build-adreno740-kits.py",
-              "build-adreno740-accelerator.py",
           ]
           new = 'archives = [\n' + ''.join('    "%s",\n' % k for k in keep) + '  ]'
           out = src[:m.start()] + new + src[m.end():]
@@ -147,6 +137,7 @@ jobs:
           done
           ls -la device/kits/sheng | head -20
           echo "--- 检查 stub 源 ---"
+          ls -l device/kits/sheng/LegacyDisplayStub.c || echo "STUB MISSING"
       - name: Pin the TZ-accepted a740_zap (12088 B)
         run: |
           set -euxo pipefail
@@ -172,10 +163,8 @@ jobs:
           io.open(p, 'w', encoding='utf-8', newline='\n').write(json.dumps(d, indent=2) + '\n')
           print('new pin:', files[key])
           PY
-          # GPU prepare scripts expect ../uefi-fuxi; the tree has uefi-sheng
           ln -sfn uefi-sheng unixnu/out/fuxi/tree/uefi-fuxi || true
-          ls -l unixnu/out/fuxi/tree/ | grep uefi || true
-          ls -l device/kits/sheng/LegacyDisplayStub.c || echo "STUB MISSING"
+          ls -l unixnu/out/fuxi/tree/ | grep -i uefi || true
 
       - name: 选择设备
         working-directory: unixnu
@@ -240,6 +229,16 @@ jobs:
           python3 - <<'PY' 2>&1 | tee -a "$LOG2"
           import io, re
           full = [
+              "build-sheng-platform-power.py",
+              "build-native-legacy-display.py",
+              "build-boot-log.py",
+              "build-fuxi-usb-debug.py",
+              "prepare-fuxi-gmu.py --dtb {tree}/uefi-fuxi/Resources/DTBs/fuxi.dtb",
+              "prepare-fuxi-gmu-votes.py --dtb {tree}/uefi-fuxi/Resources/DTBs/fuxi.dtb",
+              "prepare-fuxi-command-db-oracle.py",
+              "build-arm-driver.py Adreno740",
+              "build-adreno740-kits.py",
+              "build-adreno740-accelerator.py",
               "build-corecrypto-14.py",
               "build-corecrypto-14.py --namespace",
               "build-arm-driver.py ArmDTPlatform",
@@ -252,16 +251,6 @@ jobs:
               "build-boot-progress.py",
               "build-libpthread-kernel.py",
               "build-legacy-stub.py",
-              "build-sheng-platform-power.py",
-              "build-native-legacy-display.py",
-              "build-boot-log.py",
-              "build-fuxi-usb-debug.py",
-              "prepare-fuxi-gmu.py --dtb {tree}/uefi-fuxi/Resources/DTBs/fuxi.dtb",
-              "prepare-fuxi-gmu-votes.py --dtb {tree}/uefi-fuxi/Resources/DTBs/fuxi.dtb",
-              "prepare-fuxi-command-db-oracle.py",
-              "build-arm-driver.py Adreno740",
-              "build-adreno740-kits.py",
-              "build-adreno740-accelerator.py",
           ]
           block = 'archives = [\n' + ''.join('    "%s",\n' % k for k in full) + '  ]'
           for p in ('../device/board.toml', 'out/fuxi/tree/board.toml'):
