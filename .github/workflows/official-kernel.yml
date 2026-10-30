@@ -17,17 +17,22 @@ jobs:
         with:
           repository: ljhhkx529/unixnu-fuxi
           path: device
-          submodules: recursive
+          submodules: false
+
+      - name: Fetch the driver submodules at their branch heads
+        run: |
+          set -x
+          git clone --depth 1 https://github.com/UniXNU/NativeNovatekTouch.git device/drivers/NativeNovatekTouch || true
+          git clone --depth 1 https://github.com/UniXNU/ShengPreflight.git      device/drivers/ShengPreflight || true
+          git clone --depth 1 https://github.com/xiaoleGun/QcomXnuUsbDebug.git  device/drivers/QcomXnuUsbDebug || true
+          ls -la device/drivers/
 
       - name: Check out uefi-fuxi (the board DTB lives there)
         uses: actions/checkout@v4
         with:
           repository: ljhhkx529/uefi-fuxi
           path: unixnu/uefi-fuxi
-          submodules: recursive
-
-      - name: Install dependencies
-        run: brew install llvm lld gnu-sed coreutils openssl@3 || true
+          submodules: false
 
       - name: Report the toolchain
         run: |
@@ -39,15 +44,14 @@ jobs:
         working-directory: unixnu
         run: |
           set -x
-          python3 unixnu --help | head -20
           python3 unixnu ipsw fetch OS "Cryptex1,SystemOS" 2>&1 | tail -20
-          python3 unixnu defconfig fuxi_full_defconfig -D ../device 2>&1 | tail -20
+          python3 unixnu defconfig fuxi_full_defconfig -D ../device 2>&1 | tail -30
 
       - name: Build the kernel
         working-directory: unixnu
         run: |
           set -o pipefail
-          python3 unixnu build kernel -D ../device 2>&1 | tail -120
+          python3 unixnu build kernel -D ../device 2>&1 | tail -150
           echo "KERNEL_EXIT=$?"
           ls -l out/fuxi/kernel/ || true
 
@@ -55,9 +59,21 @@ jobs:
         working-directory: unixnu
         run: |
           set -o pipefail
-          python3 unixnu build payload -D ../device 2>&1 | tail -60
+          python3 unixnu build payload -D ../device --unique-chip-id 0x00000437b0fb20a7 2>&1 | tail -80
           echo "PAYLOAD_EXIT=$?"
           ls -l out/fuxi/payload/ || true
+
+      - name: Build the boot image
+        working-directory: unixnu
+        run: |
+          set -o pipefail
+          python3 uefi-fuxi/scripts/bootimage.py \
+            --unixnu-root "$PWD" \
+            --device ../device \
+            --uefi uefi-fuxi \
+            --ramdisk out/fuxi/payload/payload.img \
+            -o out/fuxi/boot/boot.img 2>&1 | tail -40
+          ls -l out/fuxi/boot/ || true
 
       - name: Upload
         uses: actions/upload-artifact@v4
@@ -66,4 +82,5 @@ jobs:
           path: |
             unixnu/out/fuxi/kernel/**
             unixnu/out/fuxi/payload/**
+            unixnu/out/fuxi/boot/**
           if-no-files-found: warn
