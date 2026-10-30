@@ -66,9 +66,13 @@ jobs:
           ./unixnu ipsw fetch OS "Cryptex1,SystemOS" 2>&1 | tail -20
           ./unixnu defconfig fuxi_full_defconfig 2>&1 | tail -30
 
-      - name: Relax the prelink-only audits in this clean tree
+      - name: Assemble the tree and relax the prelink-only audits
         working-directory: unixnu
-        run: python3 ../self/.github/scripts/relax_audits.py
+        run: |
+          set -o pipefail
+          ./unixnu tree 2>&1 | tail -10
+          ls out/fuxi/tree/scripts | wc -l
+          python3 ../self/.github/scripts/relax_audits.py
       - name: Build the prelink candidates
         working-directory: unixnu
         run: |
