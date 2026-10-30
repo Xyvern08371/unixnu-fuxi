@@ -46,6 +46,7 @@ jobs:
         run: |
           python3 self/.github/scripts/relax_audits.py
           python3 self/.github/scripts/patch_bootprogress.py
+          python3 self/.github/scripts/patch_fetch_adreno.py
 
       - name: Check out uefi-fuxi
         uses: actions/checkout@v4
