@@ -1,0 +1,25 @@
+/Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/kits/sheng/BootWatchdogPolicy.c:103:20: warning: declaration shadows a variable in the global scope [-Wshadow]
+  103 |  for(size_t sent=0,total=strlen(policy);sent<total;) {
+      |                    ^
+/Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/.cache/xnu-work/bsd/sys/vmmeter.h:139:25: note: previous declaration is here
+  139 | extern struct   vmtotal total;
+      |                         ^
+1 warning generated.
+In file included from /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/kits/sheng/BootFaultProbe.c:10:
+In file included from /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/.cache/xnu-work/osfmk/vm/vm_map.h:92:
+/Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/.cache/xnu-work/osfmk/vm/vm_object.h:660:21: warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
+  660 |         object->purgable = value;
+      |                          ~ ^~~~~
+/Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/.cache/xnu-work/osfmk/vm/vm_object.h:749:28: warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
+  749 |         object->no_pager_reason = value;
+      |                                 ~ ^~~~~
+/Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/kits/sheng/BootFaultProbe.c:60:18: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+   60 |  unsigned long n=snprintf(out,capacity,"p%d %.20s sig%u PC%llx LR%llx E%llx F%llx +%llx bt",
+      |                ~ ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   61 |   f.pid,f.name,signal,f.pc,f.lr,f.esr,f.far,f.slide);
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/kits/sheng/BootFaultProbe.c:67:7: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+   67 |    n+=snprintf(out+n,capacity-n," %llx",pair[1]);
+      |     ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+4 warnings generated.
+PASS: fuxi boot-progress backend and Sheng launchd watchdog policy build

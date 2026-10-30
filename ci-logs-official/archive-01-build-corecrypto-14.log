@@ -1,0 +1,4 @@
+529 kernel C sources; 0 failures
+Internal unregistered provider archive: libcorecrypto_kernel_noasm.a
+External names absent from kernel: []
+Globals shared with kernel: 63; initialization and intact selftests are still required

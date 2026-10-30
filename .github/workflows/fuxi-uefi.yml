@@ -1,0 +1,103 @@
+name: fuxi-uefi
+
+# 复刻 hanzi123-bilp/uefi-fuxi 仓库自带的 build-fuxi-uefi.yml：
+#   BootShim (FD_BASE/FD_SIZE) + SILICIUM_UEFI.fd -> gzip -> + fuxi.dtb
+#   -> Resources/Scripts/mkbootimg.py --header_version 3
+#
+# 不编内核，只出 UEFI 固件和 boot 镜像。
+# 产物（Mu-fuxi*.img / SILICIUM_UEFI.fd / 日志）推到 ci-logs 分支。
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/fuxi-uefi.yml"
+
+permissions:
+  contents: write
+
+env:
+  UNIXNU_REPO: https://github.com/UniXNU/UniXNU
+  DARWINBOOT_REPO: https://github.com/UniXNU/DarwinBoot
+  UEFI_REPO: https://github.com/hanzi123-bilp/uefi-fuxi
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: 取本仓库（推产物用）
+        uses: actions/checkout@v4
+        with:
+          path: ourrepo
+
+      - name: 取 uefi-fuxi
+        run: |
+          git clone --depth 1 "$UEFI_REPO" uefi
+          cd uefi
+          git submodule update --init --depth 1 \
+            Common/Mu \
+            Common/Mu_OEM_Sample \
+            Mu_Basecore \
+            Silicium-ACPI \
+            Silicon/Silicium/OpensslPkg/Library/OpensslLib/openssl 2>&1 | tail -5
+
+      - name: 静态预检
+        working-directory: uefi
+        run: python3 tools/validate_pkg.py . 2>&1 | tail -20
+
+      - name: 装工具链
+        working-directory: uefi
+        run: ./setup_env.sh -p apt 2>&1 | tail -20
+
+      - name: 构建 UEFI
+        working-directory: uefi
+        env:
+          UNIXNU_ROOT: ${{ github.workspace }}/UniXNU
+        run: |
+          set -o pipefail
+          git clone --depth 1 "$UNIXNU_REPO" "$UNIXNU_ROOT"
+          mkdir -p "$UNIXNU_ROOT/drivers"
+          git clone --depth 1 "$DARWINBOOT_REPO" "$UNIXNU_ROOT/drivers/DarwinBoot"
+          ./build_uefi.py -d fuxi -r DEBUG -c 2>&1 | tee /tmp/build-uefi.log | tail -40
+
+      - name: 检查产物
+        if: always()
+        working-directory: uefi
+        run: |
+          echo "--- Mu-fuxi*.img ---"
+          ls -l Mu-fuxi*.img 2>/dev/null || echo "(没有 boot 镜像)"
+          echo "--- FV ---"
+          ls -l Build/fuxiPkg/*/FV/ 2>/dev/null || echo "(没有 FV)"
+          img=$(ls Mu-fuxi*.img 2>/dev/null | head -1)
+          if [ -n "$img" ]; then
+            python3 tools/mkbootimg_v3.py info --image "$img" 2>&1 | head -20
+          fi
+
+      - name: 把产物推到 ci-logs
+        if: always()
+        working-directory: ourrepo
+        run: |
+          set +e
+          OUT=ci-logs-uefi
+          mkdir -p "$OUT"
+          cp ../uefi/Mu-fuxi*.img "$OUT/" 2>/dev/null
+          cp ../uefi/Build/fuxiPkg/*/FV/SILICIUM_UEFI.fd "$OUT/" 2>/dev/null
+          cp /tmp/build-uefi.log "$OUT/build-uefi.log" 2>/dev/null
+          {
+            echo "=== 产物清单 ==="
+            ls -l "$OUT" 2>/dev/null
+            echo
+            echo "=== 构建日志尾部 120 行 ==="
+            tail -120 /tmp/build-uefi.log 2>/dev/null
+          } > "$OUT/summary.txt"
+          git config user.name "xnu-bot"
+          git config user.email "xnu-bot@users.noreply.github.com"
+          git checkout -f --orphan uefi-logs-tmp
+          git add -f "$OUT"
+          git commit -qm "fuxi uefi build output" || true
+          git push -f origin HEAD:ci-logs

@@ -1,0 +1,26 @@
+diff --git a/osfmk/mach/arm/vm_param.h b/osfmk/mach/arm/vm_param.h
+--- a/osfmk/mach/arm/vm_param.h
++++ b/osfmk/mach/arm/vm_param.h
+@@ -135,8 +135,17 @@
+ #define MACH_VM_MIN_ADDRESS_RAW 0x0ULL
+-#if defined(XNU_PLATFORM_MacOSX) || defined(XNU_PLATFORM_DriverKit)
+-#define MACH_VM_MAX_ADDRESS_RAW 0x00007FFFFE000000ULL
+-#else
+-#define MACH_VM_MAX_ADDRESS_RAW 0x0000000FC0000000ULL
+-#endif
++/*
++ * Always use the iOS address-space layout.
++ *
++ * DXB builds the kernel against the macOS SDK, so PLATFORM=MacOSX and
++ * XNU_PLATFORM_MacOSX is defined, which makes this header pick the 47-bit
++ * limit. But this kernel is an iOS one: _COMM_PAGE64_BASE_ADDRESS is the
++ * embedded constant 0x0000000FFFFFC000, and pmap.c asserts
++ *
++ *   static_assert((_COMM_PAGE64_BASE_ADDRESS & ~ARM_TT_L1_OFFMASK) >= MACH_VM_MAX_ADDRESS);
++ *
++ * which can never hold with a 47-bit limit. 0x0000000FC0000000 (63 GiB) is
++ * the value the embedded platforms use, and it leaves the commpage above it.
++ */
++#define MACH_VM_MAX_ADDRESS_RAW 0x0000000FC0000000ULL
+ 
+ #define MACH_VM_MIN_ADDRESS     ((mach_vm_offset_t) MACH_VM_MIN_ADDRESS_RAW)

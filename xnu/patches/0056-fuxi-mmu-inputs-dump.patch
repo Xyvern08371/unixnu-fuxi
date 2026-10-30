@@ -1,0 +1,66 @@
+diff --git a/osfmk/arm64/start.s b/osfmk/arm64/start.s
+--- a/osfmk/arm64/start.s
++++ b/osfmk/arm64/start.s
+@@ -901,2 +901,62 @@
+ 
++	/* 0057 bar A @ y=1000: proves execution got here */
++	MOV64	x0, (0xB8000000 + 1000 * 4320)
++	mov	w1, #-1
++	mov	x2, #24
++	mov	x4, #4320
++Lfuxi_dumpbarA_row:
++	mov	x3, #200
++	mov	x5, x0
++Lfuxi_dumpbarA_pixel:
++	str	w1, [x5], #4
++	subs	x3, x3, #1
++	b.ne	Lfuxi_dumpbarA_pixel
++	add	x0, x0, x4
++	subs	x2, x2, #1
++	b.ne	Lfuxi_dumpbarA_row
++	dsb	sy
++	/* 0057: record the MMU inputs. Guarded: if the L1 entry holds no L2
++	 * table, x8 is 0 and reading [x8 + x9] would fault before the MMU is on. */
++	adr	x5, .
++	lsr	x6, x5, #30
++	and	x6, x6, #0x1FF
++	lsl	x6, x6, #3
++	ldr	x7, [x25, x6]
++	mov	x10, xzr
++	and	x8, x7, #0x0000FFFFFFFFF000
++	cbz	x8, 9f
++	lsr	x9, x5, #21
++	and	x9, x9, #0x1FF
++	lsl	x9, x9, #3
++	ldr	x10, [x8, x9]
++9:
++	MOV64	x0, 0xB89E0100
++	MOV64	x1, 0x5347455249585546
++	stp	x1, x25, [x0, #0]
++	mrs	x1, TTBR0_EL1
++	mrs	x2, TCR_EL1
++	stp	x1, x2, [x0, #16]
++	mrs	x1, MAIR_EL1
++	mrs	x2, TTBR1_EL1
++	stp	x1, x2, [x0, #32]
++	mrs	x1, SCTLR_EL1
++	stp	x1, x7, [x0, #48]
++	stp	x10, x5, [x0, #64]
++	dsb	sy
++	/* 0057 bar B @ y=960: proves execution got here */
++	MOV64	x0, (0xB8000000 + 960 * 4320)
++	mov	w1, #-1
++	mov	x2, #24
++	mov	x4, #4320
++Lfuxi_dumpbarB_row:
++	mov	x3, #200
++	mov	x5, x0
++Lfuxi_dumpbarB_pixel:
++	str	w1, [x5], #4
++	subs	x3, x3, #1
++	b.ne	Lfuxi_dumpbarB_pixel
++	add	x0, x0, x4
++	subs	x2, x2, #1
++	b.ne	Lfuxi_dumpbarB_row
++	dsb	sy
+ 	MOV64   x0, SCTLR_EL1_DEFAULT

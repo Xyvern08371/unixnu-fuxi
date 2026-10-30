@@ -1,0 +1,127 @@
+== configuration fuxi_full_defconfig -> /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/.config
+      25
+a740_sqe.fw
+a740_zap.mbn
+6d38046654333a6a5a4ee77ab67abc24e3c0c5c68237513afe98e94da8fc9fcc  device/.cache/firmware/sheng-gpu/qcom/a740_sqe.fw
+1a2a419c39046d3141fc5fed5aa7f971de2db40cc7a1d89693c3e26fad64dd98  device/.cache/firmware/sheng-gpu/qcom/gmu_gen70200.bin
+fd107982f9b06b40c85474c6c7288f43f77ea9b02f210df05f501cb2ee296e13  device/.cache/firmware/sheng-gpu/qcom/sm8550/sheng/a740_zap.mbn
+1a2a419c39046d3141fc5fed5aa7f971de2db40cc7a1d89693c3e26fad64dd98  device/.cache/firmware/fuxi-gpu/qcom/gmu_gen70200.bin
+96fee336424b139100fc60b5b45a907360e4b3936d7e1d00406b9bd80ca48473  device/.cache/firmware/fuxi-gpu/qcom/sm8550/fuxi/a740_sqe.fw
+fd107982f9b06b40c85474c6c7288f43f77ea9b02f210df05f501cb2ee296e13  device/.cache/firmware/fuxi-gpu/qcom/sm8550/fuxi/a740_zap.mbn
+=== IPSW: fetch the pinned volumes for the verified-root archive ===
+== ipsw: remote https://updates.cdn-apple.com/2025SpringFCS/fullrestores/122-77166/DCA6CFE8-90E9-4B92-880D-3DE171798E40/iPad_Pro_HFR_17.7.11_21H461_Restore.ipsw
+== ipsw: extracting OS (044-76040-038.dmg, 4918 MiB)
+/Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/ipsw/21H461/044-76040-038.dmg
+== ipsw: extracting Cryptex1,SystemOS (044-76034-038.dmg, 3150 MiB)
+/Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/ipsw/21H461/044-76034-038.dmg
+IPSW_EXIT=0
+-rw-r--r--  1 runner  staff  3303014400 Oct 30 14:57 out/ipsw/21H461/044-76034-038.dmg
+-rw-r--r--  1 runner  staff  5157406069 Oct 30 14:56 out/ipsw/21H461/044-76040-038.dmg
+=== BUILD: compile -> archives -> link ===
+pins patched earlier; see the zap step output
+== submodules /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu
+== submodules /Users/runner/work/unixnu-fuxi/unixnu-fuxi/device
+== tree /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree
+== kernel: XNU
+== kernel: bootstrap pass for the compile records
++ bash /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/scripts/build-xnu-4k-baseline.sh
+      __cnputs in serial_console.o
+      _serial_putc_crlf in pe_kprintf.o
+  "_fuxi_usb_debug_start", referenced from:
+      _bsdinit_task in bsd_init.o
+  "_native_legacy_display_probe", referenced from:
+      _bsd_init in bsd_init.o
+  "_native_ram_block_gpu_addon", referenced from:
+      _native_gpu_addon_prepare in kern_exec.o
+      _native_gpu_addon_prepare in kern_exec.o
+  "_native_ram_block_volume_seed", referenced from:
+      _load_init_program in kern_exec.o
+  "_native_verified_block_manifest_sha384", referenced from:
+      _native_owner_publish_boot_manifest in IOKitBSDInit.cpo
+      _native_owner_publish_boot_manifest in IOKitBSDInit.cpo
+  "_native_verified_block_root_authorized", referenced from:
+      _bsd_init in bsd_init.o
+      _load_init_program in kern_exec.o
+      _load_init_program in kern_exec.o
+      _load_init_program in kern_exec.o
+  "_native_verified_block_volume_device", referenced from:
+      _load_init_program in kern_exec.o
+  "_native_verified_root_probe", referenced from:
+      _bsd_init in bsd_init.o
+ld: symbol(s) not found for architecture arm64
+clang++: error: linker command failed with exit code 1 (use -v to see invocation)
+make[3]: *** [/Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/build/xnu/ios-obj/DEVELOPMENT_ARM64_BCM2837//mach.development.bcm2837.unstripped.noctf] Error 1
+make[2]: *** [build_all] Error 2
+make[1]: *** [build_all_bootstrap_DEVELOPMENT^ARM64^BCM2837] Error 2
+make: *** [build] Error 2
+build-xnu-4k-baseline.sh: line 786: make -C .cache/xnu-work "${XNU_BUILD_TARGET:-build}" SDKROOT="${XNU_SDKROOT:-iphoneos}" ARCH_CONFIGS=ARM64 MACHINE_CONFIGS=BCM2837 KERNEL_CONFIGS=DEVELOPMENT ARCH_STRING_FOR_CURRENT_MACHINE_CONFIG=arm64 LARGE_MEMORY_DEFINE=-UARM_LARGE_MEMORY ARM64_LINK_ADDR=0xfffffff007004000 ARM64_PLKSEG_ADDR=0xfffffff004004000 DEPLOYMENT_TARGET_FLAGS="-miphoneos-version-min=17.0 -DXNU_TARGET_OS_IOS" DEPLOYMENT_LINKER_FLAGS="-Wl,-ios_version_min,17.0" RC_DARWIN_KERNEL_VERSION="$XNU_DARWIN" RC_ProjectSourceVersion="$XNU_VERSION" BUILD_LTO=0 BOUND_CHECKS=0 BUILD_WERROR="${XNU_BUILD_WERROR:-0}" MAKEJOBS=-j"${JOBS:-4}" CFLAGS_EXTRA="$EXTRA_CFLAGS" "${EXTRA_MAKE_ARGS[@]}" OBJROOT="$ROOT/build/xnu/ios-obj" SYMROOT="$ROOT/build/xnu/ios-sym" DSTROOT="$ROOT/build/xnu/ios-dst" failed
+== kernel: prepare storage headers
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/scripts/prepare-storage-headers.py
+== kernel: archive-01-build-corecrypto-14
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/scripts/build-corecrypto-14.py
+== kernel: archive-02-build-corecrypto-14
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/scripts/build-corecrypto-14.py --namespace
+== kernel: archive-03-build-arm-driver
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/scripts/build-arm-driver.py ArmDTPlatform
+== kernel: archive-04-build-arm-driver
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/scripts/build-arm-driver.py ArmCpu
+== kernel: archive-05-build-arm-driver
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/scripts/build-arm-driver.py NativeAES
+== kernel: archive-06-build-native-aes-bindings
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/scripts/build-native-aes-bindings.py
+== kernel: archive-07-build-arm-driver
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/scripts/build-arm-driver.py NativeUfs --verified-root --verified-root-bundle
+== kernel: archive-08-build-arm-driver
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/scripts/build-arm-driver.py NativeVirtioBlock --verified-root --verified-root-bundle
+== kernel: archive-09-build-arm-driver
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/scripts/build-arm-driver.py NativeRamBlock
+== kernel: archive-10-build-libpthread-kernel
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/scripts/build-libpthread-kernel.py
+== kernel: archive-11-build-legacy-stub
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/scripts/build-legacy-stub.py
+== kernel: archive-12-build-boot-progress
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/scripts/build-boot-progress.py
+== kernel: archive-13-build-fuxi-verified-root-policy
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/scripts/build-fuxi-verified-root-policy.py
+== kernel: archive-14-prepare-fuxi-gmu
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/scripts/prepare-fuxi-gmu.py
+== kernel: archive-15-prepare-fuxi-gmu-votes
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/scripts/prepare-fuxi-gmu-votes.py
+== kernel: archive-16-prepare-fuxi-command-db-oracle
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/scripts/prepare-fuxi-command-db-oracle.py
+== kernel: archive-17-build-arm-driver
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/scripts/build-arm-driver.py Adreno740
+== kernel: archive-18-build-adreno740-kits
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/scripts/build-adreno740-kits.py
++ bash /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/scripts/build-xnu-4k-baseline.sh
+             LD mach.development.bcm2837.unstripped.noctf
+ld: warning: -new_linker is obsolete
+ld: warning: search path '/Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/.cache/fakeroot/usr/local/lib/kernel/platform' not found
+Undefined symbols for architecture arm64:
+  "_boot_log_errors", referenced from:
+      NativeUfs::start(IOService*) (.cold.13) in libNativeUfs.a[2](NativeUfs.o)
+  "_boot_log_rounds", referenced from:
+      NativeUfs::start(IOService*) (.cold.13) in libNativeUfs.a[2](NativeUfs.o)
+  "_boot_log_state", referenced from:
+      NativeUfs::start(IOService*) (.cold.13) in libNativeUfs.a[2](NativeUfs.o)
+  "_boot_process_rows", referenced from:
+      _draw in libBootProgress.a[3](BootProgress.o)
+      _draw in libBootProgress.a[3](BootProgress.o)
+      _touch_overlay in libBootProgress.a[3](BootProgress.o)
+      _touch_overlay in libBootProgress.a[3](BootProgress.o)
+  "_native_legacy_frame_color_counts", referenced from:
+      _draw in libBootProgress.a[3](BootProgress.o)
+  "_native_legacy_frame_colors", referenced from:
+      _draw in libBootProgress.a[3](BootProgress.o)
+  "_native_legacy_frame_stats", referenced from:
+      _draw in libBootProgress.a[3](BootProgress.o)
+      _draw in libBootProgress.a[3](BootProgress.o)
+      _draw in libBootProgress.a[3](BootProgress.o)
+ld: symbol(s) not found for architecture arm64
+clang++: error: linker command failed with exit code 1 (use -v to see invocation)
+make[3]: *** [/Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/tree/build/xnu/ios-obj/DEVELOPMENT_ARM64_BCM2837//mach.development.bcm2837.unstripped.noctf] Error 1
+make[2]: *** [build_all] Error 2
+make[1]: *** [build_all_bootstrap_DEVELOPMENT^ARM64^BCM2837] Error 2
+make: *** [build] Error 2
+build-xnu-4k-baseline.sh: line 786: make -C .cache/xnu-work "${XNU_BUILD_TARGET:-build}" SDKROOT="${XNU_SDKROOT:-iphoneos}" ARCH_CONFIGS=ARM64 MACHINE_CONFIGS=BCM2837 KERNEL_CONFIGS=DEVELOPMENT ARCH_STRING_FOR_CURRENT_MACHINE_CONFIG=arm64 LARGE_MEMORY_DEFINE=-UARM_LARGE_MEMORY ARM64_LINK_ADDR=0xfffffff007004000 ARM64_PLKSEG_ADDR=0xfffffff004004000 DEPLOYMENT_TARGET_FLAGS="-miphoneos-version-min=17.0 -DXNU_TARGET_OS_IOS" DEPLOYMENT_LINKER_FLAGS="-Wl,-ios_version_min,17.0" RC_DARWIN_KERNEL_VERSION="$XNU_DARWIN" RC_ProjectSourceVersion="$XNU_VERSION" BUILD_LTO=0 BOUND_CHECKS=0 BUILD_WERROR="${XNU_BUILD_WERROR:-0}" MAKEJOBS=-j"${JOBS:-4}" CFLAGS_EXTRA="$EXTRA_CFLAGS" "${EXTRA_MAKE_ARGS[@]}" OBJROOT="$ROOT/build/xnu/ios-obj" SYMROOT="$ROOT/build/xnu/ios-sym" DSTROOT="$ROOT/build/xnu/ios-dst" failed
+unixnu: bash failed (2); full log: /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/logs/kernel.log

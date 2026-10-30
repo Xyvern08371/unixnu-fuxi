@@ -1,0 +1,5 @@
+writing RSA key
+Built ordinary ARM64/iOS17 probe with original full signed hash table and real XNU crypto bridge
+verified-root-os: wrote signed policy for 1483785 blocks (e5634d04a8ac35f0...)
+verified-root-systemos: wrote signed policy for 806400 blocks (b4908cde41d23e6b...)
+PASS: OS and SystemOS VerifiedRoot policies and probe archive are ready
