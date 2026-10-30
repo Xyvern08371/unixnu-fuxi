@@ -75,6 +75,18 @@ jobs:
             tail -60 "$f"
           done
 
+      - name: Dump the build logs
+        if: always()
+        working-directory: unixnu
+        run: |
+          for f in out/fuxi/logs/*.log; do
+            [ -f "$f" ] || continue
+            echo "===== $f ($(wc -l < "$f") lines) ====="
+            grep -n -m 25 -iE "error|fatal|assert|undefined symbol|No such file" "$f" || true
+            echo "----- last 60 lines -----"
+            tail -60 "$f"
+          done
+
       - name: Build the payload
         working-directory: unixnu
         run: |
