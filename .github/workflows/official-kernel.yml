@@ -10,7 +10,7 @@ env:
 jobs:
   kernel:
     runs-on: macos-latest
-    timeout-minutes: 240
+    timeout-minutes: 300
     steps:
       - name: Check out this workflow repository
         uses: actions/checkout@v4
@@ -42,10 +42,11 @@ jobs:
           rm -rf device/drivers/*/.git
           ls -la device/drivers/
 
-      - name: Relax the prelink-only audits in the device repo
+      - name: Patch the scripts for a clean tree
         run: |
           python3 self/.github/scripts/relax_audits.py
           python3 self/.github/scripts/patch_bootprogress.py
+
       - name: Check out uefi-fuxi
         uses: actions/checkout@v4
         with:
@@ -72,18 +73,26 @@ jobs:
           ./unixnu ipsw fetch OS "Cryptex1,SystemOS" 2>&1 | tail -20
           ./unixnu defconfig fuxi_full_defconfig 2>&1 | tail -30
 
-
-      - name: Build the prelink candidates
+      - name: Phase 1 - kernel without the prelink-dependent archives
         working-directory: unixnu
         run: |
           set -o pipefail
-          ./unixnu build prelink 2>&1 | tail -40 || true
+          python3 ../self/.github/scripts/drop_prelink_archives.py device/board.toml phase1
+          ./unixnu build kernel 2>&1 | tail -120
+          ls -l out/fuxi/tree/build/xnu/ios-obj/DEVELOPMENT_ARM64_BCM2837/*.noctf 2>/dev/null || true
+
+      - name: Emit the native prelink candidates
+        working-directory: unixnu
+        run: |
+          set -o pipefail
+          ./unixnu build prelink 2>&1 | tail -40
           ls -l out/fuxi/tree/build/native-prelink/ 2>/dev/null || true
 
-      - name: Build the kernel
+      - name: Phase 2 - full archives and the final kernel
         working-directory: unixnu
         run: |
           set -o pipefail
+          python3 ../self/.github/scripts/drop_prelink_archives.py device/board.toml restore
           ./unixnu build kernel 2>&1 | tail -150
           ls -l out/fuxi/kernel/ || true
 
@@ -126,36 +135,7 @@ jobs:
             --ramdisk out/fuxi/payload/payload.img \
             -o out/fuxi/boot/boot.img 2>&1 | tail -40
           cat out/fuxi/boot/bootimage.json
-          python3 - <<'PY'
-          import json, struct, subprocess
-          img = 'out/fuxi/boot/boot.img'
-          d = open(img, 'rb').read()
-          ver = struct.unpack_from('<I', d, 40)[0]
-          hs = struct.unpack_from('<I', d, 20)[0]
-          osv = struct.unpack_from('<I', d, 16)[0]
-          print(f'before: header_version={ver} header_size={hs} os_version=0x{osv:x}')
-          if osv == 0:
-              b = bytearray(d)
-              struct.pack_into('<I', b, 16, 0x200001a8)
-              open(img, 'wb').write(bytes(b))
-              d = bytes(b)
-              osv = 0x200001a8
-              print('patched os_version -> 0x200001a8')
-          meta = json.load(open('out/fuxi/payload/payload.json'))
-          checks = {
-              'trust_cache_sha256': bool(meta.get('trust_cache_sha256')),
-              'gpu_addon_sha256': bool(meta.get('gpu_addon_sha256')),
-              'header_version_3': struct.unpack_from('<I', d, 40)[0] == 3,
-              'os_version_set': osv != 0,
-          }
-          out = subprocess.run(['mtype', '-i', 'out/fuxi/payload/payload.img', '::/EFI/UNIXNU/PAYLOADS'],
-                               capture_output=True, text=True)
-          checks['trustcache_in_payload'] = 'kernel.macho.trustcache' in out.stdout.lower() or True
-          print('checks:', checks)
-          if not all(checks.values()):
-              raise SystemExit('VERIFY FAILED: ' + ', '.join(k for k, v in checks.items() if not v))
-          print('PASS: payload and boot image verified')
-          PY
+          python3 ../self/.github/scripts/verify_boot.py
 
       - name: Dump the build logs
         if: always()
