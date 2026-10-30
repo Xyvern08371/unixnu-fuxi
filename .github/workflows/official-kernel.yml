@@ -10,6 +10,11 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 240
     steps:
+      - name: Check out this workflow repository
+        uses: actions/checkout@v4
+        with:
+          path: self
+
       - name: Check out the framework
         uses: actions/checkout@v4
         with:
@@ -63,7 +68,7 @@ jobs:
 
       - name: Relax the prelink-only audits in this clean tree
         working-directory: unixnu
-        run: python3 ../.github/scripts/relax_audits.py
+        run: python3 ../self/.github/scripts/relax_audits.py
       - name: Build the prelink candidates
         working-directory: unixnu
         run: |
