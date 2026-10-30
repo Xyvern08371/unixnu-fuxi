@@ -22,7 +22,7 @@ jobs:
         with:
           repository: ljhhkx529/UniXNU
           path: unixnu
-          submodules: recursive
+          submodules: false
 
       - name: Check out the device repository
         uses: actions/checkout@v4
@@ -31,29 +31,36 @@ jobs:
           path: device
           submodules: false
 
-      - name: Vendor the driver submodules at branch heads
+      - name: Check out uefi-fuxi
+        uses: actions/checkout@v4
+        with:
+          repository: ljhhkx529/uefi-fuxi
+          path: uefi-fuxi
+          submodules: false
+
+      - name: Vendor every submodule at its branch head
         run: |
           set -x
-          rm -f device/.gitmodules
-          git -C device rm -r --cached drivers/NativeNovatekTouch drivers/QcomXnuUsbDebug drivers/ShengPreflight 2>/dev/null || true
-          rm -rf device/drivers/NativeNovatekTouch device/drivers/QcomXnuUsbDebug device/drivers/ShengPreflight
-          git clone --depth 1 https://github.com/UniXNU/NativeNovatekTouch.git device/drivers/NativeNovatekTouch
-          git clone --depth 1 https://github.com/UniXNU/ShengPreflight.git      device/drivers/ShengPreflight
-          git clone --depth 1 https://github.com/xiaoleGun/QcomXnuUsbDebug.git  device/drivers/QcomXnuUsbDebug
-          rm -rf device/drivers/*/.git
-          ls -la device/drivers/
+          vendor() {
+            repo=$1
+            git -C "$repo" config -f .gitmodules --get-regexp path 2>/dev/null | while read -r key path; do
+              url=$(git -C "$repo" config -f .gitmodules --get "submodule.$path.url")
+              [ -n "$url" ] || continue
+              rm -rf "$repo/$path"
+              git clone --depth 1 "$url" "$repo/$path" || echo "clone failed: $url"
+              rm -rf "$repo/$path/.git"
+            done
+            rm -f "$repo/.gitmodules"
+          }
+          vendor unixnu
+          vendor device
+          ls unixnu/drivers unixnu/kits device/drivers
 
       - name: Patch the scripts for a clean tree
         run: |
           python3 self/.github/scripts/relax_audits.py
           python3 self/.github/scripts/patch_bootprogress.py
           python3 self/.github/scripts/patch_fetch_adreno.py
-
-      - name: Check out uefi-fuxi
-        uses: actions/checkout@v4
-        with:
-          repository: ljhhkx529/uefi-fuxi
-          path: uefi-fuxi
 
       - name: Install host tools
         run: brew install dtc mtools || true
@@ -63,6 +70,7 @@ jobs:
           uname -a
           xcodebuild -version
           python3 --version
+          command -v fdtget; command -v mtype
 
       - name: Cache the IPSW extraction
         uses: actions/cache@v4
