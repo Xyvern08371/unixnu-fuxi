@@ -234,50 +234,49 @@ jobs:
         run: |
           set -x
           mkdir -p "$GITHUB_WORKSPACE/ourrepo/ci-logs-official"
+          set +e
+          mkdir -p "$GITHUB_WORKSPACE/ourrepo/ci-logs-official"
           LOG2="$GITHUB_WORKSPACE/ourrepo/ci-logs-official/pass2.log"
           : > "$LOG2"
-          echo "=== PASS1: fuxi_defconfig ===" | tee -a "$LOG2"
+          cp ../device/board.toml /tmp/board.full.toml
+          echo "=== full board.toml entries: $(grep -c '"' /tmp/board.full.toml) ===" | tee -a "$LOG2"
+
+          python3 - <<'PY' 2>&1 | tee -a "$LOG2"
+import io, re, tomllib
+p = '../device/board.toml'
+src = io.open(p, encoding='utf-8').read()
+m = re.search(r'archives\s*=\s*\[(?:[^\[\]]|\n)*?\]', src)
+assert m, 'archives block not found'
+out = src[:m.start()] + 'archives = [\n  ]' + src[m.end():]
+assert len(tomllib.loads(out)['kernel']['archives']) == 0
+io.open(p, 'w', encoding='utf-8', newline='\n').write(out)
+print('PASS1 board.toml archives -> []')
+PY
+
+          echo "=== PASS1: fuxi_defconfig (no archives, recipes only) ===" | tee -a "$LOG2"
+          ./unixnu defconfig fuxi_defconfig 2>&1 | tee -a "$LOG2"
           ./unixnu build kernel 2>&1 | tee -a "$LOG2"
           echo "PASS1_EXIT=$?" | tee -a "$LOG2"
 
-          echo "=== 恢复完整 archives ===" | tee -a "$LOG2"
-          python3 - <<'PY' 2>&1 | tee -a "$LOG2"
-          import io, re
-          full = [
-              "build-corecrypto-14.py",
-              "build-corecrypto-14.py --namespace",
-              "build-arm-driver.py ArmDTPlatform",
-              "build-arm-driver.py ArmCpu",
-              "build-arm-driver.py NativeAES",
-              "build-arm-driver.py NativeVirtioBlock --verified-root --verified-root-bundle",
-              "audit-storage-interface.py",
-              "build-arm-driver.py NativeUfs",
-              "build-native-aes-bindings.py",
-              "build-boot-progress.py",
-              "build-libpthread-kernel.py",
-              "build-legacy-stub.py",
-          ]
-          import shutil
-          for p in ('../device/board.toml', 'out/fuxi/tree/board.toml'):
-              try:
-                  shutil.copyfile('/tmp/board.full.toml', p)
-                  print('restored full archives ->', p)
-              except FileNotFoundError:
-                  print('skip', p)
-          # fuxi_full_defconfig 缺 CONFIG_XNU_NATIVE_VIRTIO_BLOCK=y，
-          # 而 boot-progress 的硬性检查要求 UFS/owner-root/virtio/corecrypto 全在
-          cfg = '../device/configs/fuxi_full_defconfig'
-          s = io.open(cfg, encoding='utf-8').read()
-          if 'CONFIG_XNU_NATIVE_VIRTIO_BLOCK=y' not in s:
-              s = s.replace('CONFIG_XNU_NATIVE_VIRTIO_BLOCK_ARCHIVE',
-                            'CONFIG_XNU_NATIVE_VIRTIO_BLOCK=y\nCONFIG_XNU_NATIVE_VIRTIO_BLOCK_ARCHIVE', 1)
-              io.open(cfg, 'w', encoding='utf-8', newline='\n').write(s)
-              print('added CONFIG_XNU_NATIVE_VIRTIO_BLOCK=y')
-          PY
+          echo "=== restore full archives ===" | tee -a "$LOG2"
+          cp /tmp/board.full.toml ../device/board.toml
+          cp /tmp/board.full.toml out/fuxi/tree/board.toml
+          echo "restored entries: $(grep -c '"' ../device/board.toml) / tree $(grep -c '"' out/fuxi/tree/board.toml)" | tee -a "$LOG2"
 
-          echo "=== PASS2: fuxi_full_defconfig ===" | tee -a "$LOG2"
+          python3 - <<'PY' 2>&1 | tee -a "$LOG2"
+import io
+cfg = '../device/configs/fuxi_full_defconfig'
+s = io.open(cfg, encoding='utf-8').read()
+if 'CONFIG_XNU_NATIVE_VIRTIO_BLOCK=y' not in s:
+    s = s.replace('CONFIG_XNU_NATIVE_VIRTIO_BLOCK_ARCHIVE',
+                  'CONFIG_XNU_NATIVE_VIRTIO_BLOCK=y\nCONFIG_XNU_NATIVE_VIRTIO_BLOCK_ARCHIVE', 1)
+    io.open(cfg, 'w', encoding='utf-8', newline='\n').write(s)
+print('virtio block ok')
+PY
+
+          echo "=== PASS2: fuxi_full_defconfig (full archives) ===" | tee -a "$LOG2"
           ./unixnu defconfig fuxi_full_defconfig 2>&1 | tee -a "$LOG2"
-          echo "DEFCONFIG_EXIT=$?" | tee -a "$LOG2"
+          echo "tree board.toml after defconfig: $(grep -c '"' out/fuxi/tree/board.toml)" | tee -a "$LOG2"
           ./unixnu build kernel 2>&1 | tee -a "$LOG2"
           echo "PASS2_EXIT=$?" | tee -a "$LOG2"
 
