@@ -148,7 +148,15 @@ jobs:
           echo "fd107982f9b06b40c85474c6c7288f43f77ea9b02f210df05f501cb2ee296e13  $ZAP" | sha256sum -c -
           python3 - <<'PY'
           import io, json, glob, sys
-          cands = sorted(set(glob.glob('device/scripts/data/*adreno*inputs*.json')) | set(glob.glob('unixnu/scripts/data/adreno-inputs.json')))
+          import os
+          cands = []
+          for base in ('device', 'unixnu'):
+              for dirpath, dirnames, filenames in os.walk(base):
+                  dirnames[:] = [d for d in dirnames if d not in ('.git', 'out', 'build', '.cache')]
+                  for fn in filenames:
+                      if 'adreno' in fn and 'inputs' in fn and fn.endswith('.json'):
+                          cands.append(os.path.join(dirpath, fn))
+          cands = sorted(set(cands))
           print('candidates:', cands)
           if not cands:
               sys.exit('no adreno inputs json found')
@@ -248,7 +256,7 @@ jobs:
           sha256sum "$FW"/sheng-gpu/qcom/a740_sqe.fw "$FW"/sheng-gpu/qcom/gmu_gen70200.bin "$FW"/sheng-gpu/qcom/sm8550/sheng/a740_zap.mbn "$FW"/fuxi-gpu/qcom/gmu_gen70200.bin "$FW"/fuxi-gpu/qcom/sm8550/fuxi/a740_sqe.fw "$FW"/fuxi-gpu/qcom/sm8550/fuxi/a740_zap.mbn | tee -a "$LOG2"
           echo "=== BUILD: compile -> archives -> link ===" | tee -a "$LOG2"
           rm -f out/fuxi/tree/scripts/data/adreno-inputs.json out/fuxi/tree/scripts/data/fuxi-adreno-inputs.json
-          grep -c 626393af ../device/scripts/data/fuxi-adreno-inputs.json unixnu/scripts/data/adreno-inputs.json | tee -a "$LOG2"
+          echo "pins patched earlier; see the zap step output" | tee -a "$LOG2"
           ./unixnu build kernel 2>&1 | tee -a "$LOG2"
           echo "KERNEL_EXIT=$?" | tee -a "$LOG2"
           echo "=== payload ===" | tee -a "$LOG2"
