@@ -234,29 +234,18 @@ jobs:
           ls -l "$FUXI_DTB" || echo "DTB MISSING"
           ln -sfn uefi-sheng out/fuxi/tree/uefi-fuxi || true
           ./unixnu defconfig fuxi_full_defconfig 2>&1 | tee -a "$LOG2"
-          FW=out/fuxi/tree/.cache/firmware/sheng-gpu
-          mkdir -p "$FW/qcom/sm8550/sheng"
-          B=https://raw.githubusercontent.com/ianchb/sheng-firmware/2c1e2729a085c7f0470c855d236e49455c4601f0
-          curl -fsSL "$B/qcom/a740_sqe.fw" -o "$FW/qcom/a740_sqe.fw" || echo "SQE FAIL"
-          curl -fsSL "$B/qcom/gmu_gen70200.bin" -o "$FW/qcom/gmu_gen70200.bin" || echo "GMU FAIL"
-          # fuxi is a phone, not the sheng tablet: use OUR TZ-accepted zap everywhere
-          curl -fsSL https://raw.githubusercontent.com/Xyvern08371/fuxi-zap/main/a740_zap.mbn -o "$FW/qcom/sm8550/sheng/a740_zap.mbn" || echo "ZAP FAIL"
-          python3 - <<'PY'
-          import io, json
-          p = "out/fuxi/tree/scripts/data/adreno-inputs.json"
-          d = json.load(io.open(p, encoding="utf-8"))
-          files = d["firmware"]["files"]
-          key = "qcom/sm8550/sheng/a740_zap.mbn"
-          print("old sheng zap pin:", files.get(key))
-          files[key] = {
-              "bytes": 12088,
-              "git_blob_sha1": "626393afe52f647089754638a909834bd37a8604",
-              "sha256": "fd107982f9b06b40c85474c6c7288f43f77ea9b02f210df05f501cb2ee296e13",
-          }
-          io.open(p, "w", encoding="utf-8", newline="\n").write(json.dumps(d, indent=2) + "\n")
-          print("fuxi zap pin:", files[key])
-          PY
-          ls -l "$FW/qcom" "$FW/qcom/sm8550/sheng" | tee -a "$LOG2"
+          FW=out/fuxi/tree/.cache/firmware
+          mkdir -p "$FW/sheng-gpu/qcom/sm8550/sheng" "$FW/fuxi-gpu/qcom/sm8550/fuxi"
+          SB=https://raw.githubusercontent.com/ianchb/sheng-firmware/2c1e2729a085c7f0470c855d236e49455c4601f0
+          FB=https://raw.githubusercontent.com/hanzi123-bilp/uefi-fuxi/fuxi/fuxi-loader-build
+          ZB=https://raw.githubusercontent.com/Xyvern08371/fuxi-zap/main/a740_zap.mbn
+          curl -fsSL "$SB/qcom/a740_sqe.fw" -o "$FW/sheng-gpu/qcom/a740_sqe.fw" || echo "sheng SQE FAIL"
+          curl -fsSL "$SB/qcom/gmu_gen70200.bin" -o "$FW/sheng-gpu/qcom/gmu_gen70200.bin" || echo "sheng GMU FAIL"
+          curl -fsSL "$ZB" -o "$FW/sheng-gpu/qcom/sm8550/sheng/a740_zap.mbn" || echo "sheng ZAP FAIL"
+          curl -fsSL "$FB/gmu_gen70200.bin" -o "$FW/fuxi-gpu/qcom/gmu_gen70200.bin" || echo "fuxi GMU FAIL"
+          curl -fsSL "$FB/a740_sqe.fw" -o "$FW/fuxi-gpu/qcom/sm8550/fuxi/a740_sqe.fw" || echo "fuxi SQE FAIL"
+          curl -fsSL "$ZB" -o "$FW/fuxi-gpu/qcom/sm8550/fuxi/a740_zap.mbn" || echo "fuxi ZAP FAIL"
+          sha256sum "$FW"/sheng-gpu/qcom/a740_sqe.fw "$FW"/sheng-gpu/qcom/gmu_gen70200.bin "$FW"/sheng-gpu/qcom/sm8550/sheng/a740_zap.mbn "$FW"/fuxi-gpu/qcom/gmu_gen70200.bin "$FW"/fuxi-gpu/qcom/sm8550/fuxi/a740_sqe.fw "$FW"/fuxi-gpu/qcom/sm8550/fuxi/a740_zap.mbn | tee -a "$LOG2"
           echo "=== BUILD: compile -> archives -> link ===" | tee -a "$LOG2"
           ./unixnu build kernel 2>&1 | tee -a "$LOG2"
           echo "KERNEL_EXIT=$?" | tee -a "$LOG2"
