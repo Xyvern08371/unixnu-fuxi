@@ -117,6 +117,16 @@ jobs:
               "build-native-aes-bindings.py",
               "build-libpthread-kernel.py",
               "build-legacy-stub.py",
+              "build-sheng-platform-power.py",
+              "build-native-legacy-display.py",
+              "build-boot-log.py",
+              "build-fuxi-usb-debug.py",
+              "prepare-fuxi-gmu.py --dtb {tree}/uefi-fuxi/Resources/DTBs/fuxi.dtb",
+              "prepare-fuxi-gmu-votes.py --dtb {tree}/uefi-fuxi/Resources/DTBs/fuxi.dtb",
+              "prepare-fuxi-command-db-oracle.py",
+              "build-arm-driver.py Adreno740",
+              "build-adreno740-kits.py",
+              "build-adreno740-accelerator.py",
           ]
           new = 'archives = [\n' + ''.join('    "%s",\n' % k for k in keep) + '  ]'
           out = src[:m.start()] + new + src[m.end():]
@@ -137,6 +147,34 @@ jobs:
           done
           ls -la device/kits/sheng | head -20
           echo "--- 检查 stub 源 ---"
+      - name: Pin the TZ-accepted a740_zap (12088 B)
+        run: |
+          set -euxo pipefail
+          mkdir -p device/.cache/firmware/sheng-gpu/qcom/sm8550/fuxi
+          ZAP=device/.cache/firmware/sheng-gpu/qcom/sm8550/fuxi/a740_zap.mbn
+          curl -sSL -H "Accept: application/vnd.github.raw" \
+            https://api.github.com/repos/Xyvern08371/fuxi-zap/contents/a740_zap.mbn -o "$ZAP"
+          wc -c "$ZAP"
+          echo "fd107982f9b06b40c85474c6c7288f43f77ea9b02f210df05f501cb2ee296e13  $ZAP" | sha256sum -c -
+          python3 - <<'PY'
+          import io, json
+          p = 'device/scripts/data/fuxi-adreno-inputs.json'
+          d = json.load(io.open(p, encoding='utf-8'))
+          key = 'qcom/sm8550/fuxi/a740_zap.mbn'
+          files = d['firmware']['files']
+          print('old pin:', files.get(key))
+          files[key] = {
+              'repository': 'https://github.com/Xyvern08371/fuxi-zap',
+              'git_blob_sha1': '626393afe52f647089754638a909834bd37a8604',
+              'bytes': 12088,
+              'sha256': 'fd107982f9b06b40c85474c6c7288f43f77ea9b02f210df05f501cb2ee296e13',
+          }
+          io.open(p, 'w', encoding='utf-8', newline='\n').write(json.dumps(d, indent=2) + '\n')
+          print('new pin:', files[key])
+          PY
+          # GPU prepare scripts expect ../uefi-fuxi; the tree has uefi-sheng
+          ln -sfn uefi-sheng unixnu/out/fuxi/tree/uefi-fuxi || true
+          ls -l unixnu/out/fuxi/tree/ | grep uefi || true
           ls -l device/kits/sheng/LegacyDisplayStub.c || echo "STUB MISSING"
 
       - name: 选择设备
@@ -214,6 +252,16 @@ jobs:
               "build-boot-progress.py",
               "build-libpthread-kernel.py",
               "build-legacy-stub.py",
+              "build-sheng-platform-power.py",
+              "build-native-legacy-display.py",
+              "build-boot-log.py",
+              "build-fuxi-usb-debug.py",
+              "prepare-fuxi-gmu.py --dtb {tree}/uefi-fuxi/Resources/DTBs/fuxi.dtb",
+              "prepare-fuxi-gmu-votes.py --dtb {tree}/uefi-fuxi/Resources/DTBs/fuxi.dtb",
+              "prepare-fuxi-command-db-oracle.py",
+              "build-arm-driver.py Adreno740",
+              "build-adreno740-kits.py",
+              "build-adreno740-accelerator.py",
           ]
           block = 'archives = [\n' + ''.join('    "%s",\n' % k for k in full) + '  ]'
           for p in ('../device/board.toml', 'out/fuxi/tree/board.toml'):
