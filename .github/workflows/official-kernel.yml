@@ -2,6 +2,9 @@ name: official-kernel
 on:
   workflow_dispatch:
 
+env:
+  UNIXNU_DEVICE: ${{ github.workspace }}/device
+
 jobs:
   kernel:
     runs-on: macos-14
@@ -50,21 +53,21 @@ jobs:
         working-directory: unixnu
         run: |
           set -o pipefail
-          ./unixnu -D ../device ipsw fetch OS "Cryptex1,SystemOS" 2>&1 | tail -20
-          ./unixnu -D ../device defconfig fuxi_full_defconfig 2>&1 | tail -30
+          ./unixnu ipsw fetch OS "Cryptex1,SystemOS" 2>&1 | tail -20
+          ./unixnu defconfig fuxi_full_defconfig 2>&1 | tail -30
 
       - name: Build the kernel
         working-directory: unixnu
         run: |
           set -o pipefail
-          ./unixnu -D ../device build kernel 2>&1 | tail -150
+          ./unixnu build kernel 2>&1 | tail -150
           ls -l out/fuxi/kernel/ || true
 
       - name: Build the payload
         working-directory: unixnu
         run: |
           set -o pipefail
-          ./unixnu -D ../device build payload --unique-chip-id 0x00000437b0fb20a7 2>&1 | tail -80
+          ./unixnu build payload --unique-chip-id 0x00000437b0fb20a7 2>&1 | tail -80
           ls -l out/fuxi/payload/ || true
 
       - name: Build the boot image
