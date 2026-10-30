@@ -91,9 +91,8 @@ jobs:
           import io, sys, re
           p = sys.argv[1]
           t = io.open(p, encoding='utf-8').read()
-          t = re.sub(r'(?m)^CONFIG_XNU_BOOT_PROGRESS=.*$', 'CONFIG_XNU_BOOT_PROGRESS=n', t)
-          if 'CONFIG_XNU_BOOT_PROGRESS=' not in t:
-              t += 'CONFIG_XNU_BOOT_PROGRESS=n\n'
+          # keep CONFIG_XNU_BOOT_PROGRESS as the device repo defines it: the boot-progress kit
+          # must compile with the same records in both passes (forcing n breaks BootProgress.c)
           io.open(p, 'w', encoding='utf-8', newline='\n').write(t)
           print('BOOT_PROGRESS ->', [l for l in t.split('\n') if 'BOOT_PROGRESS' in l])
           PY
