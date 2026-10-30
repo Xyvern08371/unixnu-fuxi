@@ -148,15 +148,7 @@ jobs:
           echo "fd107982f9b06b40c85474c6c7288f43f77ea9b02f210df05f501cb2ee296e13  $ZAP" | sha256sum -c -
           python3 - <<'PY'
           import io, json, glob, sys
-          import os
-          cands = []
-          for base in ('device', 'unixnu'):
-              for dirpath, dirnames, filenames in os.walk(base):
-                  dirnames[:] = [d for d in dirnames if d not in ('.git', 'out', 'build', '.cache')]
-                  for fn in filenames:
-                      if 'adreno' in fn and 'inputs' in fn and fn.endswith('.json'):
-                          cands.append(os.path.join(dirpath, fn))
-          cands = sorted(set(cands))
+          cands = sorted(set(glob.glob('device/scripts/data/*adreno*inputs*.json')))
           print('candidates:', cands)
           if not cands:
               sys.exit('no adreno inputs json found')
@@ -249,7 +241,7 @@ jobs:
           ZB=https://raw.githubusercontent.com/Xyvern08371/fuxi-zap/main/a740_zap.mbn
           curl -fsSL "$SB/qcom/a740_sqe.fw" -o "$FW/sheng-gpu/qcom/a740_sqe.fw" || echo "sheng SQE FAIL"
           curl -fsSL "$SB/qcom/gmu_gen70200.bin" -o "$FW/sheng-gpu/qcom/gmu_gen70200.bin" || echo "sheng GMU FAIL"
-          curl -fsSL "$ZB" -o "$FW/sheng-gpu/qcom/sm8550/sheng/a740_zap.mbn" || echo "sheng ZAP FAIL"
+          curl -fsSL "$SB/qcom/sm8550/sheng/a740_zap.mbn" -o "$FW/sheng-gpu/qcom/sm8550/sheng/a740_zap.mbn" || echo "sheng ZAP FAIL"
           curl -fsSL "$FB/gmu_gen70200.bin" -o "$FW/fuxi-gpu/qcom/gmu_gen70200.bin" || echo "fuxi GMU FAIL"
           curl -fsSL "$FB/a740_sqe.fw" -o "$FW/fuxi-gpu/qcom/sm8550/fuxi/a740_sqe.fw" || echo "fuxi SQE FAIL"
           curl -fsSL "$ZB" -o "$FW/fuxi-gpu/qcom/sm8550/fuxi/a740_zap.mbn" || echo "fuxi ZAP FAIL"
