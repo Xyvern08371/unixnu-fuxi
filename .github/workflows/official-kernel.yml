@@ -140,8 +140,8 @@ jobs:
           set -euxo pipefail
           mkdir -p device/.cache/firmware/fuxi-gpu/qcom/sm8550/fuxi
           ZAP=device/.cache/firmware/fuxi-gpu/qcom/sm8550/fuxi/a740_zap.mbn
-          curl -sSL -H "Accept: application/vnd.github.raw" \
-            https://api.github.com/repos/Xyvern08371/fuxi-zap/contents/a740_zap.mbn -o "$ZAP"
+          curl -fsSL \
+            https://raw.githubusercontent.com/Xyvern08371/fuxi-zap/main/a740_zap.mbn -o "$ZAP"
           wc -c "$ZAP"
           echo "fd107982f9b06b40c85474c6c7288f43f77ea9b02f210df05f501cb2ee296e13  $ZAP" | sha256sum -c -
           find device -name '*adreno*inputs*.json' | head -10 || true
