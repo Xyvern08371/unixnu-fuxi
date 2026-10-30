@@ -247,6 +247,8 @@ jobs:
           curl -fsSL "$ZB" -o "$FW/fuxi-gpu/qcom/sm8550/fuxi/a740_zap.mbn" || echo "fuxi ZAP FAIL"
           sha256sum "$FW"/sheng-gpu/qcom/a740_sqe.fw "$FW"/sheng-gpu/qcom/gmu_gen70200.bin "$FW"/sheng-gpu/qcom/sm8550/sheng/a740_zap.mbn "$FW"/fuxi-gpu/qcom/gmu_gen70200.bin "$FW"/fuxi-gpu/qcom/sm8550/fuxi/a740_sqe.fw "$FW"/fuxi-gpu/qcom/sm8550/fuxi/a740_zap.mbn | tee -a "$LOG2"
           echo "=== BUILD: compile -> archives -> link ===" | tee -a "$LOG2"
+          rm -f out/fuxi/tree/scripts/data/adreno-inputs.json out/fuxi/tree/scripts/data/fuxi-adreno-inputs.json
+          grep -c 626393af ../device/scripts/data/fuxi-adreno-inputs.json unixnu/scripts/data/adreno-inputs.json | tee -a "$LOG2"
           ./unixnu build kernel 2>&1 | tee -a "$LOG2"
           echo "KERNEL_EXIT=$?" | tee -a "$LOG2"
           echo "=== payload ===" | tee -a "$LOG2"
