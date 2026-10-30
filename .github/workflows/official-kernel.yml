@@ -118,9 +118,15 @@ jobs:
               "build-libpthread-kernel.py",
               "build-legacy-stub.py",
           ]
-          out = src
+          import shutil
+          shutil.copyfile(p, '/tmp/board.full.toml')
+          keep = []
+          new = 'archives = [\n' + ''.join('    "%s",\n' % k for k in keep) + '  ]'
+          out = src[:m.start()] + new + src[m.end():]
           d = tomllib.loads(out)
-          print('archives kept:', len(d['kernel']['archives']), d['kernel']['archives'])
+          assert len(d['kernel']['archives']) == 0, d['kernel']['archives']
+          io.open(p, 'w', encoding='utf-8', newline='\n').write(out)
+          print('PASS1 archives ->', d['kernel']['archives'], '(full list saved to /tmp)')
           PY
 
       - name: 补 kits/sheng（设备仓库的链接名目录是空的）
@@ -251,7 +257,13 @@ jobs:
               "build-libpthread-kernel.py",
               "build-legacy-stub.py",
           ]
-          print('archives: keep the device repo board.toml as-is (21 entries incl GPU chain)')
+          import shutil
+          for p in ('../device/board.toml', 'out/fuxi/tree/board.toml'):
+              try:
+                  shutil.copyfile('/tmp/board.full.toml', p)
+                  print('restored full archives ->', p)
+              except FileNotFoundError:
+                  print('skip', p)
           # fuxi_full_defconfig 缺 CONFIG_XNU_NATIVE_VIRTIO_BLOCK=y，
           # 而 boot-progress 的硬性检查要求 UFS/owner-root/virtio/corecrypto 全在
           cfg = '../device/configs/fuxi_full_defconfig'
