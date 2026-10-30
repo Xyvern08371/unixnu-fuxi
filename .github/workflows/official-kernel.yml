@@ -252,7 +252,7 @@ jobs:
           curl -fsSL "$FB/gmu_gen70200.bin" -o "$FW/fuxi-gpu/qcom/gmu_gen70200.bin" || echo "fuxi GMU FAIL"
           curl -fsSL "$FB/a740_sqe.fw" -o "$FW/fuxi-gpu/qcom/sm8550/fuxi/a740_sqe.fw" || echo "fuxi SQE FAIL"
           curl -fsSL "$ZB" -o "$FW/fuxi-gpu/qcom/sm8550/fuxi/a740_zap.mbn" || echo "fuxi ZAP FAIL"
-          AC=device/.cache/adreno-source
+          AC=out/fuxi/tree/.cache/adreno-source
           LC=https://raw.githubusercontent.com/ianchb/sm8550-mainline/42f3b40c702abbc37c3a04c95af008cd283aeaf3
           for f in \
             drivers/gpu/drm/msm/adreno/a6xx_catalog.c \
