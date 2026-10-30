@@ -21,12 +21,16 @@ jobs:
           path: device
           submodules: false
 
-      - name: Fetch the driver submodules at their branch heads
+      - name: Vendor the driver submodules at branch heads
         run: |
           set -x
-          git clone --depth 1 https://github.com/UniXNU/NativeNovatekTouch.git device/drivers/NativeNovatekTouch || true
-          git clone --depth 1 https://github.com/UniXNU/ShengPreflight.git      device/drivers/ShengPreflight || true
-          git clone --depth 1 https://github.com/xiaoleGun/QcomXnuUsbDebug.git  device/drivers/QcomXnuUsbDebug || true
+          rm -rf device/.gitmodules
+          git -C device rm -r --cached drivers/NativeNovatekTouch drivers/QcomXnuUsbDebug drivers/ShengPreflight 2>/dev/null || true
+          rm -rf device/drivers/NativeNovatekTouch device/drivers/QcomXnuUsbDebug device/drivers/ShengPreflight
+          git clone --depth 1 https://github.com/UniXNU/NativeNovatekTouch.git device/drivers/NativeNovatekTouch
+          git clone --depth 1 https://github.com/UniXNU/ShengPreflight.git      device/drivers/ShengPreflight
+          git clone --depth 1 https://github.com/xiaoleGun/QcomXnuUsbDebug.git  device/drivers/QcomXnuUsbDebug
+          rm -rf device/drivers/*/.git
           ls -la device/drivers/
 
       - name: Check out uefi-fuxi (the board DTB lives there)
@@ -42,27 +46,25 @@ jobs:
           xcodebuild -version
           python3 --version
 
-      - name: Prepare
+      - name: Select the configuration
         working-directory: unixnu
         run: |
-          set -x
-          ./unixnu ipsw fetch OS "Cryptex1,SystemOS" 2>&1 | tail -20
-          ./unixnu defconfig fuxi_full_defconfig -D ../device 2>&1 | tail -30
+          set -o pipefail
+          ./unixnu -D ../device ipsw fetch OS "Cryptex1,SystemOS" 2>&1 | tail -20
+          ./unixnu -D ../device defconfig fuxi_full_defconfig 2>&1 | tail -30
 
       - name: Build the kernel
         working-directory: unixnu
         run: |
           set -o pipefail
-          ./unixnu build kernel -D ../device 2>&1 | tail -150
-          echo "KERNEL_EXIT=$?"
+          ./unixnu -D ../device build kernel 2>&1 | tail -150
           ls -l out/fuxi/kernel/ || true
 
       - name: Build the payload
         working-directory: unixnu
         run: |
           set -o pipefail
-          ./unixnu build payload -D ../device --unique-chip-id 0x00000437b0fb20a7 2>&1 | tail -80
-          echo "PAYLOAD_EXIT=$?"
+          ./unixnu -D ../device build payload --unique-chip-id 0x00000437b0fb20a7 2>&1 | tail -80
           ls -l out/fuxi/payload/ || true
 
       - name: Build the boot image
