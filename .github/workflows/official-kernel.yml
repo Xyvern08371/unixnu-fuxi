@@ -120,11 +120,13 @@ jobs:
           ]
           import shutil
           shutil.copyfile(p, '/tmp/board.full.toml')
-          out = src[:m.start()] + 'archives = [\n  ]' + src[m.end():]
+          print('backed up full board.toml to /tmp/board.full.toml')
+          new = 'archives = [\n' + ''.join('    "%s",\n' % k for k in keep) + '  ]'
+          out = src[:m.start()] + new + src[m.end():]
           d = tomllib.loads(out)
-          assert len(d['kernel']['archives']) == 0, d['kernel']['archives']
+          assert len(d['kernel']['archives']) == 8, d['kernel']['archives']
           io.open(p, 'w', encoding='utf-8', newline='\n').write(out)
-          print('PASS1 archives -> [] ; full list saved to /tmp/board.full.toml')
+          print('archives ->', d['kernel']['archives'])
           PY
 
       - name: 补 kits/sheng（设备仓库的链接名目录是空的）
@@ -233,16 +235,19 @@ jobs:
           mkdir -p "$GITHUB_WORKSPACE/ourrepo/ci-logs-official"
           LOG2="$GITHUB_WORKSPACE/ourrepo/ci-logs-official/pass2.log"
           : > "$LOG2"
-          echo "=== PASS1: fuxi_defconfig (archives=[]) ===" | tee -a "$LOG2"
+          echo "=== /tmp backup ===" | tee -a "$LOG2"
+          wc -c /tmp/board.full.toml | tee -a "$LOG2"
+          echo "=== PASS1: fuxi_defconfig (8-archive bootstrap) ===" | tee -a "$LOG2"
           ./unixnu defconfig fuxi_defconfig 2>&1 | tee -a "$LOG2"
           ./unixnu build kernel 2>&1 | tee -a "$LOG2"
           echo "PASS1_EXIT=$?" | tee -a "$LOG2"
           echo "=== restore the full board.toml ===" | tee -a "$LOG2"
           cp /tmp/board.full.toml ../device/board.toml
           cp /tmp/board.full.toml out/fuxi/tree/board.toml
-          echo "restored device=$(grep -c \"\" ../device/board.toml) tree=$(grep -c \"\" out/fuxi/tree/board.toml)" | tee -a "$LOG2"
+          wc -c ../device/board.toml out/fuxi/tree/board.toml | tee -a "$LOG2"
           echo "=== PASS2: fuxi_full_defconfig (full archives) ===" | tee -a "$LOG2"
           ./unixnu defconfig fuxi_full_defconfig 2>&1 | tee -a "$LOG2"
+          wc -c out/fuxi/tree/board.toml | tee -a "$LOG2"
           ./unixnu build kernel 2>&1 | tee -a "$LOG2"
           echo "PASS2_EXIT=$?" | tee -a "$LOG2"
           echo "=== payload ===" | tee -a "$LOG2"
@@ -258,8 +263,6 @@ jobs:
             [ -f "$f" ] || continue
             b=$(basename "$f")
             cp "$f" "ourrepo/ci-logs-official/$b"
-            echo "===== $b (last 60) ====="
-            tail -60 "$f"
           done
           ls -l ourrepo/ci-logs-official || true
 
