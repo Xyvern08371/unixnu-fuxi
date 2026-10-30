@@ -128,7 +128,7 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p out/fuxi/boot
-          python3 uefi-fuxi/scripts/bootimage.py \
+          python3 ../uefi-fuxi/scripts/bootimage.py \
             --unixnu-root "$PWD" \
             --device ../device \
             --uefi ../uefi-fuxi \
