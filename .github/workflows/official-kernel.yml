@@ -120,13 +120,11 @@ jobs:
           ]
           import shutil
           shutil.copyfile(p, '/tmp/board.full.toml')
-          keep = []
-          new = 'archives = [\n' + ''.join('    "%s",\n' % k for k in keep) + '  ]'
-          out = src[:m.start()] + new + src[m.end():]
+          out = src[:m.start()] + 'archives = [\n  ]' + src[m.end():]
           d = tomllib.loads(out)
           assert len(d['kernel']['archives']) == 0, d['kernel']['archives']
           io.open(p, 'w', encoding='utf-8', newline='\n').write(out)
-          print('PASS1 archives ->', d['kernel']['archives'], '(full list saved to /tmp)')
+          print('PASS1 archives -> [] ; full list saved to /tmp/board.full.toml')
           PY
 
       - name: 补 kits/sheng（设备仓库的链接名目录是空的）
@@ -146,11 +144,9 @@ jobs:
           set -euxo pipefail
           mkdir -p device/.cache/firmware/fuxi-gpu/qcom/sm8550/fuxi
           ZAP=device/.cache/firmware/fuxi-gpu/qcom/sm8550/fuxi/a740_zap.mbn
-          curl -fsSL \
-            https://raw.githubusercontent.com/Xyvern08371/fuxi-zap/main/a740_zap.mbn -o "$ZAP"
+          curl -fsSL https://raw.githubusercontent.com/Xyvern08371/fuxi-zap/main/a740_zap.mbn -o "$ZAP"
           wc -c "$ZAP"
           echo "fd107982f9b06b40c85474c6c7288f43f77ea9b02f210df05f501cb2ee296e13  $ZAP" | sha256sum -c -
-          find device -name '*adreno*inputs*.json' | head -10 || true
           python3 - <<'PY'
           import io, json, glob, sys
           cands = sorted(set(glob.glob('device/scripts/data/*adreno*inputs*.json')))
@@ -179,7 +175,6 @@ jobs:
                   print(p, 'added key')
               io.open(p, 'w', encoding='utf-8', newline='\n').write(json.dumps(d, indent=2) + '\n')
           PY
-          ln -sfn uefi-sheng unixnu/out/fuxi/tree/uefi-fuxi || true
 
       - name: 选择设备
         working-directory: unixnu
@@ -238,48 +233,18 @@ jobs:
           mkdir -p "$GITHUB_WORKSPACE/ourrepo/ci-logs-official"
           LOG2="$GITHUB_WORKSPACE/ourrepo/ci-logs-official/pass2.log"
           : > "$LOG2"
-          cp ../device/board.toml /tmp/board.full.toml
-          echo "=== full board.toml entries: $(grep -c '"' /tmp/board.full.toml) ===" | tee -a "$LOG2"
-
-          python3 - <<'PY' 2>&1 | tee -a "$LOG2"
-import io, re, tomllib
-p = '../device/board.toml'
-src = io.open(p, encoding='utf-8').read()
-m = re.search(r'archives\s*=\s*\[(?:[^\[\]]|\n)*?\]', src)
-assert m, 'archives block not found'
-out = src[:m.start()] + 'archives = [\n  ]' + src[m.end():]
-assert len(tomllib.loads(out)['kernel']['archives']) == 0
-io.open(p, 'w', encoding='utf-8', newline='\n').write(out)
-print('PASS1 board.toml archives -> []')
-PY
-
-          echo "=== PASS1: fuxi_defconfig (no archives, recipes only) ===" | tee -a "$LOG2"
+          echo "=== PASS1: fuxi_defconfig (archives=[]) ===" | tee -a "$LOG2"
           ./unixnu defconfig fuxi_defconfig 2>&1 | tee -a "$LOG2"
           ./unixnu build kernel 2>&1 | tee -a "$LOG2"
           echo "PASS1_EXIT=$?" | tee -a "$LOG2"
-
-          echo "=== restore full archives ===" | tee -a "$LOG2"
+          echo "=== restore the full board.toml ===" | tee -a "$LOG2"
           cp /tmp/board.full.toml ../device/board.toml
           cp /tmp/board.full.toml out/fuxi/tree/board.toml
-          echo "restored entries: $(grep -c '"' ../device/board.toml) / tree $(grep -c '"' out/fuxi/tree/board.toml)" | tee -a "$LOG2"
-
-          python3 - <<'PY' 2>&1 | tee -a "$LOG2"
-import io
-cfg = '../device/configs/fuxi_full_defconfig'
-s = io.open(cfg, encoding='utf-8').read()
-if 'CONFIG_XNU_NATIVE_VIRTIO_BLOCK=y' not in s:
-    s = s.replace('CONFIG_XNU_NATIVE_VIRTIO_BLOCK_ARCHIVE',
-                  'CONFIG_XNU_NATIVE_VIRTIO_BLOCK=y\nCONFIG_XNU_NATIVE_VIRTIO_BLOCK_ARCHIVE', 1)
-    io.open(cfg, 'w', encoding='utf-8', newline='\n').write(s)
-print('virtio block ok')
-PY
-
+          echo "restored device=$(grep -c \"\" ../device/board.toml) tree=$(grep -c \"\" out/fuxi/tree/board.toml)" | tee -a "$LOG2"
           echo "=== PASS2: fuxi_full_defconfig (full archives) ===" | tee -a "$LOG2"
           ./unixnu defconfig fuxi_full_defconfig 2>&1 | tee -a "$LOG2"
-          echo "tree board.toml after defconfig: $(grep -c '"' out/fuxi/tree/board.toml)" | tee -a "$LOG2"
           ./unixnu build kernel 2>&1 | tee -a "$LOG2"
           echo "PASS2_EXIT=$?" | tee -a "$LOG2"
-
           echo "=== payload ===" | tee -a "$LOG2"
           ./unixnu build payload 2>&1 | tee -a "$LOG2"
           echo "PAYLOAD_EXIT=$?" | tee -a "$LOG2"
@@ -293,10 +258,9 @@ PY
             [ -f "$f" ] || continue
             b=$(basename "$f")
             cp "$f" "ourrepo/ci-logs-official/$b"
-            echo "===== $b (last 70) ====="
-            tail -70 "$f"
+            echo "===== $b (last 60) ====="
+            tail -60 "$f"
           done
-          echo "===== listing ====="
           ls -l ourrepo/ci-logs-official || true
 
       - name: 列出产物
