@@ -17,8 +17,6 @@ jobs:
         with:
           path: self
 
-      - name: Relax the prelink-only audits in the device repo
-        run: python3 self/.github/scripts/relax_audits.py
       - name: Check out the framework
         uses: actions/checkout@v4
         with:
@@ -44,6 +42,8 @@ jobs:
           rm -rf device/drivers/*/.git
           ls -la device/drivers/
 
+      - name: Relax the prelink-only audits in the device repo
+        run: python3 self/.github/scripts/relax_audits.py
       - name: Check out uefi-fuxi
         uses: actions/checkout@v4
         with:
