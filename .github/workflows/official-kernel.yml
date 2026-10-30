@@ -108,6 +108,9 @@ jobs:
           src = io.open(p, encoding='utf-8').read()
           m = re.search(r'archives\s*=\s*\[(?:[^\[\]]|\n)*?\]', src)
           assert m, 'archives block not found'
+          import shutil
+          shutil.copyfile(p, '/tmp/board.full.toml')
+          print('backed up full board.toml')
           keep = [
               "build-corecrypto-14.py",
               "build-corecrypto-14.py --namespace",
@@ -117,14 +120,13 @@ jobs:
               "build-native-aes-bindings.py",
               "build-libpthread-kernel.py",
               "build-legacy-stub.py",
+              "build-boot-log.py",
+              "build-fuxi-usb-debug.py",
           ]
-          import shutil
-          shutil.copyfile(p, '/tmp/board.full.toml')
-          print('backed up full board.toml to /tmp/board.full.toml')
           new = 'archives = [\n' + ''.join('    "%s",\n' % k for k in keep) + '  ]'
           out = src[:m.start()] + new + src[m.end():]
           d = tomllib.loads(out)
-          assert len(d['kernel']['archives']) == 8, d['kernel']['archives']
+          assert len(d['kernel']['archives']) == 10, d['kernel']['archives']
           io.open(p, 'w', encoding='utf-8', newline='\n').write(out)
           print('archives ->', d['kernel']['archives'])
           PY
@@ -235,19 +237,21 @@ jobs:
           mkdir -p "$GITHUB_WORKSPACE/ourrepo/ci-logs-official"
           LOG2="$GITHUB_WORKSPACE/ourrepo/ci-logs-official/pass2.log"
           : > "$LOG2"
-          echo "=== /tmp backup ===" | tee -a "$LOG2"
           wc -c /tmp/board.full.toml | tee -a "$LOG2"
-          echo "=== PASS1: fuxi_defconfig (8-archive bootstrap) ===" | tee -a "$LOG2"
+          echo "=== PASS1: bootstrap (10 archives) ===" | tee -a "$LOG2"
           ./unixnu defconfig fuxi_defconfig 2>&1 | tee -a "$LOG2"
           ./unixnu build kernel 2>&1 | tee -a "$LOG2"
           echo "PASS1_EXIT=$?" | tee -a "$LOG2"
-          echo "=== restore the full board.toml ===" | tee -a "$LOG2"
+          echo "=== PRELINK: produce the candidate the audits need ===" | tee -a "$LOG2"
+          ./unixnu build prelink 2>&1 | tee -a "$LOG2"
+          echo "PRELINK_EXIT=$?" | tee -a "$LOG2"
+          ls -l out/fuxi/tree/build/native-prelink/ 2>/dev/null | tee -a "$LOG2"
+          echo "=== restore the full archives ===" | tee -a "$LOG2"
           cp /tmp/board.full.toml ../device/board.toml
           cp /tmp/board.full.toml out/fuxi/tree/board.toml
           wc -c ../device/board.toml out/fuxi/tree/board.toml | tee -a "$LOG2"
           echo "=== PASS2: fuxi_full_defconfig (full archives) ===" | tee -a "$LOG2"
           ./unixnu defconfig fuxi_full_defconfig 2>&1 | tee -a "$LOG2"
-          wc -c out/fuxi/tree/board.toml | tee -a "$LOG2"
           ./unixnu build kernel 2>&1 | tee -a "$LOG2"
           echo "PASS2_EXIT=$?" | tee -a "$LOG2"
           echo "=== payload ===" | tee -a "$LOG2"
@@ -259,7 +263,7 @@ jobs:
         run: |
           set +e
           mkdir -p ourrepo/ci-logs-official
-          for f in unixnu/out/fuxi/logs/archive-*.log unixnu/out/fuxi/logs/kernel*.log unixnu/out/fuxi/logs/payload*.log; do
+          for f in unixnu/out/fuxi/logs/archive-*.log unixnu/out/fuxi/logs/kernel*.log unixnu/out/fuxi/logs/payload*.log unixnu/out/fuxi/logs/prelink*.log; do
             [ -f "$f" ] || continue
             b=$(basename "$f")
             cp "$f" "ourrepo/ci-logs-official/$b"
