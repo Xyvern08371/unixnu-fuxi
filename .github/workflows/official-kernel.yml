@@ -160,10 +160,16 @@ jobs:
           if not cands:
               sys.exit('no adreno inputs json found')
           newpin = {
-              'repository': 'https://github.com/ljhhkx529/fuxi-firmware',
+              'repository': 'https://github.com/Xyvern08371/fuxi-zap',
               'git_blob_sha1': '626393afe52f647089754638a909834bd37a8604',
               'bytes': 12088,
-              'sha256': '4e5f47219714dfc1ca54e49c4d2fe08b1448446040a60512ba05d691348701c3',
+              'sha256': 'fd107982f9b06b40c85474c6c7288f43f77ea9b02f210df05f501cb2ee296e13',
+          }
+          sqepin = {
+              'repository': 'https://github.com/hanzi123-bilp/uefi-fuxi',
+              'git_blob_sha1': '692657ccd54e617ea5cba7cb348075c33fbbf7f9',
+              'bytes': 76724,
+              'sha256': '96fee336424b139100fc60b5b45a907360e4b3936d7e1d00406b9bd80ca48473',
           }
           sqepin = {
               'repository': 'https://github.com/ljhhkx529/fuxi-firmware',
@@ -253,14 +259,14 @@ jobs:
           FW=device/.cache/firmware
           mkdir -p "$FW/sheng-gpu/qcom/sm8550/sheng" "$FW/fuxi-gpu/qcom/sm8550/fuxi"
           SB=https://raw.githubusercontent.com/ianchb/sheng-firmware/2c1e2729a085c7f0470c855d236e49455c4601f0
-          FF=https://raw.githubusercontent.com/ljhhkx529/fuxi-firmware/main
+          FF=https://raw.githubusercontent.com/hanzi123-bilp/uefi-fuxi/fuxi/fuxi-loader-build
           ZB=https://raw.githubusercontent.com/Xyvern08371/fuxi-zap/main/a740_zap.mbn
           curl -fsSL "$SB/qcom/a740_sqe.fw" -o "$FW/sheng-gpu/qcom/a740_sqe.fw" || echo "sheng SQE FAIL"
           curl -fsSL "$SB/qcom/gmu_gen70200.bin" -o "$FW/sheng-gpu/qcom/gmu_gen70200.bin" || echo "sheng GMU FAIL"
           curl -fsSL "$ZB" -o "$FW/sheng-gpu/qcom/sm8550/sheng/a740_zap.mbn" || echo "sheng ZAP FAIL"
-          curl -fsSL "$FF/vendor/firmware/gmu_gen70200.bin" -o "$FW/fuxi-gpu/qcom/gmu_gen70200.bin" || echo "fuxi GMU FAIL"
-          curl -fsSL "$FF/vendor/firmware/a740_sqe.fw" -o "$FW/fuxi-gpu/qcom/sm8550/fuxi/a740_sqe.fw" || echo "fuxi SQE FAIL"
-          curl -fsSL "$FF/odm/firmware/a740_zap.mbn" -o "$FW/fuxi-gpu/qcom/sm8550/fuxi/a740_zap.mbn" || echo "fuxi ZAP FAIL"
+          curl -fsSL "$FF/gmu_gen70200.bin" -o "$FW/fuxi-gpu/qcom/gmu_gen70200.bin" || echo "fuxi GMU FAIL"
+          curl -fsSL "$FF/a740_sqe.fw" -o "$FW/fuxi-gpu/qcom/sm8550/fuxi/a740_sqe.fw" || echo "fuxi SQE FAIL"
+          curl -fsSL "$ZB" -o "$FW/fuxi-gpu/qcom/sm8550/fuxi/a740_zap.mbn" || echo "fuxi ZAP FAIL"
           AC=out/fuxi/tree/.cache/adreno-source
           LC=https://raw.githubusercontent.com/ianchb/sm8550-mainline/42f3b40c702abbc37c3a04c95af008cd283aeaf3
           for f in \
