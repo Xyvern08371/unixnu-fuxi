@@ -59,6 +59,7 @@ jobs:
         working-directory: unixnu
         run: |
           set -o pipefail
+          ./unixnu fetch 2>&1 | tail -20 || true
           ./unixnu ipsw fetch OS "Cryptex1,SystemOS" 2>&1 | tail -20
           ./unixnu defconfig fuxi_full_defconfig 2>&1 | tail -30
 
