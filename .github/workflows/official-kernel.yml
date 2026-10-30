@@ -92,7 +92,6 @@ jobs:
           p = sys.argv[1]
           t = io.open(p, encoding='utf-8').read()
           t = re.sub(r'(?m)^CONFIG_XNU_BOOT_PROGRESS=.*$', 'CONFIG_XNU_BOOT_PROGRESS=n', t)
-          t = re.sub(r'(?m)^CONFIG_XNU_NATIVE_LEGACY_DISPLAY=.*$', 'CONFIG_XNU_NATIVE_LEGACY_DISPLAY=n', t)
           if 'CONFIG_XNU_BOOT_PROGRESS=' not in t:
               t += 'CONFIG_XNU_BOOT_PROGRESS=n\n'
           io.open(p, 'w', encoding='utf-8', newline='\n').write(t)
@@ -119,12 +118,9 @@ jobs:
               "build-libpthread-kernel.py",
               "build-legacy-stub.py",
           ]
-          new = 'archives = [\n' + ''.join('    "%s",\n' % k for k in keep) + '  ]'
-          out = src[:m.start()] + new + src[m.end():]
+          out = src
           d = tomllib.loads(out)
-          assert len(d['kernel']['archives']) == 8, d['kernel']['archives']
-          io.open(p, 'w', encoding='utf-8', newline='\n').write(out)
-          print('archives ->', d['kernel']['archives'])
+          print('archives kept:', len(d['kernel']['archives']), d['kernel']['archives'])
           PY
 
       - name: 补 kits/sheng（设备仓库的链接名目录是空的）
@@ -142,8 +138,8 @@ jobs:
       - name: Pin the TZ-accepted a740_zap (12088 B)
         run: |
           set -euxo pipefail
-          mkdir -p device/.cache/firmware/sheng-gpu/qcom/sm8550/fuxi
-          ZAP=device/.cache/firmware/sheng-gpu/qcom/sm8550/fuxi/a740_zap.mbn
+          mkdir -p device/.cache/firmware/fuxi-gpu/qcom/sm8550/fuxi
+          ZAP=device/.cache/firmware/fuxi-gpu/qcom/sm8550/fuxi/a740_zap.mbn
           curl -sSL -H "Accept: application/vnd.github.raw" \
             https://api.github.com/repos/Xyvern08371/fuxi-zap/contents/a740_zap.mbn -o "$ZAP"
           wc -c "$ZAP"
@@ -242,16 +238,6 @@ jobs:
           python3 - <<'PY' 2>&1 | tee -a "$LOG2"
           import io, re
           full = [
-              "build-sheng-platform-power.py",
-              "build-native-legacy-display.py",
-              "build-boot-log.py",
-              "build-fuxi-usb-debug.py",
-              "prepare-fuxi-gmu.py --dtb {tree}/uefi-fuxi/Resources/DTBs/fuxi.dtb",
-              "prepare-fuxi-gmu-votes.py --dtb {tree}/uefi-fuxi/Resources/DTBs/fuxi.dtb",
-              "prepare-fuxi-command-db-oracle.py",
-              "build-arm-driver.py Adreno740",
-              "build-adreno740-kits.py",
-              "build-adreno740-accelerator.py",
               "build-corecrypto-14.py",
               "build-corecrypto-14.py --namespace",
               "build-arm-driver.py ArmDTPlatform",
@@ -265,17 +251,7 @@ jobs:
               "build-libpthread-kernel.py",
               "build-legacy-stub.py",
           ]
-          block = 'archives = [\n' + ''.join('    "%s",\n' % k for k in full) + '  ]'
-          for p in ('../device/board.toml', 'out/fuxi/tree/board.toml'):
-              try:
-                  s = io.open(p, encoding='utf-8').read()
-              except FileNotFoundError:
-                  print('missing', p); continue
-              m = re.search(r'archives\s*=\s*\[(?:[^\[\]]|\n)*?\]', s)
-              if not m:
-                  print('no block', p); continue
-              io.open(p, 'w', encoding='utf-8', newline='\n').write(s[:m.start()] + block + s[m.end():])
-              print('restored', p)
+          print('archives: keep the device repo board.toml as-is (21 entries incl GPU chain)')
           # fuxi_full_defconfig 缺 CONFIG_XNU_NATIVE_VIRTIO_BLOCK=y，
           # 而 boot-progress 的硬性检查要求 UFS/owner-root/virtio/corecrypto 全在
           cfg = '../device/configs/fuxi_full_defconfig'
