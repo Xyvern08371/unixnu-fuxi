@@ -17,17 +17,19 @@ jobs:
         with:
           path: self
 
-      - name: Check out the framework
+      - name: Check out the framework fork
         uses: actions/checkout@v4
         with:
-          repository: ljhhkx529/UniXNU
+          repository: Xyvern08371/UniXNU
+          ref: main
           path: unixnu
           submodules: false
 
-      - name: Check out the device repository
+      - name: Check out the device fork
         uses: actions/checkout@v4
         with:
-          repository: ljhhkx529/unixnu-fuxi
+          repository: Xyvern08371/fuxi-old
+          ref: old
           path: device
           submodules: false
 
@@ -54,25 +56,15 @@ jobs:
           }
           vendor unixnu
           vendor device
+          rm -rf device/drivers/QcomXnuUsbDebug
+          git clone --depth 1 https://github.com/xiaoleGun/QcomXnuUsbDebug.git device/drivers/QcomXnuUsbDebug
+          rm -rf device/drivers/QcomXnuUsbDebug/.git
           ls unixnu/drivers unixnu/kits device/drivers
-
-      - name: Patch the scripts for a clean tree
-        run: |
-          python3 self/.github/scripts/relax_audits.py
-          python3 self/.github/scripts/patch_bootprogress.py
-          python3 self/.github/scripts/patch_fetch_adreno.py
 
       - name: Install host tools
         run: brew install dtc mtools || true
 
-      - name: Report the toolchain
-        run: |
-          uname -a
-          xcodebuild -version
-          python3 --version
-          command -v fdtget; command -v mtype
-
-      - name: Restore the IPSW extraction
+      - name: Cache the IPSW extraction
         uses: actions/cache/restore@v4
         with:
           path: unixnu/out/ipsw
