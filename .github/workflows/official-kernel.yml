@@ -92,6 +92,7 @@ jobs:
           p = sys.argv[1]
           t = io.open(p, encoding='utf-8').read()
           t = re.sub(r'(?m)^CONFIG_XNU_BOOT_PROGRESS=.*$', 'CONFIG_XNU_BOOT_PROGRESS=n', t)
+          t = re.sub(r'(?m)^CONFIG_XNU_NATIVE_LEGACY_DISPLAY=.*$', 'CONFIG_XNU_NATIVE_LEGACY_DISPLAY=n', t)
           if 'CONFIG_XNU_BOOT_PROGRESS=' not in t:
               t += 'CONFIG_XNU_BOOT_PROGRESS=n\n'
           io.open(p, 'w', encoding='utf-8', newline='\n').write(t)
@@ -168,9 +169,9 @@ jobs:
               hits = [k for k in files if 'zap' in k.lower()]
               if hits:
                   for k in hits:
-                      print(p, 'old', k, files[k].get('bytes'), files[k].get('sha256'))
+                      print(p, 'old', k, files[k].get('bytes'))
                       files[k] = newpin
-                      print(p, 'new', k, newpin['bytes'], newpin['sha256'])
+                      print(p, 'new', k, newpin['bytes'])
               else:
                   files['qcom/sm8550/fuxi/a740_zap.mbn'] = newpin
                   print(p, 'added key')
