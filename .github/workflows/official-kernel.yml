@@ -56,8 +56,14 @@ jobs:
           }
           vendor unixnu
           vendor device
+          rm -rf unixnu/drivers/Adreno740
+          git clone --depth 1 https://github.com/UniXNU/Adreno740.git unixnu/drivers/Adreno740
+          rm -rf unixnu/drivers/Adreno740/.git
           rm -rf device/drivers/QcomXnuUsbDebug
           git clone --depth 1 https://github.com/xiaoleGun/QcomXnuUsbDebug.git device/drivers/QcomXnuUsbDebug
+          rm -rf unixnu/drivers/Adreno740
+          git clone --depth 1 https://github.com/UniXNU/Adreno740.git unixnu/drivers/Adreno740
+          rm -rf unixnu/drivers/Adreno740/.git
           rm -rf device/drivers/QcomXnuUsbDebug/.git
           ls unixnu/drivers unixnu/kits device/drivers
 
