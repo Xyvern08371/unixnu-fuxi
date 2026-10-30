@@ -72,11 +72,11 @@ jobs:
           python3 --version
           command -v fdtget; command -v mtype
 
-      - name: Cache the IPSW extraction
-        uses: actions/cache@v4
+      - name: Restore the IPSW extraction
+        uses: actions/cache/restore@v4
         with:
           path: unixnu/out/ipsw
-          key: ipsw-21H461-os-systemos-v1
+          key: ipsw-21H461-os-systemos-v2
 
       - name: Fetch and select the configuration
         working-directory: unixnu
@@ -149,6 +149,13 @@ jobs:
             -o out/fuxi/boot/boot.img 2>&1 | tail -40
           cat out/fuxi/boot/bootimage.json
           python3 ../self/.github/scripts/verify_boot.py
+
+      - name: Save the IPSW extraction
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: unixnu/out/ipsw
+          key: ipsw-21H461-os-systemos-v2
 
       - name: Dump the build logs
         if: always()
