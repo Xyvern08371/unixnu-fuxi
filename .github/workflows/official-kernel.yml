@@ -122,12 +122,7 @@ jobs:
               "build-boot-log.py",
               "build-fuxi-usb-debug.py",
           ]
-          new = 'archives = [\n' + ''.join('    "%s",\n' % k for k in keep) + '  ]'
-          out = src[:m.start()] + new + src[m.end():]
-          d = tomllib.loads(out)
-          assert len(d['kernel']['archives']) == 10, d['kernel']['archives']
-          io.open(p, 'w', encoding='utf-8', newline='\n').write(out)
-          print('archives ->', d['kernel']['archives'])
+          print('archives kept as-is:', len(tomllib.loads(src)['kernel']['archives']))
           PY
 
       - name: 补 kits/sheng（设备仓库的链接名目录是空的）
@@ -232,27 +227,16 @@ jobs:
         run: |
           set -x
           mkdir -p "$GITHUB_WORKSPACE/ourrepo/ci-logs-official"
-          set +e
-          mkdir -p "$GITHUB_WORKSPACE/ourrepo/ci-logs-official"
           LOG2="$GITHUB_WORKSPACE/ourrepo/ci-logs-official/pass2.log"
           : > "$LOG2"
-          wc -c /tmp/board.full.toml | tee -a "$LOG2"
-          echo "=== PASS1: bootstrap (10 archives) ===" | tee -a "$LOG2"
-          ./unixnu defconfig fuxi_defconfig 2>&1 | tee -a "$LOG2"
-          ./unixnu build kernel 2>&1 | tee -a "$LOG2"
-          echo "PASS1_EXIT=$?" | tee -a "$LOG2"
-          echo "=== PRELINK: produce the candidate the audits need ===" | tee -a "$LOG2"
-          ./unixnu build prelink 2>&1 | tee -a "$LOG2"
-          echo "PRELINK_EXIT=$?" | tee -a "$LOG2"
-          ls -l out/fuxi/tree/build/native-prelink/ 2>/dev/null | tee -a "$LOG2"
-          echo "=== restore the full archives ===" | tee -a "$LOG2"
-          cp /tmp/board.full.toml ../device/board.toml
-          cp /tmp/board.full.toml out/fuxi/tree/board.toml
-          wc -c ../device/board.toml out/fuxi/tree/board.toml | tee -a "$LOG2"
-          echo "=== PASS2: fuxi_full_defconfig (full archives) ===" | tee -a "$LOG2"
+          ln -sfn uefi-sheng out/fuxi/tree/uefi-fuxi || true
           ./unixnu defconfig fuxi_full_defconfig 2>&1 | tee -a "$LOG2"
+          echo "=== BUILD 1/2 (compile, produces the records) ===" | tee -a "$LOG2"
           ./unixnu build kernel 2>&1 | tee -a "$LOG2"
-          echo "PASS2_EXIT=$?" | tee -a "$LOG2"
+          echo "BUILD1_EXIT=$?" | tee -a "$LOG2"
+          echo "=== BUILD 2/2 (archives + final link) ===" | tee -a "$LOG2"
+          ./unixnu build kernel 2>&1 | tee -a "$LOG2"
+          echo "BUILD2_EXIT=$?" | tee -a "$LOG2"
           echo "=== payload ===" | tee -a "$LOG2"
           ./unixnu build payload 2>&1 | tee -a "$LOG2"
           echo "PAYLOAD_EXIT=$?" | tee -a "$LOG2"
