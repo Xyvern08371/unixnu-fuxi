@@ -273,6 +273,20 @@ jobs:
           ./unixnu build payload 2>&1 | tee -a "$LOG2"
           echo "PAYLOAD_EXIT=$?" | tee -a "$LOG2"
           cp "$LOG2" /tmp/build-payload.log 2>/dev/null
+      - name: Collect archive logs
+        if: always()
+        run: |
+          set +e
+          mkdir -p ourrepo/ci-logs-official
+          for f in unixnu/out/fuxi/logs/archive-*.log unixnu/out/fuxi/logs/kernel*.log unixnu/out/fuxi/logs/payload*.log; do
+            [ -f "$f" ] || continue
+            b=$(basename "$f")
+            cp "$f" "ourrepo/ci-logs-official/$b"
+            echo "===== $b (last 70) ====="
+            tail -70 "$f"
+          done
+          echo "===== listing ====="
+          ls -l ourrepo/ci-logs-official || true
 
       - name: 列出产物
         if: always()
