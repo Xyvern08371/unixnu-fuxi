@@ -106,7 +106,7 @@ jobs:
           import io, re, tomllib
           p = 'device/board.toml'
           src = io.open(p, encoding='utf-8').read()
-          m = re.search(r'archives\s*=\s*\[(?:[^\[\]]|\n)*?\]', src)
+          m = re.search(r'(?:"archives"|archives)\s*=\s*\[(?:[^\[\]]|\n)*?\]', src)
           assert m, 'archives block not found'
           keep = [
               "build-corecrypto-14.py",
@@ -232,7 +232,7 @@ jobs:
                   s = io.open(p, encoding='utf-8').read()
               except FileNotFoundError:
                   print('missing', p); continue
-              m = re.search(r'archives\s*=\s*\[(?:[^\[\]]|\n)*?\]', s)
+              m = re.search(r'(?:"archives"|archives)\s*=\s*\[(?:[^\[\]]|\n)*?\]', s)
               if not m:
                   print('no block', p); continue
               io.open(p, 'w', encoding='utf-8', newline='\n').write(s[:m.start()] + block + s[m.end():])
