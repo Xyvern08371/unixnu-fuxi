@@ -198,13 +198,14 @@ jobs:
           import io, sys, re
           p = sys.argv[1]
           t = io.open(p, encoding='utf-8').read()
-          if 'undefined,dynamic_lookup' in t:
+          if '-undefined,suppress' in t or '-undefined suppress' in t:
               print('already patched'); raise SystemExit(0)
+          # macOS ld 对内核静态链接放行未定义符号要用 -undefined suppress
           pat = re.compile(r'(DEPLOYMENT_LINKER_FLAGS="-Wl,-ios_version_min,[^"]*")')
           m = pat.search(t)
           assert m, 'no DEPLOYMENT_LINKER_FLAGS line found in ' + p
           old = m.group(1)
-          new = old[:-1] + ' -Wl,-undefined,dynamic_lookup"'
+          new = old[:-1] + ' -Wl,-undefined,suppress"'
           t = t.replace(old, new)
           io.open(p, 'w', encoding='utf-8', newline='\n').write(t)
           print('patched', p)
