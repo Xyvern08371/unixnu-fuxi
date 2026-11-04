@@ -189,10 +189,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           UNIXNU_UNIQUE_CHIP_ID: "0123456789ABCDEF"
-          # PASS1 只装头文件产出 cpo.json（不链接），避免 archive 尚未提供
-          # mockfs/sheng_pmgr/verified_root 等符号导致 undefined 报错。
+          # PASS1 只产编译记录（cpo.json），bootstrap 链接缺 archive 符号时用 suppress 放行。
+          # 不要设 XNU_BUILD_TARGET=installhdrs（那会只装头文件、不产 cpo.json）。
           XNU_BOOTSTRAP: "1"
-          XNU_BUILD_TARGET: "installhdrs"
         run: |
           set -x
           # baseline 链接要允许未定义符号（native_*/sheng_*/mockfs_* 由后续 archive 提供）
@@ -293,9 +292,8 @@ jobs:
           PY
 
           echo "=== PASS2: fuxi_full_defconfig ===" | tee -a "$LOG2"
-          # PASS2 要完整链接（archive 已齐），取消 bootstrap/installhdrs
+          # PASS2 要完整链接（archive 已齐），取消 bootstrap
           unset XNU_BOOTSTRAP
-          unset XNU_BUILD_TARGET
           ./unixnu defconfig fuxi_full_defconfig 2>&1 | tee -a "$LOG2"
           echo "DEFCONFIG_EXIT=$?" | tee -a "$LOG2"
           ./unixnu build kernel 2>&1 | tee -a "$LOG2"
