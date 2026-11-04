@@ -1,10 +1,10 @@
 schema_version = 1
 
 [device]
-name = "sheng"
+name = "fuxi"
 soc = "SM8550"
 os_profile = "ipados-17.7.11-21H461"
-summary = "Xiaomi Pad 6S Pro 12.4 uses shared SM8550 support and board-owned storage, input, firmware and power integration. This record describes implementation coverage and the evidence required for each milestone."
+summary = "小米 13（fuxi）使用共享 SM8550 平台与板级存储、输入、固件、电源集成。本记录描述各里程碑的实现覆盖与所需证据。"
 
 [[area]]
 id = "configuration"
@@ -13,7 +13,7 @@ components = []
 paths = ["board.toml", "feeds.toml", "configs/**", ".gitmodules", ".github/**", ".gitignore"]
 inputs = ["SM8550 profile, iPadOS 17.7.11 build 21H461, device defconfig, pinned component sources."]
 configuration = ["board.soc_source = sm8550; board.os_profile = ipados-17.7.11-21H461; schema_version = 2.", "The device owns ShengUfs, ShengHidInput, ShengNovatekTouch and ShengPreflight submodules."]
-procedure = ["Read https://unixnu.com/porting/device-repository and https://unixnu.com/porting/records.", "Run ./unixnu defconfig sheng_defconfig -D ../UniXNU-sheng from UniXNU.", "Run ./unixnu status --json -D ../UniXNU-sheng and review profiles, components, source pins and patch order."]
+procedure = ["Read https://unixnu.com/porting/device-repository and https://unixnu.com/porting/records.", "Run ./unixnu defconfig fuxi_defconfig -D ../unixnu-fuxi from UniXNU.", "Run ./unixnu status --json -D ../unixnu-fuxi and review profiles, components, source pins and patch order."]
 findings = ["Tables merge in ARM64, SoC, OS, device order. Arrays replace inherited selections, so include every required component and fragment.", "The selected defconfig applies after the explicit configuration fragments. Keep OS ABI and IPSW pins in the OS profile.", "board.toml names the model J120AP, the Apple board of the iPadOS identity, and its kernel arguments enable Wi-Fi (sheng-wifi=5) and the CPU and GPU governors."]
 completion = ["All source pins resolve; every selected component has a record; status shows the intended overrides and patch order."]
 limits = ["Local overrides can select a different source from the published pin; record the effective source in each verification result."]
