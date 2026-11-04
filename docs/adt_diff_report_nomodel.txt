@@ -1,0 +1,58 @@
+ADT 对比: unixnu_new/payload/EFI__UniXNU__Payloads__kernel.macho.adt  vs  unixnu_old/payload/EFI__UniXNU__Payloads__kernel.macho.adt
+（已忽略机型/产品人格差异：根节点 compatible/model/target-type 及 /product 子树）
+
+== 节点 ==  A=23  B=21  仅A=1  仅B=0
+  仅在 A 的节点:
+    + //arm-io/ufsphy
+
+== 属性差异 == (28)
+  ~//arm-io :: ranges
+      unixnu_new/payload/EFI__UniXNU__Payloads__kernel.macho.adt: 000000000000000000000001000000000000001700000000
+      unixnu_old/payload/EFI__UniXNU__Payloads__kernel.macho.adt: 000000000000000000000017000000000000000800000000
+  +//arm-io/intc :: #interrupt-cells = 0x4000000
+  +//arm-io/intc :: interrupt-controller = (empty)
+  +//arm-io/intc :: phandle = 0x1000000
+  ~//arm-io/intc :: reg
+      unixnu_new/payload/EFI__UniXNU__Payloads__kernel.macho.adt: 0000101600000000000001000000000000001816000000000000200000000000
+      unixnu_old/payload/EFI__UniXNU__Payloads__kernel.macho.adt: 0000100000000000000001000000000000001800000000000000200000000000
+  +//arm-io/ufshc :: reg = 0040d800000000000030000000000000
+  +//chosen :: kernel-ctrr-to-be-enabled = 0x
+  -//chosen :: system-volume-auth-blob = 0200000000000000010000002000000061f50c6269a33b16100d87e8a69de5797ccf07c1ab54ad68b02d5f236f36674500000000000000000000000000000000000000000000000000000000000000008a413a0cda7f6a6502edabd0a8d1c7f139995a1f6b3b034abcee8dbf2e6dff2900000000000000000000000000000000000000000000000000000000000000006f445c471a849af9c22fcef44be334badf77981d881549faf4bda03e8ff0750e0000000000000000000000000000000000000000000000000000000000000000
+  ~//chosen :: random-seed
+      unixnu_new/payload/EFI__UniXNU__Payloads__kernel.macho.adt: fd291f3daa6a548525b585490f0de59a0b308b84d735dec5594a82acc5385c5050ae45896c32940bf8ad5c331af27c10038618cec725e8fe29a5f1d9c5afd8f526dba5b3d0b3cdebd9f562506ea24676107ae364c7cb1bec0d468871fd2fbe160c2c70267e487fb88bf01633e771618085ad6ffe1760769347b8a5e3d6aacbc729963bc534fea2cbc1c51bf5a2bcd4b1d4f17b16ae630ad54e1593c47a1b4f3211b3f7418ae9108267b08518d1cb206f2b2b6b8791676433b890cb4c5738f9be71776d5177da572776d522af534b559c92c3979b291cecd85433ec907b5c71fbbffb9376b502b94a7640a0f91e979b3148b2dfb5036bde9f698253c670f622ac
+      unixnu_old/payload/EFI__UniXNU__Payloads__kernel.macho.adt: c4fbd39f4ec057280f73cc38b2f7072a4e61433e40358e295cccda182da52c59355dacfdbd37b252e996a02e4df05acb14f890682b4ca486f824da20f4d8c653
+  ~//chosen :: unique-chip-id
+      unixnu_new/payload/EFI__UniXNU__Payloads__kernel.macho.adt: 0xb3243e09a4c85ce
+      unixnu_old/payload/EFI__UniXNU__Payloads__kernel.macho.adt: 0x4415106515ace45b
+  -//chosen/memory-map :: GpuAddon = 00000000000000000000000000000000
+  -//chosen/memory-map :: PackedRAMDisk = 00000000000000000000000000000000
+  +//cpus/cpu0 :: cluster-type = 'E'
+  ~//cpus/cpu0 :: compatible
+      unixnu_new/payload/EFI__UniXNU__Payloads__kernel.macho.adt: 'arm,cortex-a510'
+      unixnu_old/payload/EFI__UniXNU__Payloads__kernel.macho.adt: 'arm,cortex-a715'
+  +//cpus/cpu1 :: cluster-type = 'E'
+  ~//cpus/cpu1 :: compatible
+      unixnu_new/payload/EFI__UniXNU__Payloads__kernel.macho.adt: 'arm,cortex-a510'
+      unixnu_old/payload/EFI__UniXNU__Payloads__kernel.macho.adt: 'arm,cortex-a715'
+  +//cpus/cpu2 :: cluster-type = 'E'
+  ~//cpus/cpu2 :: compatible
+      unixnu_new/payload/EFI__UniXNU__Payloads__kernel.macho.adt: 'arm,cortex-a510'
+      unixnu_old/payload/EFI__UniXNU__Payloads__kernel.macho.adt: 'arm,cortex-a715'
+  +//cpus/cpu3 :: cluster-type = 'P'
+  +//cpus/cpu4 :: cluster-type = 'P'
+  +//cpus/cpu5 :: cluster-type = 'P'
+  ~//cpus/cpu5 :: compatible
+      unixnu_new/payload/EFI__UniXNU__Payloads__kernel.macho.adt: 'arm,cortex-a710'
+      unixnu_old/payload/EFI__UniXNU__Payloads__kernel.macho.adt: 'arm,cortex-a715'
+  +//cpus/cpu6 :: cluster-type = 'P'
+  ~//cpus/cpu6 :: compatible
+      unixnu_new/payload/EFI__UniXNU__Payloads__kernel.macho.adt: 'arm,cortex-a710'
+      unixnu_old/payload/EFI__UniXNU__Payloads__kernel.macho.adt: 'arm,cortex-a715'
+  +//cpus/cpu7 :: cluster-type = 'P'
+  ~//cpus/cpu7 :: compatible
+      unixnu_new/payload/EFI__UniXNU__Payloads__kernel.macho.adt: 'arm,cortex-x3'
+      unixnu_old/payload/EFI__UniXNU__Payloads__kernel.macho.adt: 'arm,cortex-a715'
+  +//defaults :: vmm-present = 0x1000000
+  ~//defaults :: kern.maxvnodes
+      unixnu_new/payload/EFI__UniXNU__Payloads__kernel.macho.adt: 0x340100
+      unixnu_old/payload/EFI__UniXNU__Payloads__kernel.macho.adt: 0x40100

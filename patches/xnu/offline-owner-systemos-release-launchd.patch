@@ -1,0 +1,14 @@
+--- a/bsd/kern/kern_exec.c
++++ b/bsd/kern/kern_exec.c
+@@ -7163,9 +7163,9 @@
+ static const char * init_programs[] = {
+-#if DEBUG
++#if DEBUG && !defined(XNU_OWNER_CACHE_MOUNT)
+ 	"/usr/appleinternal/sbin/launchd.debug",
+ #endif
+-#if DEVELOPMENT || DEBUG
++#if (DEVELOPMENT || DEBUG) && !defined(XNU_OWNER_CACHE_MOUNT)
+ 	"/usr/appleinternal/sbin/launchd.development",
+ #endif
+ 	"/sbin/launchd",
+ };

@@ -1,0 +1,47 @@
+# Kernel configuration: CONFIG_XNU_<NAME> becomes XNU_<NAME> for the kernel build script.
+# y and n are 1 and 0, a quoted string or a number is passed through, {tree} is the build tree.
+# The template configuration (examples/device) on top of the arch, SoC and OS fragments, plus the touch archive.
+CONFIG_XNU_SOURCE_CORECRYPTO14=y
+CONFIG_XNU_SOURCE_PTHREAD=y
+CONFIG_XNU_ARM_DT_PLATFORM=y
+CONFIG_XNU_ARMCPU=y
+CONFIG_XNU_CRYPTO_BOOTSTRAP="prelinked"
+CONFIG_XNU_NATIVE_UFS=y
+# Storage chain from UniXNU-sheng: VirtioMmioBlock carries the original
+# IOBlockStorageDevice bindings, VerifiedRoot supplies vr_* / verified_root_*,
+# boot-progress supplies boot_progress_poll. boot-log (NativeUFS-fuxi keeps the
+# old fuxi boot_log_* references) is appended to EXTRA_LD_ARCHIVES below.
+CONFIG_XNU_NATIVE_VIRTIO_BLOCK=y
+CONFIG_XNU_NATIVE_RAM_BLOCK=y
+CONFIG_XNU_VERIFIED_ROOT_PROBE=y
+CONFIG_XNU_BOOT_PROGRESS=y
+CONFIG_XNU_NATIVE_VIRTIO_BLOCK_ARCHIVE="{tree}/build/virtio-mmio-block-verified-bundle/libVirtioMmioBlock.a"
+CONFIG_XNU_VERIFIED_ROOT_ARCHIVE="{tree}/build/verified-root-os-xnu-bundle/libVerifiedRootProbe.a"
+# Owner root mount chain (union SystemOS + Data), following unixnu-fuxi-old's
+# fuxi_full_defconfig and UniXNU-sheng's sheng_defconfig.
+CONFIG_XNU_OWNER_ROOT_AUDIT=y
+CONFIG_XNU_OWNER_ROOT_TRUST=y
+CONFIG_XNU_OWNER_CACHE_MOUNT=y
+CONFIG_XNU_OWNER_CACHE_STARTUP=y
+CONFIG_XNU_OWNER_CACHE_CARRIER=n
+CONFIG_XNU_OWNER_BOOT_MANIFEST=y
+# Data mount enabled: sealed-root authentication passed, now mount the owner
+# Data volume. OWNER_DATA_MOUNT makes the payload step require --data-ramdisk.
+CONFIG_XNU_OWNER_DATA_MOUNT=y
+CONFIG_XNU_OWNER_DATA_VOLUME_UUID="E095FBF5-B5BA-43CE-ABD7-BF2618B0158C"
+CONFIG_XNU_OWNER_CACHE_VOLUME_UUID="8846FE78-2910-4297-AF97-D59BB6F8FC16"
+CONFIG_XNU_OWNER_CRYPTEX_FILES=n
+CONFIG_XNU_OWNER_UNION_SYSTEMOS=y
+# The SoC fragment enables the Adreno driver; it is not selected for fuxi yet.
+# CONFIG_XNU_NATIVE_ADRENO is not set
+# Without this the BCM2837 target maps PLATFORM_PANIC_LOG_PADDR (0x3c0fc000, RAM on a Raspberry Pi 3) in PE_create_console,
+# reads it and zeroes 16 KiB there. On SM8550 no RAM or device tree node covers that address. With it the region comes
+# from the device tree, and the ADT has no /pram node, so no panic region is mapped.
+CONFIG_XNU_DT_PANIC_REGION=y
+# AMFI waits for an ApplePMGRNub service: the PMGR bridge (scripts/build-fuxi-platform-power.py, boot argument
+# sheng-pmgr=2) publishes the original one. Its power operations stop with a panic; it is not power management.
+CONFIG_XNU_SHENG_PMGR=y
+# bsd_init calls native_touch_probe() (patches/xnu/fuxi-touch-probe.patch); scripts/build-fuxi-touch.py builds it. The
+# HID digitizer (scripts/build-fuxi-hid-input.py) is force-loaded: its objects carry the absolute IOHIDDevice bindings and
+# the metaclass registration that kits/fuxi/FuxiHidProbe.cpp runs after IOHIDFamily is loaded.
+CONFIG_XNU_EXTRA_LD_ARCHIVES="{tree}/build/fuxi-touch/libFuxiTouch.a -Wl,-force_load,{tree}/build/sheng-hid-input/libShengHidInput.a {tree}/build/boot-log/libBootLog.a"

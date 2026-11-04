@@ -1,0 +1,6 @@
+# Board patch paths, one per line in application order.
+# zzyf-sheng-amp.patch is an unchanged copy from UniXNU-sheng 08cde20 (the same SM8550 core layout): an E and a P cluster.
+zzyf-sheng-amp.patch
+fuxi-touch-probe.patch
+zzzc-boot-log.patch
+offline-owner-systemos-release-launchd.patch

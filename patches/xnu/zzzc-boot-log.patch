@@ -1,0 +1,11 @@
+--- a/osfmk/kern/startup.c
++++ b/osfmk/kern/startup.c
+@@ -655,4 +655,8 @@
+ 	boot_progress_start();
++	{
++		extern void boot_log_tick(unsigned);
++		boot_log_tick(0);
++	}
+ 
+ 	/*
+ 	 *	Create the device service.

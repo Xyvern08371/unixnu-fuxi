@@ -1,0 +1,7 @@
+# /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@0 : mi,mdss-dsi-hbm-on-command
+# 状态: dsi_lp_mode，共 4 条
+# 序号  数据类型                  等待ms  长度  payload（第一个字节通常是 DCS 命令/寄存器）
+   0  0x39 DCS_LONG_WRITE               0     3  f0 5a 5a
+   1  0x39 DCS_LONG_WRITE               0     3  51 07 ff   # set_display_brightness
+   2  0x15 DCS_SHORT_WRITE_1            0     2  f7 0f
+   3  0x39 DCS_LONG_WRITE               0     3  f0 a5 a5

@@ -1,0 +1,49 @@
+// SPDX-License-Identifier: BSD-2-Clause-Patent
+// fuxi（小米 13）UniXNU 设备树草稿，格式参照 UniXNU-sheng/dts/sheng.dts。
+// 状态：草稿，未上机。可以直接放进 UniXNU-fuxi 设备仓库的 dts/ 目录，配合 UniXNU-sm8550-common 的 sm8550.dtsi 使用。
+// 与 sheng 的差异都已注明；未注明的部分与 sheng 相同，因为两台机器是同一颗 SoC（SM8550 v2，soc_id 519）。
+/dts-v1/;
+/include/ "sm8550.dtsi"
+
+/ {
+    model = "Xiaomi 13";
+    compatible = "xiaomi,fuxi", "qcom,sm8550";
+
+    // fuxi 的 DDR 也从 0x80000000 开始（UEFI 移植的 fuxi.dsc 实测注释），先沿用 sheng 的 2 GiB 窗口；
+    // 实际 12 GB 的完整布局见官方 DT /memory 与 uefi-fuxi 的 MemoryMapLib。
+    memory@80000000 {
+        device_type = "memory";
+        reg = <0 0x80000000 0 0x80000000>;
+    };
+
+    reserved-memory {
+        #address-cells = <2>;
+        #size-cells = <2>;
+        ranges;
+        // 官方 DT /reserved-memory/splash_region 与 uefi-fuxi "Display Reserved"：与 sheng 完全相同
+        splash_region: framebuffer@b8000000 {
+            label = "cont_splash_region";
+            reg = <0 0xb8000000 0 0x2b00000>;
+            no-map;
+        };
+    };
+};
+
+// 核心布局与 sheng 相同：cpu0-2 = A510（E 簇），cpu3-7 = A715/A710/X3（P 簇）
+&cpu0 { unixnu,cluster-type = "E"; };
+&cpu1 { unixnu,cluster-type = "E"; };
+&cpu2 { unixnu,cluster-type = "E"; };
+&cpu3 { unixnu,cluster-type = "P"; };
+&cpu4 { unixnu,cluster-type = "P"; };
+&cpu5 { unixnu,cluster-type = "P"; };
+&cpu6 { unixnu,cluster-type = "P"; };
+&cpu7 { unixnu,cluster-type = "P"; };
+&ufs { status = "okay"; };
+&ufsphy { status = "okay"; };
+&gpu { status = "okay"; };
+&gmu { status = "okay"; };
+&gpu_smmu { status = "okay"; };
+
+// 触控：sheng 把触控硬件写死在 package/TouchBoard.h 里，DT 中没有节点；fuxi 同样把板级常量放在
+// package/FuxiTouchBoard.h（同一个 SPI4 控制器 0xa90000、同样的 GPIO44-47 / 中断 GPIO25，
+// 不同的是芯片换成 ST FTS，SPI 12 MHz，复位 GPIO24，avdd 来自 PM8010 LDO6）。

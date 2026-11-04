@@ -1,0 +1,2 @@
+# /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd : mi,mdss-dsi-panel-flatmode-status-command，共 1 条
+   0  0x06 DCS_READ                     0     1  92

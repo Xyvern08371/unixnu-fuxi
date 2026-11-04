@@ -1,0 +1,18 @@
+diff --git a/bsd/kern/bsd_init.c b/bsd/kern/bsd_init.c
+index f394e74..5c36885 100644
+--- a/bsd/kern/bsd_init.c
++++ b/bsd/kern/bsd_init.c
+@@ -788,6 +788,13 @@ bsd_init(void)
+ 	bsd_init_kprintf("calling IOKitInitializeTime\n");
+ 	IOKitInitializeTime();
+ 
++#if DEVELOPMENT || DEBUG
++	/* fuxi (Xiaomi 13): staged touch controller bring-up, off unless the boot argument fuxi-touch is set.
++	 * It runs in its own kernel thread (package/FuxiTouchProbe.cpp of the fuxi device repository). */
++	extern void native_touch_probe(void);
++	native_touch_probe();
++#endif
++
+ 	/* Initialize the file systems. */
+ 	bsd_init_kprintf("calling vfsinit\n");
+ 	vfsinit();

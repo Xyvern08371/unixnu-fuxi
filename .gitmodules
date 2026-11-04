@@ -1,0 +1,6 @@
+[submodule "drivers/FuxiFtsTouch"]
+	path = drivers/FuxiFtsTouch
+	url = https://github.com/OddlyLabs/FuxiFtsTouch.git
+[submodule "drivers/NativeUfs"]
+	path = drivers/NativeUfs
+	url = https://github.com/ljhhkx529/NativeUFS-fuxi.git

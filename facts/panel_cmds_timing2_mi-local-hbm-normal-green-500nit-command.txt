@@ -1,0 +1,26 @@
+# /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 : mi,mdss-dsi-local-hbm-normal-green-500nit-command
+# 状态: dsi_hs_mode，共 23 条
+# 序号  数据类型                  等待ms  长度  payload（第一个字节通常是 DCS 命令/寄存器）
+   0  0x39 DCS_LONG_WRITE               0     3  f0 5a 5a
+   1  0x39 DCS_LONG_WRITE               0     4  b0 03 87 92
+   2  0x39 DCS_LONG_WRITE               0    17  92 02 00 00 00 00 00 19 a7 e4 29 e8 e8 21 c8 66 60
+   3  0x39 DCS_LONG_WRITE               0     4  b0 02 b4 98
+   4  0x39 DCS_LONG_WRITE               0     3  98 00 00
+   5  0x39 DCS_LONG_WRITE               0     4  b0 01 75 98
+   6  0x39 DCS_LONG_WRITE               0    19  98 00 40 14 02 80 52 0a 41 48 1c 27 ff 80 0f ff ff ff ff
+   7  0x39 DCS_LONG_WRITE               0     4  b0 02 5f 98
+   8  0x39 DCS_LONG_WRITE               0    19  98 00 40 6f 09 80 d1 11 d1 86 1c 21 c2 7f f8 00 ff ff ff
+   9  0x39 DCS_LONG_WRITE               0     4  b0 01 61 98
+  10  0x39 DCS_LONG_WRITE               0     6  98 05 82 00 d5 00
+  11  0x39 DCS_LONG_WRITE               0     4  b0 01 66 98
+  12  0x39 DCS_LONG_WRITE               0     6  98 05 82 00 d5 00
+  13  0x39 DCS_LONG_WRITE               0     4  b0 01 70 98
+  14  0x39 DCS_LONG_WRITE               0     6  98 09 9d ef ff 23
+  15  0x39 DCS_LONG_WRITE               0     4  b0 01 bd 98
+  16  0x39 DCS_LONG_WRITE               0    55  98 15 62 09 2c 63 c2 52 27 0a 80 08 00 80 08 00 80 08 00 15 62 09 2c 63 c2 52 27 0a 80 08 00 80 08 00 80 08 00 15 62 09 2c 63 c2 52 27 0a 80 08 00 80 08 00 80 08 00
+  17  0x39 DCS_LONG_WRITE               0     4  b0 01 f3 98
+  18  0x39 DCS_LONG_WRITE               0    55  98 15 62 09 2c 63 c2 52 27 0a 80 08 00 80 08 00 80 08 00 15 62 09 2c 63 c2 52 27 0a 80 08 00 80 08 00 80 08 00 15 62 09 2c 63 c2 52 27 0a 80 08 00 80 08 00 80 08 00
+  19  0x39 DCS_LONG_WRITE               0     4  b0 02 71 98
+  20  0x39 DCS_LONG_WRITE               0    55  98 14 c1 ee 2b 43 c2 52 67 0a 80 08 00 80 08 00 80 08 00 14 a1 f3 2b 43 c2 52 67 0f 80 08 00 80 08 00 80 08 00 14 d1 f9 2b 43 c2 52 67 0a 80 08 00 80 08 00 80 08 00
+  21  0x39 DCS_LONG_WRITE               0     2  53 30   # write_control_display
+  22  0x39 DCS_LONG_WRITE               0     3  f0 a5 a5

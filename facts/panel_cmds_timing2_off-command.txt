@@ -1,0 +1,12 @@
+# /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 : qcom,mdss-dsi-off-command
+# 状态: dsi_lp_mode，共 9 条
+# 序号  数据类型                  等待ms  长度  payload（第一个字节通常是 DCS 命令/寄存器）
+   0  0x39 DCS_LONG_WRITE               0     3  f0 5a 5a
+   1  0x05 DCS_SHORT_WRITE_0           20     2  28 00   # set_display_off
+   2  0x39 DCS_LONG_WRITE               0     4  b0 00 4e 98
+   3  0x39 DCS_LONG_WRITE               0     4  98 01 09 80
+   4  0x39 DCS_LONG_WRITE               0     4  b0 00 0f f6
+   5  0x15 DCS_SHORT_WRITE_1            0     2  f6 02
+   6  0x15 DCS_SHORT_WRITE_1            0     2  f7 0f
+   7  0x39 DCS_LONG_WRITE             100     3  f0 a5 a5
+   8  0x05 DCS_SHORT_WRITE_0          120     2  10 00   # enter_sleep_mode

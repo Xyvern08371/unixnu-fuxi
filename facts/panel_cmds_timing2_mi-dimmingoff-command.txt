@@ -1,0 +1,4 @@
+# /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 : mi,mdss-dsi-dimmingoff-command
+# 状态: dsi_hs_mode，共 1 条
+# 序号  数据类型                  等待ms  长度  payload（第一个字节通常是 DCS 命令/寄存器）
+   0  0x15 DCS_SHORT_WRITE_1            0     2  53 20   # write_control_display

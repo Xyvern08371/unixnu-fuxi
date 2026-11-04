@@ -1,0 +1,15 @@
+# 厂商文件、使用痕迹和 GPL 参考源码只在本地保留
+dtb/
+firmware/
+power/
+ref_src/
+
+*.o
+/build/
+__pycache__/
+
+# UniXNU device repository
+/local.toml
+/out/
+*.pyc
+.DS_Store

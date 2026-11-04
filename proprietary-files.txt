@@ -1,0 +1,3 @@
+# Required firmware inputs: relative path | source | SHA-256 | consumer
+# None for the current build. The touch controller runs the firmware in its own flash (53.42, the same as
+# /odm/firmware/st_fts_m3.ftb), so the host never downloads it; the probe does not write the controller's flash.

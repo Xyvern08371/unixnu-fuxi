@@ -1,0 +1,195 @@
+schema_version = 2
+
+# Board description of the Xiaomi 13 (fuxi, SM8550), read by the unixnu build driver. Created from UniXNU
+# examples/device; the hardware values come from the stock device tree and Android measurements (fuxi_touch_panel_porting.md,
+# facts/). Other fuxi ports (mouse233, Kerfand, hanzi123-bilp) are references only.
+
+[board]
+name = "fuxi"
+soc = "SM8550"
+soc_source = "sm8550"
+os_profile = "ipados-17.7.11-21H461"
+description = "Xiaomi 13"
+kit = "fuxi"
+
+# The raw GPT entry "userdata" of LUN 0, read from the device (BUILD-PROGRESS.md probe=10).
+# LBA values are decimal, matching UniXNU-sheng's [userdata] schema (no windows array).
+[userdata]
+first_lba = 3110976   # 0x2f7840
+last_lba  = 61880618  # 0x3afc3fa (corrected; the old board.toml wrongly had 0x76923FA)
+lba_bytes = 4096
+
+[components]
+# The template set, plus the GENI SPI engine and the FTM5 protocol of the touch controller.
+include = ["ArmDTPlatform", "ArmCpu", "SoftwareAES", "XnuPrelink", "DarwinBoot", "QcomGeniSpi", "FuxiFtsTouch", "VirtioMmioBlock", "RamBlock", "VerifiedRoot"]
+
+[kernel]
+defconfig = "fuxi_defconfig"
+config_fragments = ["arch:configs/common.config", "soc:configs/sm8550.config", "os:configs/ipados.config"]
+patch_series = ["arch:patches/xnu/series", "soc:patches/xnu/series", "os:patches/xnu/series", "device:patches/xnu/series"]
+# The archives the merged configuration links, in build order: corecrypto from source (plain and namespaced), the ARM
+# platform and CPU drivers, SoftwareAES with its bindings (the arch fragment sets CONFIG_XNU_NATIVE_AES), libpthread, the
+# mockfs fixture (the OS fragment sets CONFIG_XNU_SOURCE_MOCKFS), the PMGR bridge (CONFIG_XNU_SHENG_PMGR: AMFI needs an
+# ApplePMGRNub service), ShengHidInput's touch digitizer (force-loaded by fuxi_defconfig; the touch probe starts it), and
+# the touch archive that bsd_init calls into (patches/xnu/fuxi-touch-probe.patch). The order follows UniXNU-sheng.
+archives = [
+  "build-corecrypto-14.py",
+  "build-corecrypto-14.py --namespace",
+  "component:ArmDTPlatform",
+  "component:ArmCpu",
+  "component:SoftwareAES",
+  "build-software-aes-bindings.py",
+  "build-fuxi-ufs.py",
+  "component:VirtioMmioBlock",
+  "build-arm-driver.py NativeVirtioBlock --verified-root --verified-root-bundle",
+  "component:RamBlock",
+  "build-fuxi-ram-block.py",
+  "build-fuxi-virtio-bindings.py",
+  "build-libpthread-kernel.py",
+  "build-mockfs-fixture.py",
+  "build-fuxi-platform-power.py",
+  "build-boot-progress.py",
+  "build-boot-log.py",
+  "build-fuxi-hid-input.py",
+  "build-fuxi-touch.py",
+]
+
+[device_tree]
+source = "device:dts/fuxi.dts"
+include_dirs = ["soc:dts"]
+
+[firmware]
+# OddlyLabs/uefi-fuxi, branch fuxi: UniXNU/uefi-sheng (the official Mu-Silicium fork for UniXNU) with the fuxi bring-up
+# commits of matejkoo217/uefi-fuxi, whose platform package derives from Silicium's SM8550 nuwa (Xiaomi 13 Pro). The
+# layout and lists follow UniXNU-sheng's [firmware]; Resources/Configs/fuxi.toml supplies the firmware base and size.
+config = "fuxi"
+dsc = "Platforms/Xiaomi/fuxiPkg/fuxi.dsc"
+fd = "Build/fuxiPkg/{target}_CLANGPDB/FV/SILICIUM_UEFI.fd"
+submodules = ["Common/Mu", "Common/Mu_OEM_Sample", "Silicium-ACPI", "Silicon/Silicium/OpensslPkg/Library/OpensslLib/openssl"]
+patches = ["Resources/MuPatches/Gic-Spurious.patch"]
+packages = ["{uefi}", "{uefi}/Platforms/Xiaomi", "{tree}/package", "{tree}/drivers/DarwinBoot", "{edk2}", "{uefi}/Common/Mu",
+            "{uefi}/Common/Mu_OEM_Sample", "{uefi}/Silicon/Qualcomm", "{uefi}/Silicon/Silicium", "{uefi}/Silicium-ACPI",
+            "{uefi}/Silicium-ACPI/Platforms/Xiaomi", "{uefi}/Silicium-ACPI/Silicon/Qualcomm"]
+
+[firmware.defines]
+ENABLE_SECUREBOOT = "1"
+DEVICE_MODEL = "fuxi"
+MEMORY_PROTECTION = "TRUE"
+SHIP_MODE = "FALSE"
+BUILDID_STRING = "fuxi-research"
+
+# The boot image for `fastboot boot` (nothing is written to the device). Measured on hardware in matejkoo217/uefi-fuxi:
+# the fuxi ABL's fastboot boot refuses a header v4 image ("Failed to load/authenticate boot image: Invalid Parameter"), so
+# this is the v0 container of Resources/Configs/fuxi-legacy.toml; the ABL refuses an ARM64 header that asks for the
+# firmware address ("Load Error"), so the shim advertises text offset 0; and the ABL keeps the boot image ramdisk in
+# vendor_boot, so the payload rides after the firmware volume, where fuxiPkg's FuxiBootMemoryDxe publishes it.
+# No [[bootimg.dtb_node]]: the firmware's FdtBlob already carries /reserved-memory/splash_region.
+[bootimg]
+payload = "image"
+
+[bootimg.image]
+header_version = 0
+base = 0x00000000
+kernel_offset = 0x00008000
+tags_offset = 0x01e00000
+pagesize = 4096
+text_offset = 0
+
+[payload]
+volume = "FUXIESP"
+size_mib = 192
+loader = "firmware"
+title = "UniXNU"
+panic_screen = true
+# 无条件在绿/蓝/品红三色底部画黄色带（测试打印功能）。
+paint_yellow = true
+# -v, serial=3, debug=0x14e and kt_fixed_zones=120 as on UniXNU-sheng and the other SM8550 ports. sheng-pmgr=2 publishes
+# the original ApplePMGRNub that AMFI waits for (kits/fuxi/ShengPlatformPower.cpp, as UniXNU-sheng); without it AMFI panics
+# with "AMFI: No PMGR?" a few seconds into bsd_init. sheng-smp=1 and armcpu-spi-ipi=1 start the seven secondary cores as on
+# UniXNU-sheng, and armcpu-self-ipi=1 lets each of them take IPIs: XNU signals a core only after it has handled one IPI
+# (evidence/2026-11-02-first-boot.md). fuxi-touch=4 runs the touch probe up to sensing with the interrupt, fuxi-touch-hid=1
+# starts the HID digitizer that turns its contacts into reports (kits/fuxi/FuxiHidProbe.cpp), and fuxi-touch-panic=2 panics
+# with the probe's rows after the first lift, so the result can be read from the panic screen. Without a touch the boot ends
+# in the root device wait. native-ufs-root=1 starts NativeUfs from the root-device personality (UniXNU-sheng style); during
+# validation add native-ufs-probe=10 (GPT geometry) or native-ufs-probe=12 (full startRoot + media report) temporarily.
+kernel_args = ["-v", "serial=3", "debug=0x14e", "boot-progress=2", "kt_fixed_zones=120",
+               "sheng-pmgr=2", "sheng-smp=1", "armcpu-spi-ipi=1", "armcpu-self-ipi=1",
+               "native-ufs-root=1", "fuxi-touch=4", "fuxi-touch-hid=1", "fuxi-touch-panic=2",
+               "sheng-staged-apps=1", "sheng-disable-watchdogd=1"]
+# Signed-text fixups (from unixnu-fuxi-old board.toml), travelled in /chosen/text-fixups.
+text_fixups = ["BTAudioHALPlugin,38bec,ffc300d1f44f01a9,000080d2c0035fd6"]
+
+[payload.adt]
+# Supply the board's identity seed through --unique-chip-id.
+chip_id = "207"
+unique_chip_id = "required"
+# The OS root volume verified on the device (probe=12): disk5s1.
+root_match_volume_uuid = "04769D26-2CA0-4825-B443-E2E5F88300F2"
+# Memory DarwinBoot gives XNU, as mouse233's fuxi RAM-root port uses it (verified there on this phone model).
+owned_memory_size = "0x130000000"
+# Data volume handoff: DBRDISK1 packed APFS container, persistent across boots.
+packed_data_ramdisk = true
+persistent_data = true
+
+# ADT root properties: the fuxi identity AppleImage4 needs for software
+# unlock (SecurityLock::LockCapsuleInterface). These come from
+# unixnu-fuxi-old's make-fuxi-adt.py --ipad-identity; without them AppleImage4
+# panics with the SecurityLock SOFTWARE_LOCK message. The model is the
+# iPad7,1 / J120 target the unchanged 21H461 IPSW was built for.
+[adt.root.string]
+model = "iPad7,1"
+target-type = "J120"
+
+# The product node AppleImage4 requires. UniXNU-sheng puts model/artwork here
+# for its 27.x target; fuxi uses the old 17.7.11 iPad Pro identity.
+[adt.product.string]
+model = "xiaomi,fuxi"
+product-name = "iPad Pro (12.9-inch) (2nd generation)"
+product-description = "iPad Pro (12.9-inch) (2nd generation)"
+artwork-device-idiom = "pad"
+artwork-display-gamut = "sRGB"
+compatible-device-fallback = "iPad6,7"
+
+[adt.product.u32]
+artwork-device-subtype = 2732
+artwork-scale-factor = 2
+thin-bezel = 1
+
+# Security state as on a dev-fused, undemoted board (0,0,1,1): mobileactivationd
+# then takes its native Hactivation branch without a SEP or baseband. The
+# crypto hash method matches the target iPad's /chosen sha2-384.
+[adt.chosen.u32]
+certificate-production-status = 0
+effective-production-status-ap = 0
+certificate-security-mode = 1
+effective-security-mode-sep = 1
+amfi-only-platform-code = 1
+kernel-ctrr-to-be-enabled = 0
+
+[adt.chosen.string]
+osenvironment = "main"
+crypto-hash-method = "sha2-384"
+
+# The 208-byte 21H461 SystemVolume auth blob AppleImage4 reads for
+# SecurityLock SOFTWARE_LOCK (LockCapsuleInterface). Value transcribed from
+# the old fuxi ADT; it is the unchanged SystemVolume root-hash payload.
+[adt.chosen.bytes]
+system-volume-auth-blob = "0200000000000000010000002000000061f50c6269a33b16100d87e8a69de5797ccf07c1ab54ad68b02d5f236f36674500000000000000000000000000000000000000000000000000000000000000008a413a0cda7f6a6502edabd0a8d1c7f139995a1f6b3b034abcee8dbf2e6dff2900000000000000000000000000000000000000000000000000000000000000006f445c471a849af9c22fcef44be334badf77981d881549faf4bda03e8ff0750e0000000000000000000000000000000000000000000000000000000000000000"
+
+# Defaults: keep the device awake and report a virtual platform (no SEP).
+[adt.defaults.u32]
+sleep-disabled = 1
+vmm-present = 1
+# The 4.75 GiB owned window (4864 MiB): memory/64K + 1024, the same value UniXNU-sheng uses.
+"kern.maxvnodes" = 78848
+
+# No Home button: 2 is the non-mechanical answer BSPlatform passes through.
+[adt.buttons.string]
+compatible = "buttons"
+device_type = "buttons"
+
+[adt.buttons.strings]
+button-names = ["hold", "voldown", "volup"]
+
+[adt.buttons.u32]
+home-button-type = 2

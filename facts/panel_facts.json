@@ -1,0 +1,1593 @@
+{
+ "panel_path": "/soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd",
+ "panel": {
+  "qcom,mdss-dsi-panel-name": "xiaomi m3 38 0c 0a sec cmd mode dsc dsi panel",
+  "qcom,mdss-dsi-panel-type": "dsi_cmd_mode",
+  "qcom,mdss-dsi-virtual-channel-id": [
+   "",
+   "",
+   "",
+   ""
+  ],
+  "qcom,mdss-dsi-stream": [
+   "",
+   "",
+   "",
+   ""
+  ],
+  "qcom,mdss-dsi-bpp": [
+   24
+  ],
+  "qcom,mdss-dsi-color-order": "rgb_swap_rgb",
+  "qcom,mdss-dsi-underflow-color": [
+   255
+  ],
+  "qcom,mdss-dsi-border-color": [
+   "",
+   "",
+   "",
+   ""
+  ],
+  "qcom,dsi-ctrl-num": [
+   "",
+   "",
+   "",
+   ""
+  ],
+  "qcom,dsi-phy-num": [
+   "",
+   "",
+   "",
+   ""
+  ],
+  "qcom,mdss-dsi-traffic-mode": "burst_mode",
+  "qcom,mdss-dsi-lane-map": "lane_map_0123",
+  "qcom,mdss-dsi-bllp-eof-power-mode": true,
+  "qcom,mdss-dsi-bllp-power-mode": true,
+  "qcom,mdss-dsi-lane-0-state": true,
+  "qcom,mdss-dsi-lane-1-state": true,
+  "qcom,mdss-dsi-lane-2-state": true,
+  "qcom,mdss-dsi-lane-3-state": true,
+  "qcom,mdss-dsi-dma-trigger": "trigger_sw",
+  "qcom,mdss-dsi-mdp-trigger": "none",
+  "qcom,mdss-dsi-reset-sequence": [
+   0,
+   1,
+   1,
+   10
+  ],
+  "qcom,mdss-pan-physical-width-dimension": [
+   663
+  ],
+  "qcom,mdss-pan-physical-height-dimension": [
+   1473
+  ],
+  "qcom,mdss-dsi-te-pin-select": [
+   1
+  ],
+  "qcom,mdss-dsi-wr-mem-start": [
+   44
+  ],
+  "qcom,mdss-dsi-wr-mem-continue": [
+   60
+  ],
+  "qcom,mdss-dsi-te-dcs-command": "<4 字节，见 panel_cmds_*.txt>",
+  "qcom,mdss-dsi-te-check-enable": true,
+  "qcom,mdss-dsi-te-using-te-pin": true,
+  "qcom,mdss-dsi-tx-eot-append": true,
+  "qcom,mdss-dsi-lp11-init": true,
+  "qcom,mdss-dsi-bl-inverted-dbv": true,
+  "qcom,bl-update-flag": "delay_until_first_frame",
+  "qcom,mdss-dsi-dma-schedule-line": [
+   1
+  ],
+  "qcom,mdss-dsi-dma-schedule-window": [
+   50
+  ],
+  "qcom,mdss-dsi-panel-hdr-enabled": true,
+  "qcom,mdss-dsi-panel-hdr-color-primaries": [
+   14500,
+   15500,
+   32000,
+   17000,
+   15500,
+   30000,
+   8000,
+   3000
+  ],
+  "qcom,mdss-dsi-panel-peak-brightness": [
+   4200000
+  ],
+  "qcom,mdss-dsi-panel-blackness-level": [
+   3230
+  ],
+  "mi,esd-err-irq-gpio": [
+   {
+    "controller": "/soc/pinctrl@f000000",
+    "pin": 49,
+    "flags": 8200
+   }
+  ],
+  "mi,panel-id": [
+   19763,
+   3673088
+  ],
+  "mi,local-hbm-enabled": true,
+  "mi,local-hbm-ui-ready-delay-num-frame": [
+   3
+  ],
+  "mi,fod-low-brightness-clone-threshold": [
+   411
+  ],
+  "mi,fod-low-brightness-lux-threshold": [
+   1
+  ],
+  "mi,need-fod-animal-in-normal-enabled": true,
+  "mi,mdss-dsi-panel-wp-read-command": "<8 字节，见 panel_cmds_*.txt>",
+  "mi,mdss-dsi-panel-wp-read-command-state": "dsi_lp_mode",
+  "mi,mdss-dsi-panel-wp-read-length": [
+   4
+  ],
+  "mi,panel-on-dimming-delay": [
+   120
+  ],
+  "mi,doze-hbm-dbv-level": [
+   243
+  ],
+  "mi,doze-lbm-dbv-level": [
+   21
+  ],
+  "mi,max-brightness-clone": [
+   16383
+  ],
+  "mi,mdss-dsi-fac-bl-max-level": [
+   2047
+  ],
+  "mi,mdss-fac-brightness-max-level": [
+   2047
+  ],
+  "mi,mdss-dsi-panel-dc-threshold": [
+   450
+  ],
+  "mi,dc-feature-enabled": true,
+  "mi,thermal-dimming-flag": true,
+  "mi,dc-feature-type": "crc_skip_backlight",
+  "mi,normal-to-aod-doze-51reg-update-value": [
+   2453
+  ],
+  "mi,flatmode-status-check-enabled": true,
+  "mi,mdss-dsi-panel-flatmode-status-offset-command": "<21 字节，见 panel_cmds_*.txt>",
+  "mi,mdss-dsi-panel-flatmode-status-offset-command-state": "dsi_lp_mode",
+  "mi,mdss-dsi-panel-flatmode-status-command": "<8 字节，见 panel_cmds_*.txt>",
+  "mi,mdss-dsi-panel-flatmode-status-command-state": "dsi_lp_mode",
+  "mi,mdss-dsi-panel-flatmode-status-offset-end-command": "<10 字节，见 panel_cmds_*.txt>",
+  "mi,mdss-dsi-panel-flatmode-status-offset-end-command-state": "dsi_lp_mode",
+  "mi,mdss-dsi-panel-flatmode-status-read-length": [
+   1
+  ],
+  "mi,mdss-dsi-panel-flatmode-on-status-value": [
+   37
+  ],
+  "qcom,mdss-dsi-panel-vsync-delay": true,
+  "qcom,ulps-enabled": true,
+  "qcom,dsi-select-clocks": [
+   "pll_byte_clk0",
+   "pll_dsi_clk0"
+  ],
+  "qcom,mdss-dsi-clk-strength": [
+   255
+  ],
+  "qcom,panel-supply-entries": [
+   1852
+  ],
+  "qcom,mdss-dsi-bl-pmic-control-type": "bl_ctrl_dcs",
+  "qcom,mdss-dsi-bl-min-level": [
+   4
+  ],
+  "qcom,mdss-dsi-bl-max-level": [
+   4095
+  ],
+  "qcom,mdss-brightness-max-level": [
+   4095
+  ],
+  "qcom,mdss-brightness-init-level": [
+   307
+  ],
+  "qcom,platform-reset-gpio": [
+   {
+    "controller": "/soc/pinctrl@f000000",
+    "pin": 133,
+    "flags": 0
+   }
+  ]
+ },
+ "supply_entries": [
+  {
+   "name": "qcom,panel-supply-entry@2",
+   "reg": [
+    2
+   ],
+   "qcom,supply-name": "vci",
+   "qcom,supply-min-voltage": [
+    3000000
+   ],
+   "qcom,supply-max-voltage": [
+    3000000
+   ],
+   "qcom,supply-enable-load": [
+    300000
+   ],
+   "qcom,supply-disable-load": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "qcom,supply-post-on-sleep": [
+    10
+   ],
+   "qcom,supply-post-off-sleep": [
+    "",
+    "",
+    "",
+    ""
+   ]
+  },
+  {
+   "name": "qcom,panel-supply-entry@1",
+   "reg": [
+    1
+   ],
+   "qcom,supply-name": "vddd",
+   "qcom,supply-min-voltage": [
+    1500000
+   ],
+   "qcom,supply-max-voltage": [
+    1500000
+   ],
+   "qcom,supply-enable-load": [
+    300000
+   ],
+   "qcom,supply-disable-load": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "qcom,supply-post-on-sleep": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "qcom,supply-post-off-sleep": [
+    "",
+    "",
+    "",
+    ""
+   ]
+  },
+  {
+   "name": "qcom,panel-supply-entry@0",
+   "reg": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "qcom,supply-name": "vddio",
+   "qcom,supply-min-voltage": [
+    1800000
+   ],
+   "qcom,supply-max-voltage": [
+    1800000
+   ],
+   "qcom,supply-enable-load": [
+    300000
+   ],
+   "qcom,supply-disable-load": [
+    80
+   ],
+   "qcom,supply-post-on-sleep": [
+    2
+   ],
+   "qcom,supply-post-off-sleep": [
+    10
+   ]
+  }
+ ],
+ "timings": [
+  {
+   "node": "timing@2",
+   "qcom,mdss-dsi-cmd-mode": true,
+   "qcom,mdss-dsi-panel-framerate": [
+    90
+   ],
+   "qcom,mdss-dsi-panel-width": [
+    1080
+   ],
+   "qcom,mdss-dsi-panel-height": [
+    2400
+   ],
+   "qcom,mdss-dsi-h-front-porch": [
+    124
+   ],
+   "qcom,mdss-dsi-h-back-porch": [
+    124
+   ],
+   "qcom,mdss-dsi-h-pulse-width": [
+    32
+   ],
+   "qcom,mdss-dsi-h-sync-skew": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "qcom,mdss-dsi-v-back-porch": [
+    132
+   ],
+   "qcom,mdss-dsi-v-front-porch": [
+    128
+   ],
+   "qcom,mdss-dsi-v-pulse-width": [
+    24
+   ],
+   "qcom,mdss-dsi-h-sync-pulse": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "qcom,mdss-dsi-h-left-border": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "qcom,mdss-dsi-h-right-border": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "qcom,mdss-dsi-v-top-border": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "qcom,mdss-dsi-v-bottom-border": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "qcom,mdss-dsi-panel-clockrate": [
+    1100000000
+   ],
+   "qcom,mdss-dsi-panel-jitter": [
+    5,
+    1
+   ],
+   "qcom,mdss-mdp-transfer-time-us": [
+    7300
+   ],
+   "qcom,mdss-dsi-on-command": "<718 字节，见 panel_cmds_*.txt>",
+   "qcom,mdss-dsi-on-command-state": "dsi_lp_mode",
+   "qcom,mdss-dsi-timing-switch-command": "<79 字节，见 panel_cmds_*.txt>",
+   "qcom,mdss-dsi-timing-switch-command-state": "dsi_hs_mode",
+   "qcom,mdss-dsi-nolp-command": "<98 字节，见 panel_cmds_*.txt>",
+   "qcom,mdss-dsi-nolp-command-update": [
+    81,
+    7,
+    2
+   ],
+   "qcom,mdss-dsi-nolp-command-state": "dsi_lp_mode",
+   "qcom,compression-mode": "dsc",
+   "qcom,mdss-dsc-slice-height": [
+    40
+   ],
+   "qcom,mdss-dsc-slice-width": [
+    540
+   ],
+   "qcom,mdss-dsc-slice-per-pkt": [
+    2
+   ],
+   "qcom,mdss-dsc-bit-per-component": [
+    8
+   ],
+   "qcom,mdss-dsc-bit-per-pixel": [
+    8
+   ],
+   "qcom,mdss-dsc-block-prediction-enable": true,
+   "qcom,mdss-dsi-off-command": "<89 字节，见 panel_cmds_*.txt>",
+   "qcom,mdss-dsi-off-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-dimmingon-command": "<9 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-dimmingon-command-state": "dsi_hs_mode",
+   "mi,mdss-dsi-dimmingoff-command": "<9 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-dimmingoff-command-state": "dsi_hs_mode",
+   "mi,mdss-dsi-hbm-on-command": "<39 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-hbm-on-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-hbm-off-command": "<39 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-hbm-off-command-update": [
+    81,
+    1,
+    2
+   ],
+   "mi,mdss-dsi-hbm-off-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-hbm-fod-on-command": "<39 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-hbm-fod-on-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-hbm-fod-off-command": "<39 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-hbm-fod-off-command-update": [
+    81,
+    1,
+    2
+   ],
+   "mi,mdss-dsi-hbm-fod-off-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-flat-mode-on-command": "<40 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-flat-mode-on-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-flat-mode-off-command": "<40 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-flat-mode-off-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-local-hbm-normal-white-1000nit-command": "<460 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-local-hbm-normal-white-1000nit-command-update": [
+    81,
+    22,
+    2
+   ],
+   "mi,mdss-dsi-local-hbm-normal-white-1000nit-command-state": "dsi_hs_mode",
+   "mi,mdss-dsi-local-hbm-hlpm-white-1000nit-command": "<479 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-local-hbm-hlpm-white-1000nit-command-state": "dsi_hs_mode",
+   "mi,mdss-dsi-local-hbm-normal-white-110nit-command": "<450 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-local-hbm-normal-white-110nit-command-state": "dsi_hs_mode",
+   "mi,mdss-dsi-local-hbm-hlpm-white-110nit-command": "<479 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-local-hbm-hlpm-white-110nit-command-state": "dsi_hs_mode",
+   "mi,mdss-dsi-local-hbm-normal-green-500nit-command": "<450 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-local-hbm-normal-green-500nit-command-state": "dsi_hs_mode",
+   "mi,mdss-dsi-local-hbm-off-to-normal-command": "<29 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-local-hbm-off-to-normal-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-local-hbm-off-to-hbm-command": "<39 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-local-hbm-off-to-hbm-command-update": [
+    81,
+    2,
+    2
+   ],
+   "mi,mdss-dsi-local-hbm-off-to-hbm-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-doze-hbm-command": "<58 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-doze-hbm-command-update": [
+    81,
+    0,
+    2
+   ],
+   "mi,mdss-dsi-doze-hbm-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-doze-lbm-command": "<58 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-doze-lbm-command-update": [
+    81,
+    0,
+    2
+   ],
+   "mi,mdss-dsi-doze-lbm-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-doze-hbm-nolp-command": "<78 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-doze-lbm-nolp-command": "<78 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-doze-hbm-nolp-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-doze-lbm-nolp-command-state": "dsi_lp_mode",
+   "qcom,mdss-dsi-panel-phy-timings": "00240b0a1a25090b090204001f0f",
+   "qcom,display-topology": [
+    1,
+    1,
+    1
+   ],
+   "qcom,default-topology-index": [
+    "",
+    "",
+    "",
+    ""
+   ]
+  },
+  {
+   "node": "timing@1",
+   "qcom,mdss-dsi-cmd-mode": true,
+   "qcom,mdss-dsi-panel-framerate": [
+    120
+   ],
+   "qcom,mdss-dsi-panel-width": [
+    1080
+   ],
+   "qcom,mdss-dsi-panel-height": [
+    2400
+   ],
+   "qcom,mdss-dsi-h-front-porch": [
+    124
+   ],
+   "qcom,mdss-dsi-h-back-porch": [
+    124
+   ],
+   "qcom,mdss-dsi-h-pulse-width": [
+    32
+   ],
+   "qcom,mdss-dsi-h-sync-skew": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "qcom,mdss-dsi-v-back-porch": [
+    132
+   ],
+   "qcom,mdss-dsi-v-front-porch": [
+    128
+   ],
+   "qcom,mdss-dsi-v-pulse-width": [
+    24
+   ],
+   "qcom,mdss-dsi-h-sync-pulse": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "qcom,mdss-dsi-h-left-border": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "qcom,mdss-dsi-h-right-border": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "qcom,mdss-dsi-v-top-border": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "qcom,mdss-dsi-v-bottom-border": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "qcom,mdss-dsi-panel-clockrate": [
+    1100000000
+   ],
+   "qcom,mdss-dsi-panel-jitter": [
+    5,
+    1
+   ],
+   "qcom,mdss-mdp-transfer-time-us": [
+    7300
+   ],
+   "qcom,mdss-dsi-on-command": "<718 字节，见 panel_cmds_*.txt>",
+   "qcom,mdss-dsi-on-command-state": "dsi_lp_mode",
+   "qcom,mdss-dsi-timing-switch-command": "<79 字节，见 panel_cmds_*.txt>",
+   "qcom,mdss-dsi-timing-switch-command-state": "dsi_hs_mode",
+   "qcom,mdss-dsi-nolp-command": "<57 字节，见 panel_cmds_*.txt>",
+   "qcom,mdss-dsi-nolp-command-update": [
+    81,
+    3,
+    2
+   ],
+   "qcom,mdss-dsi-nolp-command-state": "dsi_lp_mode",
+   "qcom,compression-mode": "dsc",
+   "qcom,mdss-dsc-slice-height": [
+    40
+   ],
+   "qcom,mdss-dsc-slice-width": [
+    540
+   ],
+   "qcom,mdss-dsc-slice-per-pkt": [
+    2
+   ],
+   "qcom,mdss-dsc-bit-per-component": [
+    8
+   ],
+   "qcom,mdss-dsc-bit-per-pixel": [
+    8
+   ],
+   "qcom,mdss-dsc-block-prediction-enable": true,
+   "qcom,mdss-dsi-off-command": "<89 字节，见 panel_cmds_*.txt>",
+   "qcom,mdss-dsi-off-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-dimmingon-command": "<9 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-dimmingon-command-state": "dsi_hs_mode",
+   "mi,mdss-dsi-dimmingoff-command": "<9 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-dimmingoff-command-state": "dsi_hs_mode",
+   "mi,mdss-dsi-hbm-on-command": "<39 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-hbm-on-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-hbm-off-command": "<39 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-hbm-off-command-update": [
+    81,
+    1,
+    2
+   ],
+   "mi,mdss-dsi-hbm-off-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-hbm-fod-on-command": "<39 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-hbm-fod-on-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-hbm-fod-off-command": "<39 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-hbm-fod-off-command-update": [
+    81,
+    1,
+    2
+   ],
+   "mi,mdss-dsi-hbm-fod-off-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-flat-mode-on-command": "<40 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-flat-mode-on-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-flat-mode-off-command": "<40 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-flat-mode-off-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-local-hbm-normal-white-1000nit-command": "<460 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-local-hbm-normal-white-1000nit-command-update": [
+    81,
+    22,
+    2
+   ],
+   "mi,mdss-dsi-local-hbm-normal-white-1000nit-command-state": "dsi_hs_mode",
+   "mi,mdss-dsi-local-hbm-hlpm-white-1000nit-command": "<479 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-local-hbm-hlpm-white-1000nit-command-state": "dsi_hs_mode",
+   "mi,mdss-dsi-local-hbm-normal-white-110nit-command": "<450 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-local-hbm-normal-white-110nit-command-state": "dsi_hs_mode",
+   "mi,mdss-dsi-local-hbm-hlpm-white-110nit-command": "<479 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-local-hbm-hlpm-white-110nit-command-state": "dsi_hs_mode",
+   "mi,mdss-dsi-local-hbm-normal-green-500nit-command": "<450 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-local-hbm-normal-green-500nit-command-state": "dsi_hs_mode",
+   "mi,mdss-dsi-local-hbm-off-to-normal-command": "<29 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-local-hbm-off-to-normal-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-local-hbm-off-to-hbm-command": "<39 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-local-hbm-off-to-hbm-command-update": [
+    81,
+    2,
+    2
+   ],
+   "mi,mdss-dsi-local-hbm-off-to-hbm-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-doze-hbm-command": "<58 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-doze-hbm-command-update": [
+    81,
+    0,
+    2
+   ],
+   "mi,mdss-dsi-doze-hbm-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-doze-lbm-command": "<58 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-doze-lbm-command-update": [
+    81,
+    0,
+    2
+   ],
+   "mi,mdss-dsi-doze-lbm-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-doze-hbm-nolp-command": "<57 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-doze-lbm-nolp-command": "<57 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-doze-hbm-nolp-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-doze-lbm-nolp-command-state": "dsi_lp_mode",
+   "qcom,mdss-dsi-panel-phy-timings": "00240b0a1a25090b090204001f0f",
+   "qcom,display-topology": [
+    1,
+    1,
+    1
+   ],
+   "qcom,default-topology-index": [
+    "",
+    "",
+    "",
+    ""
+   ]
+  },
+  {
+   "node": "timing@0",
+   "qcom,mdss-dsi-cmd-mode": true,
+   "qcom,mdss-dsi-panel-framerate": [
+    60
+   ],
+   "qcom,mdss-dsi-panel-width": [
+    1080
+   ],
+   "qcom,mdss-dsi-panel-height": [
+    2400
+   ],
+   "qcom,mdss-dsi-h-front-porch": [
+    124
+   ],
+   "qcom,mdss-dsi-h-back-porch": [
+    124
+   ],
+   "qcom,mdss-dsi-h-pulse-width": [
+    32
+   ],
+   "qcom,mdss-dsi-h-sync-skew": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "qcom,mdss-dsi-v-back-porch": [
+    132
+   ],
+   "qcom,mdss-dsi-v-front-porch": [
+    128
+   ],
+   "qcom,mdss-dsi-v-pulse-width": [
+    24
+   ],
+   "qcom,mdss-dsi-h-sync-pulse": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "qcom,mdss-dsi-h-left-border": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "qcom,mdss-dsi-h-right-border": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "qcom,mdss-dsi-v-top-border": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "qcom,mdss-dsi-v-bottom-border": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "qcom,mdss-dsi-panel-clockrate": [
+    1100000000
+   ],
+   "qcom,mdss-dsi-panel-jitter": [
+    5,
+    1
+   ],
+   "qcom,mdss-mdp-transfer-time-us": [
+    7300
+   ],
+   "qcom,mdss-dsi-on-command": "<718 字节，见 panel_cmds_*.txt>",
+   "qcom,mdss-dsi-on-command-state": "dsi_lp_mode",
+   "qcom,mdss-dsi-timing-switch-command": "<79 字节，见 panel_cmds_*.txt>",
+   "qcom,mdss-dsi-timing-switch-command-state": "dsi_hs_mode",
+   "qcom,mdss-dsi-nolp-command": "<57 字节，见 panel_cmds_*.txt>",
+   "qcom,mdss-dsi-nolp-command-update": [
+    81,
+    3,
+    2
+   ],
+   "qcom,mdss-dsi-nolp-command-state": "dsi_lp_mode",
+   "qcom,compression-mode": "dsc",
+   "qcom,mdss-dsc-slice-height": [
+    40
+   ],
+   "qcom,mdss-dsc-slice-width": [
+    540
+   ],
+   "qcom,mdss-dsc-slice-per-pkt": [
+    2
+   ],
+   "qcom,mdss-dsc-bit-per-component": [
+    8
+   ],
+   "qcom,mdss-dsc-bit-per-pixel": [
+    8
+   ],
+   "qcom,mdss-dsc-block-prediction-enable": true,
+   "qcom,mdss-dsi-off-command": "<89 字节，见 panel_cmds_*.txt>",
+   "qcom,mdss-dsi-off-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-dimmingon-command": "<9 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-dimmingon-command-state": "dsi_hs_mode",
+   "mi,mdss-dsi-dimmingoff-command": "<9 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-dimmingoff-command-state": "dsi_hs_mode",
+   "mi,mdss-dsi-hbm-on-command": "<39 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-hbm-on-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-hbm-off-command": "<39 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-hbm-off-command-update": [
+    81,
+    1,
+    2
+   ],
+   "mi,mdss-dsi-hbm-off-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-hbm-fod-on-command": "<39 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-hbm-fod-on-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-hbm-fod-off-command": "<39 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-hbm-fod-off-command-update": [
+    81,
+    1,
+    2
+   ],
+   "mi,mdss-dsi-hbm-fod-off-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-flat-mode-on-command": "<40 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-flat-mode-on-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-flat-mode-off-command": "<40 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-flat-mode-off-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-local-hbm-normal-white-1000nit-command": "<460 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-local-hbm-normal-white-1000nit-command-update": [
+    81,
+    22,
+    2
+   ],
+   "mi,mdss-dsi-local-hbm-normal-white-1000nit-command-state": "dsi_hs_mode",
+   "mi,mdss-dsi-local-hbm-hlpm-white-1000nit-command": "<479 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-local-hbm-hlpm-white-1000nit-command-state": "dsi_hs_mode",
+   "mi,mdss-dsi-local-hbm-normal-white-110nit-command": "<450 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-local-hbm-normal-white-110nit-command-state": "dsi_hs_mode",
+   "mi,mdss-dsi-local-hbm-hlpm-white-110nit-command": "<479 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-local-hbm-hlpm-white-110nit-command-state": "dsi_hs_mode",
+   "mi,mdss-dsi-local-hbm-normal-green-500nit-command": "<450 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-local-hbm-normal-green-500nit-command-state": "dsi_hs_mode",
+   "mi,mdss-dsi-local-hbm-off-to-normal-command": "<29 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-local-hbm-off-to-normal-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-local-hbm-off-to-hbm-command": "<39 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-local-hbm-off-to-hbm-command-update": [
+    81,
+    2,
+    2
+   ],
+   "mi,mdss-dsi-local-hbm-off-to-hbm-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-doze-hbm-command": "<58 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-doze-hbm-command-update": [
+    81,
+    0,
+    2
+   ],
+   "mi,mdss-dsi-doze-hbm-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-doze-lbm-command": "<58 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-doze-lbm-command-update": [
+    81,
+    0,
+    2
+   ],
+   "mi,mdss-dsi-doze-lbm-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-doze-hbm-nolp-command": "<57 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-doze-lbm-nolp-command": "<57 字节，见 panel_cmds_*.txt>",
+   "mi,mdss-dsi-doze-hbm-nolp-command-state": "dsi_lp_mode",
+   "mi,mdss-dsi-doze-lbm-nolp-command-state": "dsi_lp_mode",
+   "qcom,mdss-dsi-panel-phy-timings": "00240b0a1a25090b090204001f0f",
+   "qcom,display-topology": [
+    1,
+    1,
+    1
+   ],
+   "qcom,default-topology-index": [
+    "",
+    "",
+    "",
+    ""
+   ]
+  }
+ ],
+ "command_sequences": [
+  {
+   "timing": "timing@2",
+   "property": "qcom,mdss-dsi-on-command",
+   "count": 63,
+   "file": "panel_cmds_timing2_on-command.txt"
+  },
+  {
+   "timing": "timing@2",
+   "property": "qcom,mdss-dsi-timing-switch-command",
+   "count": 8,
+   "file": "panel_cmds_timing2_timing-switch-command.txt"
+  },
+  {
+   "timing": "timing@2",
+   "property": "qcom,mdss-dsi-nolp-command",
+   "count": 10,
+   "file": "panel_cmds_timing2_nolp-command.txt"
+  },
+  {
+   "timing": "timing@2",
+   "property": "qcom,mdss-dsi-off-command",
+   "count": 9,
+   "file": "panel_cmds_timing2_off-command.txt"
+  },
+  {
+   "timing": "timing@2",
+   "property": "mi,mdss-dsi-dimmingon-command",
+   "count": 1,
+   "file": "panel_cmds_timing2_mi-dimmingon-command.txt"
+  },
+  {
+   "timing": "timing@2",
+   "property": "mi,mdss-dsi-dimmingoff-command",
+   "count": 1,
+   "file": "panel_cmds_timing2_mi-dimmingoff-command.txt"
+  },
+  {
+   "timing": "timing@2",
+   "property": "mi,mdss-dsi-hbm-on-command",
+   "count": 4,
+   "file": "panel_cmds_timing2_mi-hbm-on-command.txt"
+  },
+  {
+   "timing": "timing@2",
+   "property": "mi,mdss-dsi-hbm-off-command",
+   "count": 4,
+   "file": "panel_cmds_timing2_mi-hbm-off-command.txt"
+  },
+  {
+   "timing": "timing@2",
+   "property": "mi,mdss-dsi-hbm-fod-on-command",
+   "count": 4,
+   "file": "panel_cmds_timing2_mi-hbm-fod-on-command.txt"
+  },
+  {
+   "timing": "timing@2",
+   "property": "mi,mdss-dsi-hbm-fod-off-command",
+   "count": 4,
+   "file": "panel_cmds_timing2_mi-hbm-fod-off-command.txt"
+  },
+  {
+   "timing": "timing@2",
+   "property": "mi,mdss-dsi-flat-mode-on-command",
+   "count": 4,
+   "file": "panel_cmds_timing2_mi-flat-mode-on-command.txt"
+  },
+  {
+   "timing": "timing@2",
+   "property": "mi,mdss-dsi-flat-mode-off-command",
+   "count": 4,
+   "file": "panel_cmds_timing2_mi-flat-mode-off-command.txt"
+  },
+  {
+   "timing": "timing@2",
+   "property": "mi,mdss-dsi-local-hbm-normal-white-1000nit-command",
+   "count": 24,
+   "file": "panel_cmds_timing2_mi-local-hbm-normal-white-1000nit-command.txt"
+  },
+  {
+   "timing": "timing@2",
+   "property": "mi,mdss-dsi-local-hbm-hlpm-white-1000nit-command",
+   "count": 26,
+   "file": "panel_cmds_timing2_mi-local-hbm-hlpm-white-1000nit-command.txt"
+  },
+  {
+   "timing": "timing@2",
+   "property": "mi,mdss-dsi-local-hbm-normal-white-110nit-command",
+   "count": 23,
+   "file": "panel_cmds_timing2_mi-local-hbm-normal-white-110nit-command.txt"
+  },
+  {
+   "timing": "timing@2",
+   "property": "mi,mdss-dsi-local-hbm-hlpm-white-110nit-command",
+   "count": 26,
+   "file": "panel_cmds_timing2_mi-local-hbm-hlpm-white-110nit-command.txt"
+  },
+  {
+   "timing": "timing@2",
+   "property": "mi,mdss-dsi-local-hbm-normal-green-500nit-command",
+   "count": 23,
+   "file": "panel_cmds_timing2_mi-local-hbm-normal-green-500nit-command.txt"
+  },
+  {
+   "timing": "timing@2",
+   "property": "mi,mdss-dsi-local-hbm-off-to-normal-command",
+   "count": 3,
+   "file": "panel_cmds_timing2_mi-local-hbm-off-to-normal-command.txt"
+  },
+  {
+   "timing": "timing@2",
+   "property": "mi,mdss-dsi-local-hbm-off-to-hbm-command",
+   "count": 4,
+   "file": "panel_cmds_timing2_mi-local-hbm-off-to-hbm-command.txt"
+  },
+  {
+   "timing": "timing@2",
+   "property": "mi,mdss-dsi-doze-hbm-command",
+   "count": 6,
+   "file": "panel_cmds_timing2_mi-doze-hbm-command.txt"
+  },
+  {
+   "timing": "timing@2",
+   "property": "mi,mdss-dsi-doze-lbm-command",
+   "count": 6,
+   "file": "panel_cmds_timing2_mi-doze-lbm-command.txt"
+  },
+  {
+   "timing": "timing@2",
+   "property": "mi,mdss-dsi-doze-hbm-nolp-command",
+   "count": 8,
+   "file": "panel_cmds_timing2_mi-doze-hbm-nolp-command.txt"
+  },
+  {
+   "timing": "timing@2",
+   "property": "mi,mdss-dsi-doze-lbm-nolp-command",
+   "count": 8,
+   "file": "panel_cmds_timing2_mi-doze-lbm-nolp-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "qcom,mdss-dsi-on-command",
+   "count": 63,
+   "file": "panel_cmds_timing1_on-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "qcom,mdss-dsi-timing-switch-command",
+   "count": 8,
+   "file": "panel_cmds_timing1_timing-switch-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "qcom,mdss-dsi-nolp-command",
+   "count": 6,
+   "file": "panel_cmds_timing1_nolp-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "qcom,mdss-dsi-off-command",
+   "count": 9,
+   "file": "panel_cmds_timing1_off-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "mi,mdss-dsi-dimmingon-command",
+   "count": 1,
+   "file": "panel_cmds_timing1_mi-dimmingon-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "mi,mdss-dsi-dimmingoff-command",
+   "count": 1,
+   "file": "panel_cmds_timing1_mi-dimmingoff-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "mi,mdss-dsi-hbm-on-command",
+   "count": 4,
+   "file": "panel_cmds_timing1_mi-hbm-on-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "mi,mdss-dsi-hbm-off-command",
+   "count": 4,
+   "file": "panel_cmds_timing1_mi-hbm-off-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "mi,mdss-dsi-hbm-fod-on-command",
+   "count": 4,
+   "file": "panel_cmds_timing1_mi-hbm-fod-on-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "mi,mdss-dsi-hbm-fod-off-command",
+   "count": 4,
+   "file": "panel_cmds_timing1_mi-hbm-fod-off-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "mi,mdss-dsi-flat-mode-on-command",
+   "count": 4,
+   "file": "panel_cmds_timing1_mi-flat-mode-on-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "mi,mdss-dsi-flat-mode-off-command",
+   "count": 4,
+   "file": "panel_cmds_timing1_mi-flat-mode-off-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "mi,mdss-dsi-local-hbm-normal-white-1000nit-command",
+   "count": 24,
+   "file": "panel_cmds_timing1_mi-local-hbm-normal-white-1000nit-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "mi,mdss-dsi-local-hbm-hlpm-white-1000nit-command",
+   "count": 26,
+   "file": "panel_cmds_timing1_mi-local-hbm-hlpm-white-1000nit-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "mi,mdss-dsi-local-hbm-normal-white-110nit-command",
+   "count": 23,
+   "file": "panel_cmds_timing1_mi-local-hbm-normal-white-110nit-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "mi,mdss-dsi-local-hbm-hlpm-white-110nit-command",
+   "count": 26,
+   "file": "panel_cmds_timing1_mi-local-hbm-hlpm-white-110nit-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "mi,mdss-dsi-local-hbm-normal-green-500nit-command",
+   "count": 23,
+   "file": "panel_cmds_timing1_mi-local-hbm-normal-green-500nit-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "mi,mdss-dsi-local-hbm-off-to-normal-command",
+   "count": 3,
+   "file": "panel_cmds_timing1_mi-local-hbm-off-to-normal-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "mi,mdss-dsi-local-hbm-off-to-hbm-command",
+   "count": 4,
+   "file": "panel_cmds_timing1_mi-local-hbm-off-to-hbm-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "mi,mdss-dsi-doze-hbm-command",
+   "count": 6,
+   "file": "panel_cmds_timing1_mi-doze-hbm-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "mi,mdss-dsi-doze-lbm-command",
+   "count": 6,
+   "file": "panel_cmds_timing1_mi-doze-lbm-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "mi,mdss-dsi-doze-hbm-nolp-command",
+   "count": 6,
+   "file": "panel_cmds_timing1_mi-doze-hbm-nolp-command.txt"
+  },
+  {
+   "timing": "timing@1",
+   "property": "mi,mdss-dsi-doze-lbm-nolp-command",
+   "count": 6,
+   "file": "panel_cmds_timing1_mi-doze-lbm-nolp-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "qcom,mdss-dsi-on-command",
+   "count": 63,
+   "file": "panel_cmds_timing0_on-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "qcom,mdss-dsi-timing-switch-command",
+   "count": 8,
+   "file": "panel_cmds_timing0_timing-switch-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "qcom,mdss-dsi-nolp-command",
+   "count": 6,
+   "file": "panel_cmds_timing0_nolp-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "qcom,mdss-dsi-off-command",
+   "count": 9,
+   "file": "panel_cmds_timing0_off-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "mi,mdss-dsi-dimmingon-command",
+   "count": 1,
+   "file": "panel_cmds_timing0_mi-dimmingon-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "mi,mdss-dsi-dimmingoff-command",
+   "count": 1,
+   "file": "panel_cmds_timing0_mi-dimmingoff-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "mi,mdss-dsi-hbm-on-command",
+   "count": 4,
+   "file": "panel_cmds_timing0_mi-hbm-on-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "mi,mdss-dsi-hbm-off-command",
+   "count": 4,
+   "file": "panel_cmds_timing0_mi-hbm-off-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "mi,mdss-dsi-hbm-fod-on-command",
+   "count": 4,
+   "file": "panel_cmds_timing0_mi-hbm-fod-on-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "mi,mdss-dsi-hbm-fod-off-command",
+   "count": 4,
+   "file": "panel_cmds_timing0_mi-hbm-fod-off-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "mi,mdss-dsi-flat-mode-on-command",
+   "count": 4,
+   "file": "panel_cmds_timing0_mi-flat-mode-on-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "mi,mdss-dsi-flat-mode-off-command",
+   "count": 4,
+   "file": "panel_cmds_timing0_mi-flat-mode-off-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "mi,mdss-dsi-local-hbm-normal-white-1000nit-command",
+   "count": 24,
+   "file": "panel_cmds_timing0_mi-local-hbm-normal-white-1000nit-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "mi,mdss-dsi-local-hbm-hlpm-white-1000nit-command",
+   "count": 26,
+   "file": "panel_cmds_timing0_mi-local-hbm-hlpm-white-1000nit-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "mi,mdss-dsi-local-hbm-normal-white-110nit-command",
+   "count": 23,
+   "file": "panel_cmds_timing0_mi-local-hbm-normal-white-110nit-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "mi,mdss-dsi-local-hbm-hlpm-white-110nit-command",
+   "count": 26,
+   "file": "panel_cmds_timing0_mi-local-hbm-hlpm-white-110nit-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "mi,mdss-dsi-local-hbm-normal-green-500nit-command",
+   "count": 23,
+   "file": "panel_cmds_timing0_mi-local-hbm-normal-green-500nit-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "mi,mdss-dsi-local-hbm-off-to-normal-command",
+   "count": 3,
+   "file": "panel_cmds_timing0_mi-local-hbm-off-to-normal-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "mi,mdss-dsi-local-hbm-off-to-hbm-command",
+   "count": 4,
+   "file": "panel_cmds_timing0_mi-local-hbm-off-to-hbm-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "mi,mdss-dsi-doze-hbm-command",
+   "count": 6,
+   "file": "panel_cmds_timing0_mi-doze-hbm-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "mi,mdss-dsi-doze-lbm-command",
+   "count": 6,
+   "file": "panel_cmds_timing0_mi-doze-lbm-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "mi,mdss-dsi-doze-hbm-nolp-command",
+   "count": 6,
+   "file": "panel_cmds_timing0_mi-doze-hbm-nolp-command.txt"
+  },
+  {
+   "timing": "timing@0",
+   "property": "mi,mdss-dsi-doze-lbm-nolp-command",
+   "count": 6,
+   "file": "panel_cmds_timing0_mi-doze-lbm-nolp-command.txt"
+  },
+  {
+   "timing": "(panel)",
+   "property": "mi,mdss-dsi-panel-wp-read-command",
+   "count": 1,
+   "file": "panel_cmds_panel_mi-panel-wp-read-command.txt"
+  },
+  {
+   "timing": "(panel)",
+   "property": "mi,mdss-dsi-panel-flatmode-status-offset-command",
+   "count": 2,
+   "file": "panel_cmds_panel_mi-panel-flatmode-status-offset-command.txt"
+  },
+  {
+   "timing": "(panel)",
+   "property": "mi,mdss-dsi-panel-flatmode-status-command",
+   "count": 1,
+   "file": "panel_cmds_panel_mi-panel-flatmode-status-command.txt"
+  },
+  {
+   "timing": "(panel)",
+   "property": "mi,mdss-dsi-panel-flatmode-status-offset-end-command",
+   "count": 1,
+   "file": "panel_cmds_panel_mi-panel-flatmode-status-offset-end-command.txt"
+  }
+ ],
+ "display_node": {
+  "path": "/soc/qcom,dsi-display-primary",
+  "compatible": "qcom,dsi-display",
+  "label": "primary",
+  "qcom,dsi-ctrl": [
+   1850,
+   1857
+  ],
+  "qcom,dsi-phy": [
+   1858,
+   1859
+  ],
+  "pinctrl-names": [
+   "panel_active",
+   "panel_suspend"
+  ],
+  "pinctrl-0": [
+   {
+    "node": "/soc/pinctrl@f000000/pmx_sde/sde_dsi_active",
+    "config": {
+     "pins": "gpio133",
+     "drive-strength": [
+      8
+     ],
+     "bias-disable": [
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "mux": {
+     "pins": "gpio133",
+     "function": "gpio"
+    }
+   },
+   {
+    "node": "/soc/pinctrl@f000000/pmx_sde_te/sde_te_active",
+    "config": {
+     "pins": "gpio86",
+     "drive-strength": [
+      2
+     ],
+     "bias-pull-down": true
+    },
+    "mux": {
+     "pins": "gpio86",
+     "function": "mdp_vsync"
+    }
+   },
+   {
+    "node": "/soc/pinctrl@f000000/pmx_sde/sde_esd_active",
+    "config": {
+     "pins": "gpio49",
+     "drive-strength": [
+      8
+     ],
+     "bias-pull-up": true
+    },
+    "mux": {
+     "pins": "gpio49",
+     "function": "gpio"
+    }
+   }
+  ],
+  "pinctrl-1": [
+   {
+    "node": "/soc/pinctrl@f000000/pmx_sde/sde_dsi_suspend",
+    "config": {
+     "pins": "gpio133",
+     "drive-strength": [
+      2
+     ],
+     "bias-pull-down": true
+    },
+    "mux": {
+     "pins": "gpio133",
+     "function": "gpio"
+    }
+   },
+   {
+    "node": "/soc/pinctrl@f000000/pmx_sde_te/sde_te_suspend",
+    "config": {
+     "pins": "gpio86",
+     "drive-strength": [
+      2
+     ],
+     "bias-pull-down": true
+    },
+    "mux": {
+     "pins": "gpio86",
+     "function": "mdp_vsync"
+    }
+   },
+   {
+    "node": "/soc/pinctrl@f000000/pmx_sde/sde_esd_suspend",
+    "config": {
+     "pins": "gpio49",
+     "drive-strength": [
+      2
+     ],
+     "bias-pull-down": true
+    },
+    "mux": {
+     "pins": "gpio49",
+     "function": "gpio"
+    }
+   }
+  ],
+  "qcom,platform-te-gpio": [
+   {
+    "controller": "/soc/pinctrl@f000000",
+    "pin": 86,
+    "flags": 0
+   }
+  ],
+  "qcom,panel-te-source": [
+   "",
+   "",
+   "",
+   ""
+  ],
+  "qcom,mdp": [
+   1853
+  ],
+  "qcom,dsi-default-panel": [
+   1866
+  ],
+  "qcom,demura-panel-id": [
+   19064576,
+   1137
+  ],
+  "clocks": [
+   1858,
+   0,
+   1858,
+   1,
+   1859,
+   2,
+   1859,
+   3,
+   47,
+   61
+  ],
+  "clock-names": [
+   "pll_byte_clk0",
+   "pll_dsi_clk0",
+   "pll_byte_clk1",
+   "pll_dsi_clk1",
+   "mdp_core_clk"
+  ],
+  "vddio-supply": {
+   "node": "/soc/display_panel_vddio",
+   "regulator-name": "display_panel_vddio",
+   "regulator-min-microvolt": [
+    1800000
+   ],
+   "regulator-max-microvolt": [
+    1800000
+   ],
+   "gpio": {
+    "controller": "/soc/pinctrl@f000000",
+    "pin": 126,
+    "flags": 0
+   },
+   "enable-active-high": true
+  },
+  "vci-supply": {
+   "node": "/soc/display_panel_vci",
+   "regulator-name": "display_panel_vci",
+   "regulator-min-microvolt": [
+    3000000
+   ],
+   "regulator-max-microvolt": [
+    3000000
+   ],
+   "gpio": {
+    "controller": "/soc/pinctrl@f000000",
+    "pin": 127,
+    "flags": 0
+   },
+   "enable-active-high": true
+  },
+  "vddd-supply": {
+   "node": "/soc/display_panel_vddd",
+   "regulator-name": "display_panel_vddd",
+   "regulator-min-microvolt": [
+    1500000
+   ],
+   "regulator-max-microvolt": [
+    1500000
+   ],
+   "gpio": {
+    "controller": "/soc/pinctrl@f000000",
+    "pin": 42,
+    "flags": 0
+   },
+   "enable-active-high": true
+  }
+ },
+ "mdss": {
+  "qcom,mdss_mdp@ae00000": {
+   "reg": [
+    182452224,
+    540672,
+    183173120,
+    8200,
+    183156736,
+    2048,
+    4194304,
+    4096
+   ],
+   "reg-names": [
+    "mdp_phys",
+    "vbif_phys",
+    "regdma_phys",
+    "ipcc_reg"
+   ],
+   "compatible": "qcom,sde-kms",
+   "interrupts": [
+    0,
+    83,
+    4
+   ],
+   "clock-names": [
+    "gcc_iface",
+    "gcc_bus",
+    "iface_clk",
+    "branch_clk",
+    "core_clk",
+    "vsync_clk",
+    "lut_clk"
+   ]
+  },
+  "qcom,mdss_dsi_ctrl0@ae94000": {
+   "reg": [
+    183058432,
+    4096,
+    183562240,
+    4,
+    182673408,
+    768
+   ],
+   "reg-names": [
+    "dsi_ctrl",
+    "disp_cc_base",
+    "mdp_intf_base"
+   ],
+   "compatible": "qcom,dsi-ctrl-hw-v2.7",
+   "interrupts": [
+    4,
+    0
+   ],
+   "clock-names": [
+    "byte_clk",
+    "byte_clk_rcg",
+    "byte_intf_clk",
+    "pixel_clk",
+    "pixel_clk_rcg",
+    "esc_clk",
+    "xo"
+   ]
+  },
+  "qcom,mdss_dsi_phy0@ae95500": {
+   "reg": [
+    183062528,
+    2560,
+    183063808,
+    1024,
+    183058944,
+    160
+   ],
+   "reg-names": [
+    "dsi_phy",
+    "pll_base",
+    "dyn_refresh_base"
+   ],
+   "compatible": "qcom,dsi-phy-v5.2"
+  }
+ },
+ "splash_region": [
+  {
+   "path": "/reserved-memory/splash_region",
+   "reg": [
+    0,
+    3087007744,
+    0,
+    45088768
+   ]
+  }
+ ]
+}

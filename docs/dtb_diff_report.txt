@@ -1,0 +1,882 @@
+DTB 对比: out_t36/kernel.tail  vs  out_boot/kernel.tail
+
+== 头部 ==
+  字段                          A            B
+  totalsize              815093       801360
+  boot_cpuid_phys             0            0
+  version                    17           17
+  size_dt_struct         752908       740064
+  size_dt_strings         62129        61240
+
+== 内存保留块 ==
+  A: []
+  B: []
+
+== 节点 ==
+  节点总数:    A=4785  B=4715
+  相同节点:    4522
+  仅在 A 存在: 263
+  仅在 B 存在: 193
+
+== 节点 — 仅在 A (out_t36/kernel.tail) == (263)
+   + /hypervisor/qcom,resource-manager-rpc@1e341a2d2f2463c7
+   + /reserved-memory/aop_image_region@81c00000
+   + /reserved-memory/audio_cma_region
+   + /reserved-memory/debug_kinfo_region
+   + /reserved-memory/qmc_dma_region
+   + /reserved-memory/sdsp_region
+   + /reserved-memory/xbl_dt_log@81a00000
+   + /soc/apps_rsc@17a00000
+   + /soc/apps_rsc@17a00000/drv@2
+   + /soc/apps_rsc@17a00000/drv@2/bcm_voter
+   + /soc/apps_rsc@17a00000/drv@2/channel@0
+   + /soc/apps_rsc@17a00000/drv@2/clock-controller
+   + /soc/apps_rsc@17a00000/drv@2/qcom,dcvs-fp
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-bobb1
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-bobb1/regulator-pm-humu-bob1
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-bobb2
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-bobb2/regulator-pm-humu-bob2
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-cxlvl
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-cxlvl/regulator-pm-v6e-s6-level
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-cxlvl/regulator-pm-v6e-s6-level-ao
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-cxlvl/regulator-pm-v6e-s6-mmcx-sup-level
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ebilvl
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ebilvl/regulator-pm-v8-s3-level
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-gfxlvl
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-gfxlvl/regulator-pm-v6d-s5-level
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-lcxlvl
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-lcxlvl/regulator-pm-v6d-s4-level
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob1
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob1/regulator-pm-humu-l1
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob10
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob10/regulator-pm-humu-l10
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob11
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob11/regulator-pm-humu-l11
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob12
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob12/regulator-pm-humu-l12
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob13
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob13/regulator-pm-humu-l13
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob14
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob14/regulator-pm-humu-l14
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob15
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob15/regulator-pm-humu-l15
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob16
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob16/regulator-pm-humu-l16
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob17
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob17/regulator-pm-humu-l17
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob2
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob2/regulator-pm-humu-l2
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob5
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob5/regulator-pm-humu-l5
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob6
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob6/regulator-pm-humu-l6
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob7
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob7/regulator-pm-humu-l7
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob8
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob8/regulator-pm-humu-l8
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob9
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldob9/regulator-pm-humu-l9
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldoc1
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldoc1/regulator-pm-v6c-l1
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldoc2
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldoc2/regulator-pm-v6c-l2
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldoc3
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldoc3/regulator-pm-v6c-l3
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldod1
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldod1/regulator-pm-v6d-l1
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldoe1
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldoe1/regulator-pm-v6e-l1
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldoe1/regulator-pm-v6e-l1-ao
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldoe1/regulator-pm-v6e-l1-so
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldoe2
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldoe2/regulator-pm-v6e-l2
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldoe3
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldoe3/regulator-pm-v6e-l3
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldoe3/regulator-pm-v6e-l3-ao
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldoe3/regulator-pm-v6e-l3-so
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldof1
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldof1/regulator-pm-v8-l1
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldof2
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldof2/regulator-pm-v8-l2
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldof3
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldof3/regulator-pm-v8-l3
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldog1
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldog1/regulator-pm-v6g-l1
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldog2
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldog2/regulator-pm-v6g-l2
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldog3
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldog3/regulator-pm-v6g-l3
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldok1
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldok1/regulator-pmr-nalojrk-l1
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldok2
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldok2/regulator-pmr-nalojrk-l2
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldok3
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldok3/regulator-pmr-nalojrk-l3
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldok4
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldok4/regulator-pmr-nalojrk-l4
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldok5
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldok5/regulator-pmr-nalojrk-l5
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldok6
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldok6/regulator-pmr-nalojrk-l6
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldok7
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldok7/regulator-pmr-nalojrk-l7
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldol3
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldol3/regulator-pmr-nalojrl-l3
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldol4
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldol4/regulator-pmr-nalojrl-l4
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldol5
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldol5/regulator-pmr-nalojrl-l5
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldol6
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldol6/regulator-pmr-nalojrl-l6
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldol7
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldol7/regulator-pmr-nalojrl-l7
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldom1
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldom1/regulator-pm8010m-l1
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldom2
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldom2/regulator-pm8010m-l2
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldom3
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldom3/regulator-pm8010m-l3
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldom4
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldom4/regulator-pm8010m-l4
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldom5
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldom5/regulator-pm8010m-l5
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldom6
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldom6/regulator-pm8010m-l6
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldom7
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldom7/regulator-pm8010m-l7
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldon1
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldon1/regulator-pm8010n-l1
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldon2
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldon2/regulator-pm8010n-l2
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldon3
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldon3/regulator-pm8010n-l3
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldon4
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldon4/regulator-pm8010n-l4
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldon5
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldon5/regulator-pm8010n-l5
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldon6
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldon6/regulator-pm8010n-l6
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldon7
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-ldon7/regulator-pm8010n-l7
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-lmxlvl
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-lmxlvl/regulator-pm-v6d-l2-level
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-mmcxlvl
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-mmcxlvl/regulator-pm-v6e-s1-level
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-mmcxlvl/regulator-pm-v6e-s1-level-ao
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-mmcxlvl/regulator-pm-v6e-s1-level-so
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-msslvl
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-msslvl/regulator-pm-v8-s7-level
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-mxclvl
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-mxclvl/regulator-pm-v8-s5-gfx-voter-level
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-mxclvl/regulator-pm-v8-s5-level
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-mxclvl/regulator-pm-v8-s5-level-ao
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-mxclvl/regulator-pm-v8-s5-mmcx-voter-level
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-mxlvl
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-mxlvl/regulator-pm-v6e-s3-level
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-mxlvl/regulator-pm-v6e-s3-level-ao
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-nsplvl
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-nsplvl/regulator-pm-v8-s1-level
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-smpe4
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-smpe4/regulator-pm-v6e-s4
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-smpe5
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-smpe5/regulator-pm-v6e-s5
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-smpf4
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-smpf4/regulator-pm-v8-s4
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-smpg1
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-smpg1/regulator-pm-v6g-s1
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-smpg2
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-smpg2/regulator-pm-v6g-s2
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-smpg3
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-smpg3/regulator-pm-v6g-s3
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-smpg4
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-smpg4/regulator-pm-v6g-s4
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-smpg5
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-smpg5/regulator-pm-v6g-s5
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-smpg6
+   + /soc/apps_rsc@17a00000/drv@2/rpmh-regulator-smpg6/regulator-pm-v6g-s6
+   + /soc/cam_rsc@add9000
+   + /soc/cam_rsc@add9000/drv@0
+   + /soc/cam_rsc@add9000/drv@0/bcm_voter
+   + /soc/cam_rsc@add9000/drv@0/channel@0
+   + /soc/cam_rsc@add9000/drv@0/channel@1
+   + /soc/cam_rsc@add9000/drv@1
+   + /soc/cam_rsc@add9000/drv@1/bcm_voter
+   + /soc/cam_rsc@add9000/drv@1/channel@0
+   + /soc/cam_rsc@add9000/drv@1/channel@1
+   + /soc/cam_rsc@add9000/drv@2
+   + /soc/cam_rsc@add9000/drv@2/bcm_voter
+   + /soc/cam_rsc@add9000/drv@2/channel@0
+   + /soc/cam_rsc@add9000/drv@2/channel@1
+   + /soc/cti@112060000/trig-conns
+   + /soc/cti@12010000/trig-conns
+   + /soc/cti@12020000/trig-conns
+   + /soc/cti@12030000/trig-conns
+   + /soc/cti@12040000/trig-conns
+   + /soc/cti@12050000/trig-conns
+   + /soc/cti@12070000/trig-conns
+   + /soc/cti@12080000/trig-conns
+   + /soc/disp_rdump_region
+   + /soc/disp_rsc@af20000
+   + /soc/disp_rsc@af20000/drv@0
+   + /soc/disp_rsc@af20000/drv@0/bcm_voter
+   + /soc/disp_rsc@af20000/drv@0/channel@0
+   + /soc/disp_rsc@af20000/drv@0/sde_rsc_rpmh
+   + /soc/dump_display_region@a4a80000
+   + /soc/google,debug-kinfo
+   + /soc/pinctrl@f000000/ap2mdm
+   + /soc/pinctrl@f000000/ap2mdm/ap2mdm_active
+   + /soc/pinctrl@f000000/ap2mdm/ap2mdm_active/config
+   + /soc/pinctrl@f000000/ap2mdm/ap2mdm_active/mux
+   + /soc/pinctrl@f000000/ap2mdm/ap2mdm_sleep
+   + /soc/pinctrl@f000000/ap2mdm/ap2mdm_sleep/config
+   + /soc/pinctrl@f000000/ap2mdm/ap2mdm_sleep/mux
+   + /soc/pinctrl@f000000/gamepad_gpio_key
+   + /soc/pinctrl@f000000/gamepad_gpio_key/gpio_key_active
+   + /soc/pinctrl@f000000/gamepad_gpio_key/gpio_key_active/config
+   + /soc/pinctrl@f000000/gamepad_gpio_key/gpio_key_active/mux
+   + /soc/pinctrl@f000000/gamepad_gpio_key/gpio_key_suspend
+   + /soc/pinctrl@f000000/gamepad_gpio_key/gpio_key_suspend/config
+   + /soc/pinctrl@f000000/gamepad_gpio_key/gpio_key_suspend/mux
+   + /soc/pinctrl@f000000/mdm2ap
+   + /soc/pinctrl@f000000/mdm2ap/mdm2ap_active
+   + /soc/pinctrl@f000000/mdm2ap/mdm2ap_active/config
+   + /soc/pinctrl@f000000/mdm2ap/mdm2ap_active/mux
+   + /soc/pinctrl@f000000/mdm2ap/mdm2ap_sleep
+   + /soc/pinctrl@f000000/mdm2ap/mdm2ap_sleep/config
+   + /soc/pinctrl@f000000/mdm2ap/mdm2ap_sleep/mux
+   + /soc/qcom,dma-heaps/qcom,adsp
+   + /soc/qcom,dma-heaps/qcom,audio_ml
+   + /soc/qcom,gdsc@add5004
+   + /soc/qcom,glinkpkt/qcom,glinkpkt-qmc-cma
+   + /soc/qcom,glinkpkt/qcom,glinkpkt-qmc-dma
+   + /soc/qcom,glinkpkt/qcom,glinkpkt-xpan_control
+   + /soc/qcom,llcc-l3-vote
+   + /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_ext_bridge_1080p
+   + /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_ext_bridge_1080p/qcom,mdss-dsi-display-timings
+   + /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_ext_bridge_1080p/qcom,mdss-dsi-display-timings/timing@0
+   + /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_sec_sim_video
+   + /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_sec_sim_video/qcom,mdss-dsi-display-timings
+   + /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_sec_sim_video/qcom,mdss-dsi-display-timings/timing@0
+   + /soc/qcom,memshare/qcom,client_4
+   + /soc/qcom,memshare/qcom,client_5
+   + /soc/qcom,qbt_handler
+   + /soc/qcom,scmi/protocol@84
+   + /soc/qcom,spmi@c42d000/qcom,pm8550b@7/qcom,hv-haptics@f000/primitive_0
+   + /soc/qcom,spmi@c42d000/qcom,pm8550b@7/qcom,hv-haptics@f000/primitive_1
+   + /soc/qcom,spmi@c42d000/qcom,pm8550b@7/qcom,hv-haptics@f000/primitive_2
+   + /soc/qcom,spmi@c42d000/qcom,pm8550b@7/qcom,hv-haptics@f000/primitive_3
+   + /soc/qcom,spmi@c42d000/qcom,pm8550b@7/qcom,hv-haptics@f000/primitive_4
+   + /soc/qcom,spmi@c42d000/qcom,pm8550b@7/qcom,hv-haptics@f000/primitive_5
+   + /soc/qcom,spmi@c42d000/qcom,pm8550b@7/qcom,hv-haptics@f000/primitive_6
+   + /soc/qcom,spmi@c42d000/qcom,pm8550b@7/qcom,hv-haptics@f000/primitive_7
+   + /soc/qcom,spmi@c42d000/qcom,pm8550b@7/qcom,hv-haptics@f000/primitive_8
+   + /soc/qmi-tmd-devices/modem/modem_lte_sub1_dsc
+   + /soc/qmi-tmd-devices/modem/modem_nr_scg_sub1_dsc
+   + /soc/qmi-tmd-devices/modem/modem_nr_sub1_dsc
+   + /soc/qmi-tmd-devices/modem/pa_lte_sdr0_sub1_dsc
+   + /soc/qmi-tmd-devices/modem/pa_lte_sdr1_sub1_dsc
+   + /soc/qmi-tmd-devices/modem/pa_nr_sdr0_sub1_dsc
+   + /soc/qmi-tmd-devices/modem/pa_nr_sdr1_sub1_dsc
+   + /soc/tgu@10b0f000
+   + /soc/tgu@10b10000
+   + /soc/tsens0@c271000
+   + /soc/tsens1@c272000
+   + /soc/tsens2@c273000
+
+== 节点 — 仅在 B (out_boot/kernel.tail) == (193)
+   - /hypervisor/qcom,resource-manager-rpc@14c04352ae1e1739
+   - /reserved-memory/tz_reserved_region@d8000000
+   - /soc/display_gpio_regulator@1
+   - /soc/qcom,spmi@c42d000/qcom,pm8550@1/pinctrl@8800/display_panel_avdd_default
+   - /soc/rsc@17a00000
+   - /soc/rsc@17a00000/drv@2
+   - /soc/rsc@17a00000/drv@2/bcm_voter
+   - /soc/rsc@17a00000/drv@2/channel@0
+   - /soc/rsc@17a00000/drv@2/clock-controller
+   - /soc/rsc@17a00000/drv@2/qcom,dcvs-fp
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-bobb1
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-bobb1/regulator-pm-humu-bob1
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-bobb2
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-bobb2/regulator-pm-humu-bob2
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-cxlvl
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-cxlvl/regulator-pm-v6e-s6-level
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-cxlvl/regulator-pm-v6e-s6-level-ao
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-cxlvl/regulator-pm-v6e-s6-mmcx-sup-level
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ebilvl
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ebilvl/regulator-pm-v8-s3-level
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-gfxlvl
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-gfxlvl/regulator-pm-v6d-s5-level
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-lcxlvl
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-lcxlvl/regulator-pm-v6d-s4-level
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob1
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob1/regulator-pm-humu-l1
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob10
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob10/regulator-pm-humu-l10
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob11
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob11/regulator-pm-humu-l11
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob12
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob12/regulator-pm-humu-l12
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob13
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob13/regulator-pm-humu-l13
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob14
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob14/regulator-pm-humu-l14
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob15
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob15/regulator-pm-humu-l15
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob16
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob16/regulator-pm-humu-l16
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob17
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob17/regulator-pm-humu-l17
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob2
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob2/regulator-pm-humu-l2
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob5
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob5/regulator-pm-humu-l5
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob6
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob6/regulator-pm-humu-l6
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob7
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob7/regulator-pm-humu-l7
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob8
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob8/regulator-pm-humu-l8
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob9
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldob9/regulator-pm-humu-l9
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldoc1
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldoc1/regulator-pm-v6c-l1
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldoc2
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldoc2/regulator-pm-v6c-l2
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldoc3
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldoc3/regulator-pm-v6c-l3
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldod1
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldod1/regulator-pm-v6d-l1
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldoe1
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldoe1/regulator-pm-v6e-l1
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldoe1/regulator-pm-v6e-l1-ao
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldoe1/regulator-pm-v6e-l1-so
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldoe2
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldoe2/regulator-pm-v6e-l2
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldoe3
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldoe3/regulator-pm-v6e-l3
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldoe3/regulator-pm-v6e-l3-ao
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldoe3/regulator-pm-v6e-l3-so
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldof1
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldof1/regulator-pm-v8-l1
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldof2
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldof2/regulator-pm-v8-l2
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldof3
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldof3/regulator-pm-v8-l3
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldog1
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldog1/regulator-pm-v6g-l1
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldog2
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldog2/regulator-pm-v6g-l2
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldog3
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldog3/regulator-pm-v6g-l3
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldok1
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldok1/regulator-pmr-nalojrk-l1
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldok2
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldok2/regulator-pmr-nalojrk-l2
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldok3
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldok3/regulator-pmr-nalojrk-l3
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldok4
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldok4/regulator-pmr-nalojrk-l4
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldok5
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldok5/regulator-pmr-nalojrk-l5
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldok6
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldok6/regulator-pmr-nalojrk-l6
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldok7
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldok7/regulator-pmr-nalojrk-l7
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldol3
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldol3/regulator-pmr-nalojrl-l3
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldol4
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldol4/regulator-pmr-nalojrl-l4
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldol5
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldol5/regulator-pmr-nalojrl-l5
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldol6
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldol6/regulator-pmr-nalojrl-l6
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldol7
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldol7/regulator-pmr-nalojrl-l7
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldom1
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldom1/regulator-pm8010m-l1
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldom2
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldom2/regulator-pm8010m-l2
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldom3
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldom3/regulator-pm8010m-l3
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldom4
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldom4/regulator-pm8010m-l4
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldom5
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldom5/regulator-pm8010m-l5
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldom6
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldom6/regulator-pm8010m-l6
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldom7
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldom7/regulator-pm8010m-l7
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldon1
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldon1/regulator-pm8010n-l1
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldon2
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldon2/regulator-pm8010n-l2
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldon3
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldon3/regulator-pm8010n-l3
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldon4
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldon4/regulator-pm8010n-l4
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldon5
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldon5/regulator-pm8010n-l5
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldon6
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldon6/regulator-pm8010n-l6
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldon7
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-ldon7/regulator-pm8010n-l7
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-lmxlvl
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-lmxlvl/regulator-pm-v6d-l2-level
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-mmcxlvl
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-mmcxlvl/regulator-pm-v6e-s1-level
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-mmcxlvl/regulator-pm-v6e-s1-level-ao
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-mmcxlvl/regulator-pm-v6e-s1-level-so
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-msslvl
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-msslvl/regulator-pm-v8-s7-level
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-mxclvl
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-mxclvl/regulator-pm-v8-s5-gfx-voter-level
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-mxclvl/regulator-pm-v8-s5-level
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-mxclvl/regulator-pm-v8-s5-level-ao
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-mxclvl/regulator-pm-v8-s5-mmcx-voter-level
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-mxlvl
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-mxlvl/regulator-pm-v6e-s3-level
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-mxlvl/regulator-pm-v6e-s3-level-ao
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-nsplvl
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-nsplvl/regulator-pm-v8-s1-level
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-smpe4
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-smpe4/regulator-pm-v6e-s4
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-smpe5
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-smpe5/regulator-pm-v6e-s5
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-smpf4
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-smpf4/regulator-pm-v8-s4
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-smpg1
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-smpg1/regulator-pm-v6g-s1
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-smpg2
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-smpg2/regulator-pm-v6g-s2
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-smpg3
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-smpg3/regulator-pm-v6g-s3
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-smpg4
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-smpg4/regulator-pm-v6g-s4
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-smpg5
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-smpg5/regulator-pm-v6g-s5
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-smpg6
+   - /soc/rsc@17a00000/drv@2/rpmh-regulator-smpg6/regulator-pm-v6g-s6
+   - /soc/rsc@add9000
+   - /soc/rsc@add9000/drv@0
+   - /soc/rsc@add9000/drv@0/bcm_voter
+   - /soc/rsc@add9000/drv@0/channel@0
+   - /soc/rsc@add9000/drv@0/channel@1
+   - /soc/rsc@add9000/drv@1
+   - /soc/rsc@add9000/drv@1/bcm_voter
+   - /soc/rsc@add9000/drv@1/channel@0
+   - /soc/rsc@add9000/drv@1/channel@1
+   - /soc/rsc@add9000/drv@2
+   - /soc/rsc@add9000/drv@2/bcm_voter
+   - /soc/rsc@add9000/drv@2/channel@0
+   - /soc/rsc@add9000/drv@2/channel@1
+   - /soc/rsc@af20000
+   - /soc/rsc@af20000/drv@0
+   - /soc/rsc@af20000/drv@0/bcm_voter
+   - /soc/rsc@af20000/drv@0/channel@0
+   - /soc/rsc@af20000/drv@0/sde_rsc_rpmh
+   - /soc/thermal-sensor@c271000
+   - /soc/thermal-sensor@c272000
+   - /soc/thermal-sensor@c273000
+
+== 属性（公共节点）==
+  属性总数:    A=22820  B=22432
+  仅在 A 存在: 99
+  仅在 B 存在: 14
+  真实值变化:  277
+  仅 phandle 重新编号: 3176
+
+== 属性 — 仅在 A 存在 == (99)
+   + /__symbols__ :: ap2mdm_active  (42B)
+   + /__symbols__ :: ap2mdm_sleep  (41B)
+   + /__symbols__ :: audio_cma_mem  (34B)
+   + /__symbols__ :: cam_cc_camss_top_gdsc  (23B)
+   + /__symbols__ :: gpio_key_active  (54B)
+   + /__symbols__ :: gpio_key_suspend  (55B)
+   + /__symbols__ :: kinfo_mem  (36B)
+   + /__symbols__ :: mdm2ap_active  (42B)
+   + /__symbols__ :: mdm2ap_sleep  (41B)
+   + /__symbols__ :: modem_lte_sub1_dsc  (46B)
+   + /__symbols__ :: modem_nr_scg_sub1_dsc  (49B)
+   + /__symbols__ :: modem_nr_sub1_dsc  (45B)
+   + /__symbols__ :: pa_lte_sdr0_sub1_dsc  (48B)
+   + /__symbols__ :: pa_lte_sdr1_sub1_dsc  (48B)
+   + /__symbols__ :: pa_nr_sdr0_sub1_dsc  (47B)
+   + /__symbols__ :: pa_nr_sdr1_sub1_dsc  (47B)
+   + /__symbols__ :: qcom_llcc_l3_vote  (23B)
+   + /__symbols__ :: qcom_qbt  (22B)
+   + /__symbols__ :: qmc_dma_mem  (32B)
+   + /__symbols__ :: scmi_cpufreqstat  (27B)
+   + /__symbols__ :: sdsp_mem  (29B)
+   + /__symbols__ :: spmi_tgu0  (18B)
+   + /__symbols__ :: spmi_tgu1  (18B)
+   + /aliases :: mmc1  (19B)
+   + /ddr-regions :: region2  (40B)
+   + /memory :: ufs_ffu_batterystatus  (4B)
+   + /memory :: ufs_ffu_bootreason  (4B)
+   + /soc/apps-smmu@15000000 :: reg-names  (14B)
+   + /soc/apps-smmu@15000000/anoc_1_qtb@16f0000 :: reg-names  (21B)
+   + /soc/apps-smmu@15000000/anoc_2_qtb@171a000 :: reg-names  (21B)
+   + /soc/apps-smmu@15000000/cam_hf_qtb@17d2000 :: reg-names  (21B)
+   + /soc/apps-smmu@15000000/lpass_qtb@503000 :: reg-names  (21B)
+   + /soc/apps-smmu@15000000/mdp_hf_qtb@17d0000 :: reg-names  (21B)
+   + /soc/apps-smmu@15000000/nsp_qtb@523000 :: reg-names  (21B)
+   + /soc/apps-smmu@15000000/pcie_qtb@16cd000 :: reg-names  (21B)
+   + /soc/apps-smmu@15000000/sf_qtb@17d1000 :: reg-names  (21B)
+   + /soc/dcc_v2@100ff000 :: ll-reg-offsets  (288B)
+   + /soc/dcc_v2@100ff000 :: per-ll-reg-cnt  (4B)
+   + /soc/kgsl-smmu@3da0000 :: reg-names  (14B)
+   + /soc/kgsl-smmu@3da0000/gpu_qtb@3de8000 :: reg-names  (21B)
+   + /soc/qcom,bwmon-llcc@240B6300 :: qcom,second-vote  (4B)
+   + /soc/qcom,cnss-qca-converged/chip_cfg@0 :: cnss-enable-self-recovery  (0B)
+   + /soc/qcom,cnss-qca-converged/chip_cfg@0 :: qcom,rc-ep-short-channel  (0B)
+   + /soc/qcom,cnss-qca-converged/chip_cfg@0 :: qcom,vreg_ol_cpr  (4B)
+   + /soc/qcom,cnss-qca-converged/chip_cfg@1 :: cnss-enable-self-recovery  (0B)
+   + /soc/qcom,gdsc@139004 :: status  (3B)
+   + /soc/qcom,gdsc@150018 :: status  (3B)
+   + /soc/qcom,gdsc@16b004 :: status  (3B)
+   + /soc/qcom,gdsc@16c000 :: status  (3B)
+   + /soc/qcom,gdsc@177004 :: status  (3B)
+   + /soc/qcom,gdsc@18d004 :: status  (3B)
+   + /soc/qcom,gdsc@18e000 :: status  (3B)
+   + /soc/qcom,gdsc@19e000 :: status  (3B)
+   + /soc/qcom,gdsc@3d9905c :: status  (3B)
+   + /soc/qcom,gdsc@3d99108 :: status  (3B)
+   + /soc/qcom,gdsc@abf804c :: status  (3B)
+   + /soc/qcom,gdsc@abf8078 :: status  (3B)
+   + /soc/qcom,gdsc@abf80a4 :: status  (3B)
+   + /soc/qcom,gdsc@abf80cc :: status  (3B)
+   + /soc/qcom,gdsc@adf0004 :: status  (3B)
+   + /soc/qcom,gdsc@adf03b8 :: status  (3B)
+   + /soc/qcom,gdsc@adf052c :: status  (3B)
+   + /soc/qcom,gdsc@adf1004 :: status  (3B)
+   + /soc/qcom,gdsc@adf2004 :: status  (3B)
+   + /soc/qcom,gdsc@adf2294 :: status  (3B)
+   + /soc/qcom,gdsc@adf3280 :: status  (3B)
+   + /soc/qcom,gdsc@adf33e0 :: status  (3B)
+   + /soc/qcom,gdsc@adf4058 :: status  (3B)
+   + /soc/qcom,gdsc@af09000 :: status  (3B)
+   + /soc/qcom,gdsc@af0b000 :: status  (3B)
+   + /soc/qcom,mdss_mdp@ae00000 :: qcom,sde-ipcc-client-dpu-phys-id  (4B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd :: mi,normal-to-aod-doze-51reg-update-value  (4B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@0 :: mi,mdss-dsi-doze-hbm-command-update  (12B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@0 :: mi,mdss-dsi-doze-lbm-command-update  (12B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@0 :: qcom,mdss-dsi-nolp-command-update  (12B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@1 :: mi,mdss-dsi-doze-hbm-command-update  (12B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@1 :: mi,mdss-dsi-doze-lbm-command-update  (12B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@1 :: qcom,mdss-dsi-nolp-command-update  (12B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 :: mi,mdss-dsi-doze-hbm-command-update  (12B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 :: mi,mdss-dsi-doze-lbm-command-update  (12B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 :: qcom,mdss-dsi-nolp-command-update  (12B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd :: mi,normal-to-aod-doze-51reg-update-value  (4B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@0 :: mi,mdss-dsi-doze-hbm-command-update  (12B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@0 :: mi,mdss-dsi-doze-lbm-command-update  (12B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@0 :: qcom,mdss-dsi-nolp-command-update  (12B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@1 :: mi,mdss-dsi-doze-hbm-command-update  (12B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@1 :: mi,mdss-dsi-doze-lbm-command-update  (12B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@1 :: qcom,mdss-dsi-nolp-command-update  (12B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 :: mi,mdss-dsi-doze-hbm-command-update  (12B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 :: mi,mdss-dsi-doze-lbm-command-update  (12B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 :: qcom,mdss-dsi-nolp-command-update  (12B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_sharp_qhd_plus_dsc_video :: qcom,dsi-supported-dfps-list  (12B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_sharp_qhd_plus_dsc_video :: qcom,mdss-dsi-pan-enable-dynamic-fps  (0B)
+   + /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_sharp_qhd_plus_dsc_video :: qcom,mdss-dsi-pan-fps-update  (30B)
+   + /soc/qcom,pcie@1c00000 :: device_type  (4B)
+   + /soc/qcom,pcie@1c00000 :: qcom,config-recovery  (0B)
+   + /soc/slim@6C40000/ngd@1/btfmslim-driver :: qcom,btslim-address  (4B)
+   + /soc/slim@6C40000/ngd@1/btfmslim-driver :: qcom,btslimrx-channels  (8B)
+   + /soc/slim@6C40000/ngd@1/btfmslim-driver :: qcom,btslimtx-channels  (8B)
+
+== 属性 — 仅在 B 存在 == (14)
+   - /__symbols__ :: tz_reserved_mem  (45B)
+   - /aliases :: sdhc2  (19B)
+   - /reserved-memory/oem_vm_region@f7c00000 :: reg  (16B)
+   - /reserved-memory/oem_vm_swiotlb@f7b00000 :: reg  (16B)
+   - /reserved-memory/oem_vm_vblk0_ring@f7afc000 :: reg  (16B)
+   - /reserved-memory/ramoops_region :: console-size  (4B)
+   - /reserved-memory/ramoops_region :: max-reason  (4B)
+   - /reserved-memory/ramoops_region :: record-size  (4B)
+   - /reserved-memory/ramoops_region :: size  (8B)
+   - /reserved-memory/xbl_dt_log_merged@81a00000 :: reg  (16B)
+   - /soc/qcom,kgsl-3d0@3d00000 :: qcom,chipid  (4B)
+   - /soc/qcom,kgsl-3d0@3d00000 :: qcom,gpu-model  (12B)
+   - /soc/qcom,pcie@1c00000 :: qcom,no-l0s-supported  (0B)
+   - /soc/regulator-ocp-notifier :: periph-2c3-supply  (4B)
+
+== 属性 — 真实值变化 == (277)
+   ~ /__symbols__ :: BOB1  (73B -> 68B)
+   ~ /__symbols__ :: BOB2  (73B -> 68B)
+   ~ /__symbols__ :: L10B  (73B -> 68B)
+   ~ /__symbols__ :: L11B  (73B -> 68B)
+   ~ /__symbols__ :: L12B  (73B -> 68B)
+   ~ /__symbols__ :: L13B  (73B -> 68B)
+   ~ /__symbols__ :: L14B  (73B -> 68B)
+   ~ /__symbols__ :: L15B  (73B -> 68B)
+   ~ /__symbols__ :: L16B  (73B -> 68B)
+   ~ /__symbols__ :: L17B  (73B -> 68B)
+   ~ /__symbols__ :: L1B  (71B -> 66B)
+   ~ /__symbols__ :: L1C  (70B -> 65B)
+   ~ /__symbols__ :: L1D  (70B -> 65B)
+   ~ /__symbols__ :: L1E  (70B -> 65B)
+   ~ /__symbols__ :: L1E_AO  (73B -> 68B)
+   ~ /__symbols__ :: L1F  (69B -> 64B)
+   ~ /__symbols__ :: L1G  (70B -> 65B)
+   ~ /__symbols__ :: L1K  (75B -> 70B)
+   ~ /__symbols__ :: L1M  (71B -> 66B)
+   ~ /__symbols__ :: L1N  (71B -> 66B)
+   ~ /__symbols__ :: L2B  (71B -> 66B)
+   ~ /__symbols__ :: L2C  (70B -> 65B)
+   ~ /__symbols__ :: L2D_LEVEL  (77B -> 72B)
+   ~ /__symbols__ :: L2E  (70B -> 65B)
+   ~ /__symbols__ :: L2F  (69B -> 64B)
+   ~ /__symbols__ :: L2G  (70B -> 65B)
+   ~ /__symbols__ :: L2K  (75B -> 70B)
+   ~ /__symbols__ :: L2M  (71B -> 66B)
+   ~ /__symbols__ :: L2N  (71B -> 66B)
+   ~ /__symbols__ :: L3C  (70B -> 65B)
+   ~ /__symbols__ :: L3E  (70B -> 65B)
+   ~ /__symbols__ :: L3E_AO  (73B -> 68B)
+   ~ /__symbols__ :: L3F  (69B -> 64B)
+   ~ /__symbols__ :: L3G  (70B -> 65B)
+   ~ /__symbols__ :: L3K  (75B -> 70B)
+   ~ /__symbols__ :: L3L  (75B -> 70B)
+   ~ /__symbols__ :: L3M  (71B -> 66B)
+   ~ /__symbols__ :: L3N  (71B -> 66B)
+   ~ /__symbols__ :: L4K  (75B -> 70B)
+   ~ /__symbols__ :: L4L  (75B -> 70B)
+   ~ /__symbols__ :: L4M  (71B -> 66B)
+   ~ /__symbols__ :: L4N  (71B -> 66B)
+   ~ /__symbols__ :: L5B  (71B -> 66B)
+   ~ /__symbols__ :: L5K  (75B -> 70B)
+   ~ /__symbols__ :: L5L  (75B -> 70B)
+   ~ /__symbols__ :: L5M  (71B -> 66B)
+   ~ /__symbols__ :: L5N  (71B -> 66B)
+   ~ /__symbols__ :: L6B  (71B -> 66B)
+   ~ /__symbols__ :: L6K  (75B -> 70B)
+   ~ /__symbols__ :: L6L  (75B -> 70B)
+   ~ /__symbols__ :: L6M  (71B -> 66B)
+   ~ /__symbols__ :: L6N  (71B -> 66B)
+   ~ /__symbols__ :: L7B  (71B -> 66B)
+   ~ /__symbols__ :: L7K  (75B -> 70B)
+   ~ /__symbols__ :: L7L  (75B -> 70B)
+   ~ /__symbols__ :: L7M  (71B -> 66B)
+   ~ /__symbols__ :: L7N  (71B -> 66B)
+   ~ /__symbols__ :: L8B  (71B -> 66B)
+   ~ /__symbols__ :: L9B  (71B -> 66B)
+   ~ /__symbols__ :: S1E_LEVEL  (78B -> 73B)
+   ~ /__symbols__ :: S1E_LEVEL_AO  (81B -> 76B)
+   ~ /__symbols__ :: S1F_LEVEL  (76B -> 71B)
+   ~ /__symbols__ :: S1G  (70B -> 65B)
+   ~ /__symbols__ :: S2G  (70B -> 65B)
+   ~ /__symbols__ :: S3E_LEVEL  (76B -> 71B)
+   ~ /__symbols__ :: S3E_LEVEL_AO  (79B -> 74B)
+   ~ /__symbols__ :: S3F_LEVEL  (76B -> 71B)
+   ~ /__symbols__ :: S3G  (70B -> 65B)
+   ~ /__symbols__ :: S4D_LEVEL  (77B -> 72B)
+   ~ /__symbols__ :: S4E  (70B -> 65B)
+   ~ /__symbols__ :: S4F  (69B -> 64B)
+   ~ /__symbols__ :: S4G  (70B -> 65B)
+   ~ /__symbols__ :: S5D_LEVEL  (77B -> 72B)
+   ~ /__symbols__ :: S5E  (70B -> 65B)
+   ~ /__symbols__ :: S5F_LEVEL  (76B -> 71B)
+   ~ /__symbols__ :: S5F_LEVEL_AO  (79B -> 74B)
+   ~ /__symbols__ :: S5G  (70B -> 65B)
+   ~ /__symbols__ :: S6E_LEVEL  (76B -> 71B)
+   ~ /__symbols__ :: S6E_LEVEL_AO  (79B -> 74B)
+   ~ /__symbols__ :: S6G  (70B -> 65B)
+   ~ /__symbols__ :: S7F_LEVEL  (76B -> 71B)
+   ~ /__symbols__ :: VDD_CX_LEVEL  (76B -> 71B)
+   ~ /__symbols__ :: VDD_CX_LEVEL_AO  (79B -> 74B)
+   ~ /__symbols__ :: VDD_CX_MMCX_SUPPLY_LEVEL  (85B -> 80B)
+   ~ /__symbols__ :: VDD_EBI_LEVEL  (76B -> 71B)
+   ~ /__symbols__ :: VDD_GFX_LEVEL  (77B -> 72B)
+   ~ /__symbols__ :: VDD_GFX_MXC_VOTER_LEVEL  (86B -> 81B)
+   ~ /__symbols__ :: VDD_LPI_CX_LEVEL  (77B -> 72B)
+   ~ /__symbols__ :: VDD_LPI_MX_LEVEL  (77B -> 72B)
+   ~ /__symbols__ :: VDD_MMCX_LEVEL  (78B -> 73B)
+   ~ /__symbols__ :: VDD_MMCX_LEVEL_AO  (81B -> 76B)
+   ~ /__symbols__ :: VDD_MM_LEVEL  (78B -> 73B)
+   ~ /__symbols__ :: VDD_MM_LEVEL_AO  (81B -> 76B)
+   ~ /__symbols__ :: VDD_MM_MXC_VOTER_LEVEL  (87B -> 82B)
+   ~ /__symbols__ :: VDD_MODEM_LEVEL  (76B -> 71B)
+   ~ /__symbols__ :: VDD_MXA_LEVEL  (76B -> 71B)
+   ~ /__symbols__ :: VDD_MXA_LEVEL_AO  (79B -> 74B)
+   ~ /__symbols__ :: VDD_MXC_GFX_VOTER_LEVEL  (86B -> 81B)
+   ~ /__symbols__ :: VDD_MXC_LEVEL  (76B -> 71B)
+   ~ /__symbols__ :: VDD_MXC_LEVEL_AO  (79B -> 74B)
+   ~ /__symbols__ :: VDD_MXC_MMCX_VOTER_LEVEL  (87B -> 82B)
+   ~ /__symbols__ :: VDD_MXC_MM_VOTER_LEVEL  (87B -> 82B)
+   ~ /__symbols__ :: VDD_NSP_LEVEL  (76B -> 71B)
+   ~ /__symbols__ :: apps_bcm_voter  (39B -> 34B)
+   ~ /__symbols__ :: apps_rsc  (23B -> 18B)
+   ~ /__symbols__ :: apps_rsc_drv2  (29B -> 24B)
+   ~ /__symbols__ :: cam_bcm_voter0  (37B -> 33B)
+   ~ /__symbols__ :: cam_bcm_voter1  (37B -> 33B)
+   ~ /__symbols__ :: cam_bcm_voter2  (37B -> 33B)
+   ~ /__symbols__ :: cam_rsc  (21B -> 17B)
+   ~ /__symbols__ :: cam_rsc_drv0  (27B -> 23B)
+   ~ /__symbols__ :: cam_rsc_drv1  (27B -> 23B)
+   ~ /__symbols__ :: cam_rsc_drv2  (27B -> 23B)
+   ~ /__symbols__ :: dcvs_fp  (42B -> 37B)
+   ~ /__symbols__ :: disp_bcm_voter  (38B -> 33B)
+   ~ /__symbols__ :: disp_rsc  (22B -> 17B)
+   ~ /__symbols__ :: disp_rsc_drv0  (28B -> 23B)
+   ~ /__symbols__ :: pm8010m_l1  (71B -> 66B)
+   ~ /__symbols__ :: pm8010m_l2  (71B -> 66B)
+   ~ /__symbols__ :: pm8010m_l3  (71B -> 66B)
+   ~ /__symbols__ :: pm8010m_l4  (71B -> 66B)
+   ~ /__symbols__ :: pm8010m_l5  (71B -> 66B)
+   ~ /__symbols__ :: pm8010m_l6  (71B -> 66B)
+   ~ /__symbols__ :: pm8010m_l7  (71B -> 66B)
+   ~ /__symbols__ :: pm8010n_l1  (71B -> 66B)
+   ~ /__symbols__ :: pm8010n_l2  (71B -> 66B)
+   ~ /__symbols__ :: pm8010n_l3  (71B -> 66B)
+   ~ /__symbols__ :: pm8010n_l4  (71B -> 66B)
+   ~ /__symbols__ :: pm8010n_l5  (71B -> 66B)
+   ~ /__symbols__ :: pm8010n_l6  (71B -> 66B)
+   ~ /__symbols__ :: pm8010n_l7  (71B -> 66B)
+   ~ /__symbols__ :: pm_humu_bob1  (73B -> 68B)
+   ~ /__symbols__ :: pm_humu_bob2  (73B -> 68B)
+   ~ /__symbols__ :: pm_humu_l1  (71B -> 66B)
+   ~ /__symbols__ :: pm_humu_l10  (73B -> 68B)
+   ~ /__symbols__ :: pm_humu_l11  (73B -> 68B)
+   ~ /__symbols__ :: pm_humu_l12  (73B -> 68B)
+   ~ /__symbols__ :: pm_humu_l13  (73B -> 68B)
+   ~ /__symbols__ :: pm_humu_l14  (73B -> 68B)
+   ~ /__symbols__ :: pm_humu_l15  (73B -> 68B)
+   ~ /__symbols__ :: pm_humu_l16  (73B -> 68B)
+   ~ /__symbols__ :: pm_humu_l17  (73B -> 68B)
+   ~ /__symbols__ :: pm_humu_l2  (71B -> 66B)
+   ~ /__symbols__ :: pm_humu_l5  (71B -> 66B)
+   ~ /__symbols__ :: pm_humu_l6  (71B -> 66B)
+   ~ /__symbols__ :: pm_humu_l7  (71B -> 66B)
+   ~ /__symbols__ :: pm_humu_l8  (71B -> 66B)
+   ~ /__symbols__ :: pm_humu_l9  (71B -> 66B)
+   ~ /__symbols__ :: pm_v6c_l1  (70B -> 65B)
+   ~ /__symbols__ :: pm_v6c_l2  (70B -> 65B)
+   ~ /__symbols__ :: pm_v6c_l3  (70B -> 65B)
+   ~ /__symbols__ :: pm_v6d_l1  (70B -> 65B)
+   ~ /__symbols__ :: pm_v6d_l2_level  (77B -> 72B)
+   ~ /__symbols__ :: pm_v6d_s4_level  (77B -> 72B)
+   ~ /__symbols__ :: pm_v6d_s5_level  (77B -> 72B)
+   ~ /__symbols__ :: pm_v6e_l1  (70B -> 65B)
+   ~ /__symbols__ :: pm_v6e_l1_ao  (73B -> 68B)
+   ~ /__symbols__ :: pm_v6e_l2  (70B -> 65B)
+   ~ /__symbols__ :: pm_v6e_l3  (70B -> 65B)
+   ~ /__symbols__ :: pm_v6e_l3_ao  (73B -> 68B)
+   ~ /__symbols__ :: pm_v6e_s1_level  (78B -> 73B)
+   ~ /__symbols__ :: pm_v6e_s1_level_ao  (81B -> 76B)
+   ~ /__symbols__ :: pm_v6e_s3_level  (76B -> 71B)
+   ~ /__symbols__ :: pm_v6e_s3_level_ao  (79B -> 74B)
+   ~ /__symbols__ :: pm_v6e_s4  (70B -> 65B)
+   ~ /__symbols__ :: pm_v6e_s5  (70B -> 65B)
+   ~ /__symbols__ :: pm_v6e_s6_level  (76B -> 71B)
+   ~ /__symbols__ :: pm_v6e_s6_level_ao  (79B -> 74B)
+   ~ /__symbols__ :: pm_v6g_l1  (70B -> 65B)
+   ~ /__symbols__ :: pm_v6g_l2  (70B -> 65B)
+   ~ /__symbols__ :: pm_v6g_l3  (70B -> 65B)
+   ~ /__symbols__ :: pm_v6g_s1  (70B -> 65B)
+   ~ /__symbols__ :: pm_v6g_s2  (70B -> 65B)
+   ~ /__symbols__ :: pm_v6g_s3  (70B -> 65B)
+   ~ /__symbols__ :: pm_v6g_s4  (70B -> 65B)
+   ~ /__symbols__ :: pm_v6g_s5  (70B -> 65B)
+   ~ /__symbols__ :: pm_v6g_s6  (70B -> 65B)
+   ~ /__symbols__ :: pm_v8_l1  (69B -> 64B)
+   ~ /__symbols__ :: pm_v8_l2  (69B -> 64B)
+   ~ /__symbols__ :: pm_v8_l3  (69B -> 64B)
+   ~ /__symbols__ :: pm_v8_s1_level  (76B -> 71B)
+   ~ /__symbols__ :: pm_v8_s3_level  (76B -> 71B)
+   ~ /__symbols__ :: pm_v8_s4  (69B -> 64B)
+   ~ /__symbols__ :: pm_v8_s5_level  (76B -> 71B)
+   ~ /__symbols__ :: pm_v8_s5_level_ao  (79B -> 74B)
+   ~ /__symbols__ :: pm_v8_s7_level  (76B -> 71B)
+   ~ /__symbols__ :: pmr_nalojrk_l1  (75B -> 70B)
+   ~ /__symbols__ :: pmr_nalojrk_l2  (75B -> 70B)
+   ~ /__symbols__ :: pmr_nalojrk_l3  (75B -> 70B)
+   ~ /__symbols__ :: pmr_nalojrk_l4  (75B -> 70B)
+   ~ /__symbols__ :: pmr_nalojrk_l5  (75B -> 70B)
+   ~ /__symbols__ :: pmr_nalojrk_l6  (75B -> 70B)
+   ~ /__symbols__ :: pmr_nalojrk_l7  (75B -> 70B)
+   ~ /__symbols__ :: pmr_nalojrl_l3  (75B -> 70B)
+   ~ /__symbols__ :: pmr_nalojrl_l4  (75B -> 70B)
+   ~ /__symbols__ :: pmr_nalojrl_l5  (75B -> 70B)
+   ~ /__symbols__ :: pmr_nalojrl_l6  (75B -> 70B)
+   ~ /__symbols__ :: pmr_nalojrl_l7  (75B -> 70B)
+   ~ /__symbols__ :: rpmhcc  (46B -> 41B)
+   ~ /__symbols__ :: tsens0  (20B -> 28B)
+   ~ /__symbols__ :: tsens1  (20B -> 28B)
+   ~ /__symbols__ :: tsens2  (20B -> 28B)
+   ~ /chosen :: bootargs  (1187B -> 1314B)
+   ~ /chosen :: linux,initrd-end  (8B -> 8B)
+   ~ /chosen :: linux,initrd-start  (8B -> 8B)
+   ~ /ddr-regions :: region1  (40B -> 40B)
+   ~ /memory :: reg  (144B -> 112B)
+   ~ /reserved-memory/adspslpi_region@9ea00000 :: reg  (16B -> 16B)
+   ~ /reserved-memory/hwfence-shmem :: reg  (16B -> 16B)
+   ~ /reserved-memory/qseecom_ta_region :: size  (8B -> 8B)
+   ~ /soc/apps-smmu@15000000 :: reg  (16B -> 8B)
+   ~ /soc/apps-smmu@15000000/anoc_1_qtb@16f0000 :: reg  (16B -> 8B)
+   ~ /soc/apps-smmu@15000000/anoc_2_qtb@171a000 :: reg  (16B -> 8B)
+   ~ /soc/apps-smmu@15000000/cam_hf_qtb@17d2000 :: reg  (16B -> 8B)
+   ~ /soc/apps-smmu@15000000/lpass_qtb@503000 :: reg  (16B -> 8B)
+   ~ /soc/apps-smmu@15000000/mdp_hf_qtb@17d0000 :: reg  (16B -> 8B)
+   ~ /soc/apps-smmu@15000000/nsp_qtb@523000 :: reg  (16B -> 8B)
+   ~ /soc/apps-smmu@15000000/pcie_qtb@16cd000 :: reg  (16B -> 8B)
+   ~ /soc/apps-smmu@15000000/sf_qtb@17d1000 :: reg  (16B -> 8B)
+   ~ /soc/audio_etm0 :: atid  (8B -> 4B)
+   ~ /soc/kgsl-smmu@3da0000 :: reg  (16B -> 8B)
+   ~ /soc/kgsl-smmu@3da0000/gpu_qtb@3de8000 :: reg  (16B -> 8B)
+   ~ /soc/qcom,cnss-qca-converged/chip_cfg@0 :: qcom,bus-bw-cfg  (160B -> 144B)
+   ~ /soc/qcom,cnss-qca-converged/chip_cfg@0 :: qcom,pdc_init_table  (553B -> 553B)
+   ~ /soc/qcom,cnss-qca-converged/chip_cfg@0 :: qcom,vdd-wlan-aon-config  (20B -> 20B)
+   ~ /soc/qcom,mdss_mdp@ae00000 :: qcom,sde-max-bw-high-kbps  (4B -> 4B)
+   ~ /soc/qcom,mdss_mdp@ae00000 :: qcom,sde-max-bw-low-kbps  (4B -> 4B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@0 :: mi,mdss-dsi-local-hbm-hlpm-white-1000nit-command  (479B -> 479B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@0 :: mi,mdss-dsi-local-hbm-hlpm-white-110nit-command  (479B -> 479B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@0 :: mi,mdss-dsi-local-hbm-normal-green-500nit-command  (450B -> 450B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@0 :: mi,mdss-dsi-local-hbm-normal-white-1000nit-command  (460B -> 460B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@0 :: mi,mdss-dsi-local-hbm-normal-white-110nit-command  (450B -> 450B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@0 :: mi,mdss-dsi-local-hbm-off-to-hbm-command  (39B -> 39B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@0 :: mi,mdss-dsi-local-hbm-off-to-normal-command  (29B -> 29B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@1 :: mi,mdss-dsi-local-hbm-hlpm-white-1000nit-command  (479B -> 479B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@1 :: mi,mdss-dsi-local-hbm-hlpm-white-110nit-command  (479B -> 479B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@1 :: mi,mdss-dsi-local-hbm-normal-green-500nit-command  (450B -> 450B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@1 :: mi,mdss-dsi-local-hbm-normal-white-1000nit-command  (460B -> 460B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@1 :: mi,mdss-dsi-local-hbm-normal-white-110nit-command  (450B -> 450B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@1 :: mi,mdss-dsi-local-hbm-off-to-hbm-command  (39B -> 39B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@1 :: mi,mdss-dsi-local-hbm-off-to-normal-command  (29B -> 29B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 :: mi,mdss-dsi-local-hbm-hlpm-white-1000nit-command  (479B -> 479B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 :: mi,mdss-dsi-local-hbm-hlpm-white-110nit-command  (479B -> 479B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 :: mi,mdss-dsi-local-hbm-normal-green-500nit-command  (450B -> 450B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 :: mi,mdss-dsi-local-hbm-normal-white-1000nit-command  (460B -> 460B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 :: mi,mdss-dsi-local-hbm-normal-white-110nit-command  (450B -> 450B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 :: mi,mdss-dsi-local-hbm-off-to-hbm-command  (39B -> 39B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,global,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 :: mi,mdss-dsi-local-hbm-off-to-normal-command  (29B -> 29B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@0 :: mi,mdss-dsi-local-hbm-hlpm-white-1000nit-command  (479B -> 479B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@0 :: mi,mdss-dsi-local-hbm-hlpm-white-110nit-command  (479B -> 479B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@0 :: mi,mdss-dsi-local-hbm-normal-green-500nit-command  (450B -> 450B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@0 :: mi,mdss-dsi-local-hbm-normal-white-1000nit-command  (460B -> 460B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@0 :: mi,mdss-dsi-local-hbm-normal-white-110nit-command  (450B -> 450B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@0 :: mi,mdss-dsi-local-hbm-off-to-hbm-command  (39B -> 39B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@0 :: mi,mdss-dsi-local-hbm-off-to-normal-command  (29B -> 29B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@1 :: mi,mdss-dsi-local-hbm-hlpm-white-1000nit-command  (479B -> 479B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@1 :: mi,mdss-dsi-local-hbm-hlpm-white-110nit-command  (479B -> 479B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@1 :: mi,mdss-dsi-local-hbm-normal-green-500nit-command  (450B -> 450B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@1 :: mi,mdss-dsi-local-hbm-normal-white-1000nit-command  (460B -> 460B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@1 :: mi,mdss-dsi-local-hbm-normal-white-110nit-command  (450B -> 450B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@1 :: mi,mdss-dsi-local-hbm-off-to-hbm-command  (39B -> 39B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@1 :: mi,mdss-dsi-local-hbm-off-to-normal-command  (29B -> 29B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 :: mi,mdss-dsi-local-hbm-hlpm-white-1000nit-command  (479B -> 479B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 :: mi,mdss-dsi-local-hbm-hlpm-white-110nit-command  (479B -> 479B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 :: mi,mdss-dsi-local-hbm-normal-green-500nit-command  (450B -> 450B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 :: mi,mdss-dsi-local-hbm-normal-white-1000nit-command  (460B -> 460B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 :: mi,mdss-dsi-local-hbm-normal-white-110nit-command  (450B -> 450B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 :: mi,mdss-dsi-local-hbm-off-to-hbm-command  (39B -> 39B)
+   ~ /soc/qcom,mdss_mdp@ae00000/qcom,mdss_dsi_m3_38_0c_0a_dsc_cmd/qcom,mdss-dsi-display-timings/timing@2 :: mi,mdss-dsi-local-hbm-off-to-normal-command  (29B -> 29B)
+   ~ /soc/qcom,msm_fastrpc :: qcom,qos-cores  (12B -> 16B)
+   ~ /soc/qcom,pcie@1c08000 :: qcom,phy-sequence  (2400B -> 1884B)
+   ~ /soc/qcom,pmu :: qcom,pmu-events-tbl  (96B -> 80B)
+   ~ /soc/remoteproc-adsp@03000000 :: interrupt-names  (48B -> 35B)
+   ~ /soc/remoteproc-adsp@03000000 :: interrupts-extended  (72B -> 60B)
+   ~ /soc/remoteproc-cdsp@32300000 :: interrupt-names  (48B -> 35B)
+   ~ /soc/remoteproc-cdsp@32300000 :: interrupts-extended  (76B -> 64B)
+   ~ /soc/ssphy@88e8000 :: qcom,qmp-phy-init-seq  (1336B -> 1320B)
