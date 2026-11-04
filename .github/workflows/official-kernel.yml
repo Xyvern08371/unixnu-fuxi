@@ -192,28 +192,27 @@ jobs:
         run: |
           set -x
           # baseline 链接要允许未定义符号（native_*/sheng_*/mockfs_* 由后续 archive 提供）
-          BL=out/fuxi/tree/scripts/build-xnu-4k-baseline.sh
-          if [ -f "$BL" ]; then
+          # 真正的树路径是 out/fuxi/ipados-17.7.11-21H461/fuxi/tree/，用 find 定位
+          for BL in $(find out/fuxi -path '*/tree/scripts/build-xnu-4k-baseline.sh'); do
             python3 - "$BL" <<'PY'
           import io, sys
           p = sys.argv[1]
           t = io.open(p, encoding='utf-8').read()
           if 'undefined,dynamic_lookup' in t:
               print('already patched'); raise SystemExit(0)
-          old = 'DEPLOYMENT_LINKER_FLAGS="-Wl,-ios_version_min,$IOS_VERSION"'
-          new = 'DEPLOYMENT_LINKER_FLAGS="-Wl,-ios_version_min,$IOS_VERSION -Wl,-undefined,dynamic_lookup"'
-          if old not in t:
-              old2 = 'DEPLOYMENT_LINKER_FLAGS="-Wl,-ios_version_min,17.0"'
-              new2 = 'DEPLOYMENT_LINKER_FLAGS="-Wl,-ios_version_min,17.0 -Wl,-undefined,dynamic_lookup"'
-              assert old2 in t, 'no DEPLOYMENT_LINKER_FLAGS line found'
-              t = t.replace(old2, new2)
-          else:
-              t = t.replace(old, new)
+          import re
+          # 匹配任意 DEPLOYMENT_LINKER_FLAGS="..." 行（可能带 $IOS_VERSION 或 17.0）
+          pat = re.compile(r'(DEPLOYMENT_LINKER_FLAGS="-Wl,-ios_version_min,[^"]*")')
+          m = pat.search(t)
+          assert m, 'no DEPLOYMENT_LINKER_FLAGS line found in ' + p
+          old = m.group(1)
+          new = old[:-1] + ' -Wl,-undefined,dynamic_lookup"'
+          t = t.replace(old, new)
           io.open(p, 'w', encoding='utf-8', newline='\n').write(t)
-          print('patched DEPLOYMENT_LINKER_FLAGS')
+          print('patched', p)
           PY
             grep -n 'DEPLOYMENT_LINKER_FLAGS=' "$BL"
-          fi
+          done
           mkdir -p "$GITHUB_WORKSPACE/ourrepo/ci-logs-official"
           LOG2="$GITHUB_WORKSPACE/ourrepo/ci-logs-official/pass2.log"
           : > "$LOG2"
