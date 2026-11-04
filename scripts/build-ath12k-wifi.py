@@ -51,7 +51,7 @@ keep = {'_nw_wifi_start', '_nw_wifi_step', '_nw_wifi_stop', '_nw_wifi_stats', '_
         '_nw_wifi_tx_reasons'}
 objs = [o for _, o, _ in jobs]
 names = set()
-llvm = Path(subprocess.run(['brew', '--prefix', 'llvm'], check=True, capture_output=True, text=True).stdout.strip()) / 'bin'
+llvm = Path('/usr/bin')  # WSL: llvm-nm/llvm-objcopy 在 /usr/bin，避免 brew 依赖
 for o in objs:
     r = subprocess.run([str(llvm / 'llvm-nm'), '-g', '--defined-only', str(o)], check=True, capture_output=True, text=True)
     for line in r.stdout.splitlines():

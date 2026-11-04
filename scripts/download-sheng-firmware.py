@@ -28,7 +28,7 @@ target = directory / URL.rsplit('/', 1)[1]
 partial = target.with_suffix('.tgz.part')
 state_path = target.with_suffix('.tgz.ranges.json')
 request = urllib.request.Request(URL, headers={'Range': 'bytes=0-0'})
-with urllib.request.urlopen(request, timeout=30) as response:
+with urllib.request.urlopen(request, timeout=120) as response:
     match = re.fullmatch(r'bytes 0-0/(\d+)', response.headers.get('Content-Range', ''))
     if response.status != 206 or not match or response.read() != b'\x1f':
         raise SystemExit('Expected a ranged gzip response; refusing a whole-body fallback')
@@ -73,11 +73,11 @@ def fetch(index):
             request = urllib.request.Request(URL, headers=headers)
             digest = hashlib.sha256()
             position = begin
-            with urllib.request.urlopen(request, timeout=30) as response:
+            with urllib.request.urlopen(request, timeout=120) as response:
                 if response.status != 206 or response.headers.get('Content-Range') != f'bytes {begin}-{end - 1}/{size}':
                     raise RuntimeError('Range response does not match the requested extent')
                 while position < end:
-                    if time.monotonic() - request_started > 45:
+                    if time.monotonic() - request_started > 300:
                         raise TimeoutError('Slow range exceeded its 45-second attempt budget')
                     blob = response.read1(min(256 * 1024, end - position))
                     if not blob:
