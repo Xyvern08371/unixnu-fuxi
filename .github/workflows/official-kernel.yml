@@ -53,10 +53,10 @@ jobs:
           path: unixnu
           persist-credentials: false
 
-      - name: 取设备仓库（官方 fuxi 端口）
+      - name: 取设备仓库（Xyvern08371 fuxi 端口，含 WiFi）
         uses: actions/checkout@v4
         with:
-          repository: hanzi123-bilp/unixnu-fuxi
+          repository: Xyvern08371/unixnu-fuxi
           path: device
           persist-credentials: false
 
@@ -204,16 +204,27 @@ jobs:
           full = [
               "build-corecrypto-14.py",
               "build-corecrypto-14.py --namespace",
-              "build-arm-driver.py ArmDTPlatform",
-              "build-arm-driver.py ArmCpu",
-              "build-arm-driver.py NativeAES",
-              "build-arm-driver.py NativeVirtioBlock --verified-root --verified-root-bundle",
+              "component:ArmDTPlatform",
+              "component:ArmCpu",
+              "component:SoftwareAES",
+              "audit-aes-interface.py",
+              "build-software-aes-bindings.py",
               "audit-storage-interface.py",
-              "build-arm-driver.py NativeUfs",
-              "build-native-aes-bindings.py",
+              "component:ShengUfs",
+              "component:VirtioMmioBlock",
+              "component:RamBlock",
+              "build-virtio-mmio-bindings.py --component RamBlock --directory build/ram-block",
+              "build-virtio-mmio-bindings.py --component VirtioMmioBlock",
+              "build-mockfs-fixture.py",
+              "build-sheng-platform-power.py",
               "build-boot-progress.py",
               "build-libpthread-kernel.py",
-              "build-legacy-stub.py",
+              "component:Adreno740",
+              "build-adreno740-kits.py",
+              "build-adreno740-accelerator.py",
+              "component:ShengHidInput",
+              "component:AppleKeyStoreState",
+              "build-gop-legacy-display.py",
           ]
           block = 'archives = [\n' + ''.join('    "%s",\n' % k for k in full) + '  ]'
           for p in ('../device/board.toml', 'out/fuxi/tree/board.toml'):
