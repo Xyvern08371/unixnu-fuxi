@@ -1,0 +1,64 @@
+name: macos-kernel
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [merged]
+
+jobs:
+  kernel:
+    runs-on: macos-14
+    timeout-minutes: 180
+    steps:
+      - name: Checkout UniXNU
+        uses: actions/checkout@v4
+        with:
+          repository: UniXNU/UniXNU
+          path: UniXNU
+          submodules: recursive
+
+      - name: Checkout device repo
+        uses: actions/checkout@v4
+        with:
+          path: UniXNU-fuxi-merged
+
+      - name: Toolchain info
+        run: |
+          xcodebuild -version
+          xcrun --find clang
+          xcrun clang --version | head -2
+
+      - name: Fetch sources
+        working-directory: UniXNU
+        run: |
+          python3 unixnu fetch -D ../UniXNU-fuxi-merged 2>&1 | tail -30
+
+      - name: Defconfig
+        working-directory: UniXNU
+        run: |
+          python3 unixnu defconfig fuxi_defconfig -D ../UniXNU-fuxi-merged
+
+      - name: Build kernel
+        working-directory: UniXNU
+        run: |
+          set -o pipefail
+          set +e; python3 unixnu kernel -D ../UniXNU-fuxi-merged -j 8 > ../kernel-build.log 2>&1; echo "kernel rc=$?"; tail -60 ../kernel-build.log; exit 0
+
+      - name: Collect outputs
+        if: always()
+        run: |
+          mkdir -p artifacts
+          cp -v ../kernel-build.log artifacts/ 2>/dev/null || true
+          find UniXNU/out/fuxi -type f \( -name 'kernel' -o -name '*.im4p' -o -name '*.kernelcache' \) -exec cp -v {} artifacts/ \; 2>/dev/null || true
+          ls -la artifacts
+          du -sh artifacts
+
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuxi-kernel
+          path: |
+            artifacts
+            UniXNU-fuxi-merged/kernel-build.log
+          if-no-files-found: warn

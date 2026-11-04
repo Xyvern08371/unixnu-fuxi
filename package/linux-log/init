@@ -1,0 +1,50 @@
+#!/bin/busybox sh
+# sheng log reader (see build-linux-log-boot.py): copies the UniXNU diagnostic log window (the last 32 MiB of userdata, written by
+# kits/sheng/BootLog.c) into RAM and offers it on a USB CDC ACM shell, where scripts/read-sheng-log.py fetches it and then runs
+# /bin/rebootbl to return to fastboot. Block devices are only read; nothing is mounted.
+/bin/busybox --install -s /bin
+mkdir -p /proc /sys /dev /run /tmp
+mount -t proc proc /proc
+mount -t sysfs sys /sys
+mount -t devtmpfs dev /dev
+mount -t configfs configfs /sys/kernel/config
+mount -t tmpfs tmpfs /run
+L=/run/reader.log
+O=${logout:-/dev/tty0}       # logout=/dev/console and logshell=/dev/ttyAMA0 on the command line for the offline QEMU check
+T=${logshell:-/dev/ttyGS0}
+say() { echo "$*" | tee -a $L > $O; }
+say "sheng log reader $(uname -r)"
+for m in /lib/modules/*.ko; do [ -e "$m" ] && insmod "$m" && say "loaded $m"; done
+
+gadget() {
+    for r in /sys/class/usb_role/*/role; do [ -e "$r" ] && echo device > "$r"; done
+    G=/sys/kernel/config/usb_gadget/log
+    mkdir -p $G/strings/0x409 $G/configs/c.1 $G/functions/acm.usb0 || return
+    echo 0x1d6b > $G/idVendor; echo 0x0104 > $G/idProduct
+    echo shenglog > $G/strings/0x409/serialnumber; echo sheng-log-reader > $G/strings/0x409/product
+    ln -s $G/functions/acm.usb0 $G/configs/c.1/
+    for i in $(seq 1 20); do U=$(ls /sys/class/udc 2>/dev/null | head -n1); [ -n "$U" ] && break; sleep 1; done
+    [ -n "$U" ] && echo "$U" > $G/UDC && say "usb: acm on $U" || say "usb: no udc"
+}
+gadget
+
+# userdata: the partition whose uevent names it; the log is its last 8192 blocks of 4096 bytes.
+P=
+for i in $(seq 1 30); do
+    for u in /sys/class/block/*/uevent; do grep -q '^PARTNAME=userdata$' "$u" && P=$(basename $(dirname "$u")) && break; done
+    [ -n "$P" ] && break; sleep 1
+done
+if [ -n "$P" ]; then
+    S=$(cat /sys/class/block/$P/size)              # 512-byte sectors
+    B=$((S / 8))                                    # 4096-byte blocks
+    dd if=/dev/$P of=/run/log.bin bs=4096 skip=$((B - 8192)) count=8192 2>>$L
+    say "userdata=$P blocks=$B log=$(wc -c < /run/log.bin) bytes magic=$(dd if=/run/log.bin bs=8 count=1 2>/dev/null)"
+else
+    say "userdata not found"
+fi
+say "ready: shell on USB serial"
+
+while true; do
+    if [ -e $T ]; then setsid sh -c "exec sh -i <$T >$T 2>&1"; fi
+    sleep 1
+done
