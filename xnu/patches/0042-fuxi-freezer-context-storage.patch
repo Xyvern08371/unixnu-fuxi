@@ -1,0 +1,18 @@
+diff --git a/osfmk/vm/vm_compressor.c b/osfmk/vm/vm_compressor.c
+--- a/osfmk/vm/vm_compressor.c
++++ b/osfmk/vm/vm_compressor.c
+@@ -61,3 +61,14 @@
+ #include <IOKit/IOHibernatePrivate.h>
++
++#if CONFIG_FREEZE
++/*
++ * Apple's public drop has every *use* of this object (vm_compressor.c,
++ * vm_map.c, vm_object.c, task.c) but no definition, because the
++ * configurations they publish leave CONFIG_FREEZE off. Our DEVELOPMENT
++ * config does pass -DCONFIG_FREEZE, so the storage has to live somewhere.
++ * The type comes from vm/vm_pageout.h, already included above.
++ */
++struct freezer_context freezer_context_global;
++#endif /* CONFIG_FREEZE */
+ 
+ /*

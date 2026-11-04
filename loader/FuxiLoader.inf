@@ -1,0 +1,36 @@
+## @file
+#  fuxi 引导器 (UEFI Application)
+#
+#  构建: 放进 edk2 的源码树, 或用 edk2 的 PACKAGES_PATH 指向本目录,
+#  然后用 `build -p ios-on-fuxi/loader/FuxiLoader.dsc -a AARCH64 -t GCC5`
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = FuxiLoader
+  FILE_GUID                      = 7d3a1c62-9f5b-4e1a-8c2d-9b6e4f0a1c33
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 0.1
+  ENTRY_POINT                    = UefiMain
+
+[Sources]
+  Loader.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+
+[LibraryClasses]
+  UefiApplicationEntryPoint
+  UefiBootServicesTableLib
+  BaseLib
+  BaseMemoryLib
+  MemoryAllocationLib
+  PrintLib
+  DebugLib
+
+[Protocols]
+  gEfiLoadedImageProtocolGuid
+  gEfiSimpleFileSystemProtocolGuid
+
+[Guids]
+  gEfiFileInfoGuid

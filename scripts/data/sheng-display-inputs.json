@@ -1,0 +1,91 @@
+{
+  "repository": "https://github.com/ianchb/sm8550-mainline",
+  "commit": "42f3b40c702abbc37c3a04c95af008cd283aeaf3",
+  "files": {
+    "drivers/gpu/drm/msm/msm_mdss.c": {
+      "bytes": 15472,
+      "sha256": "092b2bbd3b57a03468663c3267a6bf7a47b4e8b79d656933a9a55b642d656f4d"
+    },
+    "drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c": {
+      "bytes": 21382,
+      "sha256": "1dd229917115f420b6a5abdb55bc3764591e0613c130b1bccec577b62f084d96"
+    },
+    "drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.h": {
+      "bytes": 1941,
+      "sha256": "53ffe7e74dead133e11692ba1027f075b5e640efea24ff585d18c46b08b09ecb"
+    },
+    "drivers/gpu/drm/msm/disp/dpu1/dpu_hw_mdss.h": {
+      "bytes": 8569,
+      "sha256": "c66a80dde1a8cd1c5d8a3f09286ac7a94de0d6dc4e2f126297e9f9e4dd891ff3"
+    },
+    "drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c": {
+      "bytes": 19535,
+      "sha256": "7278b79fbc8902211b66283a4a367e74201de91239f4432fd2a8dc723353ef6d"
+    },
+    "drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.h": {
+      "bytes": 4404,
+      "sha256": "a098d9ab8aec98e0128e84e860c2f6ffaec8947daf90472a0d7b568de4fb12b2"
+    },
+    "drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_vid.c": {
+      "bytes": 27680,
+      "sha256": "35a02f9f2dfd71903b655f9398cff4ef7294268ee87ef9b0fec631a22037b3be"
+    },
+    "drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c": {
+      "bytes": 22008,
+      "sha256": "93e6532b1afd723678e4b90929b042f432904e02936a9d302031462c09d36d2d"
+    },
+    "drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h": {
+      "bytes": 23452,
+      "sha256": "8bcce60c810ce81777a33d126703c599f93301300f6d0496aef036fa6751c1b8"
+    },
+    "drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_9_0_sm8550.h": {
+      "bytes": 10877,
+      "sha256": "9d5c9a94429eef2745b27d8eacda91f3253016149d5d31be1bf1968f47b6234e"
+    },
+    "drivers/gpu/drm/msm/disp/dpu1/dpu_core_irq.h": {
+      "bytes": 796,
+      "sha256": "cf13d9b70b52485aa1dc67311c818dc787ddc8abb019fc340d825c2e54fefa2f"
+    },
+    "drivers/gpu/drm/msm/disp/dpu1/dpu_hwio.h": {
+      "bytes": 2904,
+      "sha256": "89ca70aafd0558e2a1cd17bc8b090664d361671f8e73b166e4b588713b8dbc08"
+    },
+    "drivers/gpu/drm/msm/disp/dpu1/dpu_hw_util.h": {
+      "bytes": 11617,
+      "sha256": "aa074953da15bfdbfac65c03b0ad582638a52c5dc4cde88689222a237b597e1c"
+    },
+    "drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h": {
+      "bytes": 4541,
+      "sha256": "bc16c61c0da39919d362d39656eefc8c337e22c1b04ef6aa40b8441ba465c79e"
+    },
+    "drivers/gpu/drm/msm/registers/display/mdss.xml": {
+      "bytes": 1416,
+      "sha256": "932d9b80b9c51df8cae826b26f6769db97ccf989eb0151f2550f3ac7a96fd53f"
+    },
+    "drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c": {
+      "bytes": 44769,
+      "sha256": "e45c965c16dd6c0b47f8ce16171902316859081584f11084c9f7485582b95862"
+    }
+  },
+  "dts_files": {
+    "arch/arm64/boot/dts/qcom/sm8550.dtsi": {
+      "bytes": 191840,
+      "sha256": "a7123ec022f1957144ffb857d7e5e1e7cdc3b136731b1536a1c9800f865752df"
+    },
+    "arch/arm64/boot/dts/qcom/sm8550-xiaomi-sheng.dts": {
+      "bytes": 39163,
+      "sha256": "ad5b13d3e9653afeab728b82fe398278cc5ade3833711edfe3b17206b03d0343"
+    }
+  },
+  "firmware_panel_xml": {
+    "input_name": "Panel_N81A_36_02_0a_duldsi_dsc_vid.xml",
+    "bytes": 5024,
+    "sha256": "d590ebacbcd568454897b71bc25611ca4af64157ec6974efbe1913f1bbbe12ab",
+    "refresh_entry_raw": "0x780000",
+    "active_timing_qualified": false
+  },
+  "limitations": [
+    "Pinned source/candidate topology only; no active hardware map, clock, timing, master role or IRQ ownership proof.",
+    "No refresh rate, frame deadline or real VBL follows from raw register sampling."
+  ]
+}

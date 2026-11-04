@@ -1,0 +1,21 @@
+diff --git a/osfmk/vm/vm_compressor_backing_store.c b/osfmk/vm/vm_compressor_backing_store.c
+--- a/osfmk/vm/vm_compressor_backing_store.c
++++ b/osfmk/vm/vm_compressor_backing_store.c
+@@ -166,6 +166,17 @@
+ #else /* !XNU_TARGET_OS_OSX */
+ 
+ #define VM_MAX_SWAP_FILE_NUM            100
++
++/*
++ * The macOS branch below never defined these, but the swap-file scaling code
++ * in vm_swapfile_create() uses them unconditionally. This build targets the
++ * macOS SDK (XNU_TARGET_OS_OSX=1) while running an embedded-style machine
++ * config, so it lands here and fails with "use of undeclared identifier".
++ */
++#define VM_MAX_SWAP_FILE_SWAP_ENABLED_NUM (4ULL * (1ULL << 30) / MAX_SWAP_FILE_SIZE)
++#define VM_MIN_SWAP_FILE_SWAP_ENABLED_NUM (4ULL * (1ULL << 30) / MAX_SWAP_FILE_SIZE)
++#define VM_SWAP_MIN_VOLUME_CAPACITY       (128ULL * (1ULL << 30))
++
+ #define VM_SWAPFILE_DELAYED_TRIM_MAX    128
+ 
+ #define VM_SWAP_SHOULD_DEFRAGMENT()     (((vm_swap_force_defrag == TRUE) || (c_swappedout_sparse_count > (vm_swapfile_total_segs_used / 4))) ? 1 : 0)

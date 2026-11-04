@@ -1,0 +1,131 @@
+=== 让 tree 生成（defconfig + fetch） ===
+== configuration fuxi_defconfig -> /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/.config
+== submodules /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu
+== submodules /Users/runner/work/unixnu-fuxi/unixnu-fuxi/device
+== wrote /Users/runner/work/unixnu-fuxi/unixnu-fuxi/device/unixnu.lock
+=== patch makedefs/MakeInc.def 的 DEPLOYMENT_TARGET_FLAGS ===
+=== PASS1: fuxi_defconfig ===
+== submodules /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu
+== submodules /Users/runner/work/unixnu-fuxi/unixnu-fuxi/device
+== tree /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree
+== kernel: XNU
+== kernel: prepare XNU d8b80295118e
++ git clone --quiet --shared --no-checkout /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/feeds/xnu-b7545ced /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/.cache/xnu-work
+== kernel: patch apple-only-cpu-tunables.patch
+== kernel: patch architectural-timer-entry.patch
+== kernel: patch armvirt-platform-personality.patch
+== kernel: patch cxx-flag-dependencies.patch
+== kernel: patch disabled-deferred-reclaim.patch
+== kernel: patch external-archive-dependencies.patch
+== kernel: patch kernel-sdk-root.patch
+== kernel: patch local-availability.patch
+== kernel: patch mockfs-intermediate-lookup.patch
+== kernel: patch mockfs-memory-device-width.patch
+== kernel: patch mockfs-statfs.patch
+== kernel: patch mockfs-test-file.patch
+== kernel: patch mockfs-typed-allocation.patch
+== kernel: patch native-4k-bootstrap-capacity.patch
+== kernel: patch native-4k-signature-hash-cache.patch
+== kernel: patch native-4k-user-abi.patch
+== kernel: patch native-aes-personality.patch
+== kernel: patch native-arm-pan.patch
+== kernel: patch native-dt-panic-region.patch
+== kernel: patch native-lookup-trace.patch
+== kernel: patch native-priv-work-interval.patch
+== kernel: patch native-quiet-managed-page-report.patch
+== kernel: patch native-text-fixup.patch
+== kernel: patch native-trust-cache-runtime.patch
+== kernel: patch native-union-getattrlistbulk.patch
+== kernel: patch native-union-lower-directory.patch
+== kernel: patch native-work-interval-soft-fail.patch
+== kernel: patch native-work-interval-trace.patch
+== kernel: patch native-work-interval-instance.patch
+== kernel: patch non-apple-cache-monitor.patch
+== kernel: patch non-apple-iommu-bootstrap.patch
+== kernel: patch non-apple-pmap-field.patch
+== kernel: patch null-root-media.patch
+== kernel: patch offline-component-load-probes.patch
+== kernel: patch offline-legacy-start.patch
+== kernel: patch offline-native-gpu-broker.patch
+== kernel: patch offline-owner-boot-manifest.patch
+== kernel: patch offline-owner-cache-carrier.patch
+== kernel: patch offline-owner-root-binding-audit.patch
+== kernel: patch offline-owner-root-crypto-probe.patch
+== kernel: patch offline-owner-systemos-mount.patch
+== kernel: patch offline-owner-z-air-init.patch
+== kernel: patch offline-pgz-alignment-probe.patch
+== kernel: patch pgz-aligned-validation.patch
+== kernel: patch public-entitlements-header.patch
+== kernel: patch published-freezer-condition.patch
+== kernel: patch source-corecrypto14-bootstrap.patch
+== kernel: patch source-machine-layer.patch
+== kernel: patch source-pthread-bootstrap.patch
+== kernel: patch zzw-native-adreno-sandbox-grant.patch
+== kernel: patch zzwb-native-sandbox-grant-set-properties.patch
+== kernel: patch zzx-pmap-sync-64bit-pa.patch
+== kernel: patch zzy-native-gpu-addon-mount.patch
+== kernel: patch zzy-staged-system-apps.patch
+== kernel: patch zzyb-native-cryptex-os-view.patch
+== kernel: patch zzyc-owner-skip-launch-constraints.patch
+== kernel: patch native-smp-secondary.patch
+== kernel: patch sheng-platform-power.patch
+== kernel: patch zzz-boot-progress.patch
+== kernel: patch xnu-10063.141.1-security-init.patch
+== kernel: patch xnu-10063.141.1-sparse-index.patch
+== kernel: patch zzyd-sheng-audio-addon-mount.patch
+== kernel: patch zzye-sheng-cpu-idle.patch
+== kernel: patch zzyf-sheng-amp.patch
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/scripts/prepare-xnu-source.py
+Restored 26 omitted public headers from Apple; blob hashes verified
+== kernel: bootstrap pass for the compile records
++ bash /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/scripts/build-xnu-4k-baseline.sh
+1 warning generated.
+             CC nonlto.o
+clang: warning: no such include directory: '/Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/build/xnu/ios-obj/EXPORT_HDRS/libsa' [-Wmissing-include-dirs]
+             CC version.o
+clang: warning: no such include directory: '/Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/build/xnu/ios-obj/EXPORT_HDRS/libsa' [-Wmissing-include-dirs]
+             LD mach.development.bcm2837.unstripped.noctf
+ld: warning: -new_linker is obsolete
+ld: warning: search path '/Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/.cache/fakeroot/usr/local/lib/kernel/platform' not found
+Undefined symbols for architecture arm64:
+  "_mockfs_mountroot", referenced from:
+      _vfstbllist in vfs_conf.o
+  "_mockfs_vfsops", referenced from:
+      _vfstbllist in vfs_conf.o
+  "_mockfs_vnodeop_opv_desc", referenced from:
+      _vfs_opv_descs in vfs_conf.o
+  "_native_verified_root_probe", referenced from:
+      _bsd_init in bsd_init.o
+  "_sheng_pmgr_run", referenced from:
+      _bsd_init in bsd_init.o
+ld: symbol(s) not found for architecture arm64
+clang++: error: linker command failed with exit code 1 (use -v to see invocation)
+make[3]: *** [/Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/.cache/xnu-work/makedefs/MakeInc.kernel:238: /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/build/xnu/ios-obj/DEVELOPMENT_ARM64_BCM2837//mach.development.bcm2837.unstripped.noctf] Error 1
+make[3]: Leaving directory '/Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/build/xnu/ios-obj/DEVELOPMENT_ARM64_BCM2837'
+make[2]: *** [/Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/.cache/xnu-work/makedefs/MakeInc.dir:84: build_all] Error 2
+make[2]: Leaving directory '/Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/build/xnu/ios-obj/DEVELOPMENT_ARM64_BCM2837'
+make[1]: *** [/Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/.cache/xnu-work/makedefs/MakeInc.top:524: build_all_bootstrap_DEVELOPMENT^ARM64^BCM2837] Error 2
+make[1]: Leaving directory '/Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/.cache/xnu-work'
+make: *** [Makefile:234: build] Error 2
+make: Leaving directory '/Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/.cache/xnu-work'
+build-xnu-4k-baseline.sh: line 829: make -C .cache/xnu-work "${XNU_BUILD_TARGET:-build}" SDKROOT="${XNU_SDKROOT:-iphoneos}" ARCH_CONFIGS=ARM64 MACHINE_CONFIGS=BCM2837 KERNEL_CONFIGS=DEVELOPMENT ARCH_STRING_FOR_CURRENT_MACHINE_CONFIG="$XNU_ARCH_STRING" LARGE_MEMORY_DEFINE=-UARM_LARGE_MEMORY ARM64_LINK_ADDR=0xfffffff007004000 ARM64_PLKSEG_ADDR=0xfffffff004004000 DEPLOYMENT_TARGET_FLAGS="-miphoneos-version-min=$IOS_VERSION -DXNU_TARGET_OS_IOS" DEPLOYMENT_LINKER_FLAGS="-Wl,-ios_version_min,$IOS_VERSION" RC_DARWIN_KERNEL_VERSION="$XNU_DARWIN" RC_ProjectSourceVersion="$XNU_VERSION" BUILD_LTO=0 BOUND_CHECKS=0 BUILD_WERROR="${XNU_BUILD_WERROR:-0}" MAKEJOBS=-j"${JOBS:-4}" CFLAGS_EXTRA="$EXTRA_CFLAGS" "${EXTRA_MAKE_ARGS[@]}" ${XNU_HOST_MAKE_ARGS[@]+"${XNU_HOST_MAKE_ARGS[@]}"} OBJROOT="$ROOT/build/xnu/ios-obj" SYMROOT="$ROOT/build/xnu/ios-sym" DSTROOT="$ROOT/build/xnu/ios-dst" failed
+== kernel: prepare storage headers
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/scripts/prepare-storage-headers.py
+== kernel: component-ArmDTPlatform
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/scripts/build-arm-driver.py ArmDTPlatform
+== kernel: component-ArmCpu
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/scripts/build-arm-driver.py ArmCpu
+== kernel: component-SoftwareAES
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/scripts/build-arm-driver.py SoftwareAES
+== kernel: component-VirtioMmioBlock
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/scripts/build-arm-driver.py VirtioMmioBlock
+== kernel: component-ShengUfs
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/scripts/build-arm-driver.py ShengUfs
+== kernel: component-RamBlock
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/scripts/build-arm-driver.py RamBlock
+== kernel: component-Adreno740
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/scripts/build-arm-driver.py Adreno740
+== kernel: component-ShengHidInput
++ python3 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/tree/scripts/build-sheng-hid-input.py
+No reference candidate available
+unixnu: python3 failed (1); full log: /Users/runner/work/unixnu-fuxi/unixnu-fuxi/unixnu/out/fuxi/ipados-17.7.11-21H461/fuxi/logs/component-ShengHidInput.log

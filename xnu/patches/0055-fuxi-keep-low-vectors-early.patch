@@ -1,0 +1,11 @@
+diff --git a/osfmk/arm64/start.s b/osfmk/arm64/start.s
+--- a/osfmk/arm64/start.s
++++ b/osfmk/arm64/start.s
+@@ -868,3 +868,6 @@
+ 1:
+-	MSR_VBAR_EL1_X0
++	/* 0055: keep the V=P low vectors (physical address) until the MMU and
++	 * TTBR1 are known good: with KVA vectors installed, a translation fault
++	 * cannot even fetch its own handler, so nothing gets reported. */
++	nop
+ 

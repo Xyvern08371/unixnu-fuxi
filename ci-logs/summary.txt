@@ -1,0 +1,34 @@
+kernel:
+-rwxr-xr-x  1 runner  staff  15951888 Oct 23 09:10 out/kernel.development.fuxi
+
+sha256:
+3b51ad715d145e8e4d20f90bcc0b603aefd2d86951c7935f3eee32c911ea855c  kernel.development.fuxi
+
+flags:
+  IOS:       0
+0
+  OSX:       1133
+  iphoneos:  0
+0
+
+error count: 15
+
+compile/link errors:
+
+ld errors:
+
+no such file:
+
+tail:
+/bin/mkdir -p /Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/fakeroot//System/Library/Frameworks/Kernel.framework/Versions/A/Resources
+make -C "/Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/build/xnu.obj/DEVELOPMENT_ARM64_FUXI/san" -f /Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/xnu/san/Makefile CURRENT_KERNEL_CONFIG=DEVELOPMENT CURRENT_ARCH_CONFIG=ARM64 CURRENT_MACHINE_CONFIG=FUXI CURRENT_BUILD_CONFIG=DEVELOPMENT^ARM64^FUXI SOURCE=/Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/xnu/san/ RELATIVE_SOURCE_PATH=./san TARGET=/Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/build/xnu.obj/DEVELOPMENT_ARM64_FUXI/. OBJPATH=/Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/build/xnu.obj/DEVELOPMENT_ARM64_FUXI do_config_install;
+[1m                       INSTALL[m [mkextplist System.kext/PlugIns/Private.kext/Info.plist[m
+/Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/build/xnu.obj/SETUP/installfile/installfile -c -S -m 0644 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/build/xnu.sym/System.kext/PlugIns/Private.kext/Info.plist /Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/fakeroot/System/Library/Extensions/System.kext/PlugIns/Private.kext/Info.plist
+[1m                       INSTALL[m SupportedKPIs-all-archs.txt[m
+/Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/build/xnu.obj/SETUP/installfile/installfile -c -S -m 0444 /Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/build/xnu.obj/DEVELOPMENT_ARM64_FUXI/SupportedKPIs-all-archs.txt /Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/fakeroot//System/Library/Frameworks/Kernel.framework/Versions/A/Resources/SupportedKPIs-all-archs.txt
+make -C "/Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/build/xnu.obj/DEVELOPMENT_ARM64_FUXI/san/coverage" -f /Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/xnu/san/coverage/Makefile CURRENT_KERNEL_CONFIG=DEVELOPMENT CURRENT_ARCH_CONFIG=ARM64 CURRENT_MACHINE_CONFIG=FUXI CURRENT_BUILD_CONFIG=DEVELOPMENT^ARM64^FUXI SOURCE=/Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/xnu/san/coverage/ RELATIVE_SOURCE_PATH=./san/coverage TARGET=/Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/build/xnu.obj/DEVELOPMENT_ARM64_FUXI/san OBJPATH=/Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/build/xnu.obj/DEVELOPMENT_ARM64_FUXI do_config_install_variant;
+make -C "/Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/build/xnu.obj/DEVELOPMENT_ARM64_FUXI" -f /Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/xnu/Makefile CURRENT_KERNEL_CONFIG=DEVELOPMENT CURRENT_ARCH_CONFIG=ARM64 CURRENT_MACHINE_CONFIG=FUXI CURRENT_BUILD_CONFIG=DEVELOPMENT^ARM64^FUXI SOURCE=/Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/xnu/ RELATIVE_SOURCE_PATH=. TARGET=/Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/build/xnu.obj/DEVELOPMENT_ARM64_FUXI/ OBJPATH=/Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/build/xnu.obj/DEVELOPMENT_ARM64_FUXI do_config_install;
+make -C "/Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/build/xnu.obj/DEVELOPMENT_ARM64_FUXI/san" -f /Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/xnu/san/Makefile CURRENT_KERNEL_CONFIG=DEVELOPMENT CURRENT_ARCH_CONFIG=ARM64 CURRENT_MACHINE_CONFIG=FUXI CURRENT_BUILD_CONFIG=DEVELOPMENT^ARM64^FUXI SOURCE=/Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/xnu/san/ RELATIVE_SOURCE_PATH=./san TARGET=/Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/build/xnu.obj/DEVELOPMENT_ARM64_FUXI/. OBJPATH=/Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/build/xnu.obj/DEVELOPMENT_ARM64_FUXI do_config_install_variant;
+make -C "/Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/build/xnu.obj/DEVELOPMENT_ARM64_FUXI" -f /Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/xnu/Makefile CURRENT_KERNEL_CONFIG=DEVELOPMENT CURRENT_ARCH_CONFIG=ARM64 CURRENT_MACHINE_CONFIG=FUXI CURRENT_BUILD_CONFIG=DEVELOPMENT^ARM64^FUXI SOURCE=/Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/xnu/ RELATIVE_SOURCE_PATH=. TARGET=/Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/build/xnu.obj/DEVELOPMENT_ARM64_FUXI/ OBJPATH=/Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/build/xnu.obj/DEVELOPMENT_ARM64_FUXI do_config_install_variant;
+/usr/bin/touch /Users/runner/work/unixnu-fuxi/unixnu-fuxi/dxb/build/xnu.obj/.symbolset.timestamp
+  🎉 XNU Build Done!

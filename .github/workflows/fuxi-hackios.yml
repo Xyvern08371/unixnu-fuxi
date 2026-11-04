@@ -1,0 +1,86 @@
+name: fuxi-hackios
+'on':
+  workflow_dispatch: null
+  push:
+    paths:
+    - .github/workflows/fuxi-hackios.yml
+permissions:
+  contents: write
+defaults:
+  run:
+    shell: bash
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 150
+    steps:
+    - name: 取本仓库（日志推回用）
+      uses: actions/checkout@v4
+      with:
+        path: ourrepo
+    - name: 取 UniXNU（官方框架）
+      uses: actions/checkout@v4
+      with:
+        repository: UniXNU/UniXNU
+        path: unixnu
+        persist-credentials: false
+    - name: 取设备仓库（官方 fuxi 端口）
+      uses: actions/checkout@v4
+      with:
+        repository: hanzi123-bilp/unixnu-fuxi
+        path: device
+        persist-credentials: false
+    - name: 装依赖
+      run: "brew install llvm lld mtools dtc unifdef || true\nif ! command -v unifdef >/dev/null; then\n  echo \"$(brew --prefix unifdef)/bin\" >> \"$GITHUB_PATH\"\nfi\necho \"$(brew --prefix llvm)/bin\"\
+        \ >> \"$GITHUB_PATH\"\n"
+    - name: 报告工具链
+      run: "sw_vers\nuname -m\nxcodebuild -version || true\nxcrun --sdk iphoneos --show-sdk-version || true\nxcrun --sdk iphoneos --find mig || true\nfor t in git make clang cmake ninja unifdef ld.lld mformat\
+        \ mcopy dtc; do\n  printf '%-10s %s\\n' \"$t\" \"$(command -v \"$t\" || echo MISSING)\"\ndone\n"
+    - name: 打开 CONFIG_XNU_BUILD_ARCHIVES
+      run: "set +e\nset -x\nF=device/configs/$DEFCONFIG\ngrep -q '^CONFIG_XNU_BUILD_ARCHIVES=y' \"$F\" || echo 'CONFIG_XNU_BUILD_ARCHIVES=y' >> \"$F\"\n# 这个「控制台版」配置开着 BOOT_PROGRESS，但构建脚本要求 UFS/owner-root/\n\
+        # virtio/corecrypto 全在，否则直接 exit 1。关掉它才能编过。\npython3 - \"$F\" <<'PY'\nimport io, sys, re\np = sys.argv[1]\nt = io.open(p, encoding='utf-8').read()\nt = re.sub(r'(?m)^CONFIG_XNU_BOOT_PROGRESS=.*$',\
+        \ 'CONFIG_XNU_BOOT_PROGRESS=n', t)\nif 'CONFIG_XNU_BOOT_PROGRESS=' not in t:\n    t += 'CONFIG_XNU_BOOT_PROGRESS=n\\n'\nio.open(p, 'w', encoding='utf-8', newline='\\n').write(t)\nprint('BOOT_PROGRESS\
+        \ ->', [l for l in t.split('\\n') if 'BOOT_PROGRESS' in l])\nPY\ntail -6 \"$F\"\n"
+    - name: 只保留 legacy-stub 这一个 archive
+      run: "set -x\npython3 - <<'PY'\nimport io, re, tomllib\np = 'device/board.toml'\nsrc = io.open(p, encoding='utf-8').read()\nm = re.search(r'archives\\s*=\\s*\\[(?:[^\\[\\]]|\\n)*?\\]', src)\nassert\
+        \ m, 'archives block not found'\nkeep = [\n    \"build-corecrypto-14.py\",\n    \"build-corecrypto-14.py --namespace\",\n    \"build-arm-driver.py ArmDTPlatform\",\n    \"build-arm-driver.py ArmCpu\"\
+        ,\n    \"build-arm-driver.py NativeAES\",\n    \"build-native-aes-bindings.py\",\n    \"build-libpthread-kernel.py\",\n    \"build-legacy-stub.py\",\n]\nnew = 'archives = [\\n' + ''.join('    \"\
+        %s\",\\n' % k for k in keep) + '  ]'\nout = src[:m.start()] + new + src[m.end():]\nd = tomllib.loads(out)\nassert len(d['kernel']['archives']) == 8, d['kernel']['archives']\nio.open(p, 'w', encoding='utf-8',\
+        \ newline='\\n').write(out)\nprint('archives ->', d['kernel']['archives'])\nPY\n"
+    - name: 补 kits/sheng（设备仓库的链接名目录是空的）
+      run: "set -x\nmkdir -p device/kits/sheng\nfor f in device/package/*; do\n  [ -f \"$f\" ] || continue\n  b=$(basename \"$f\")\n  [ -e \"device/kits/sheng/$b\" ] || cp \"$f\" \"device/kits/sheng/$b\"\
+        \ndone\nls -la device/kits/sheng | head -20\necho \"--- 检查 stub 源 ---\"\nls -l device/kits/sheng/LegacyDisplayStub.c || echo \"STUB MISSING\"\n"
+    - name: 选择设备
+      working-directory: unixnu
+      run: ./unixnu defconfig "$DEFCONFIG"
+    - name: 拉源码
+      working-directory: unixnu
+      run: ./unixnu fetch
+    - name: 给 prepare-xnu-source.py 加 token
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: "set -x\nF=unixnu/out/fuxi/tree/scripts/prepare-xnu-source.py\nls -l \"$F\" || exit 0\npython3 - \"$F\" <<'PY'\nimport io, sys, os\np = sys.argv[1]\nt = io.open(p, encoding='utf-8').read()\n\
+        if 'GITHUB_TOKEN' in t:\n    print('already patched'); raise SystemExit(0)\nold = 'with urllib.request.urlopen(request, timeout=30) as response:'\nnew = ('_tok = os.environ.get(\"GITHUB_TOKEN\"\
+        ) or \"\"\\n'\n       '    if _tok:\\n'\n       '        request.add_header(\"Authorization\", \"Bearer \" + _tok)\\n'\n       '    request.add_header(\"User-Agent\", \"unixnu-build\")\\n'\n   \
+        \    '    with urllib.request.urlopen(request, timeout=30) as response:')\nif old not in t:\n    print('ANCHOR NOT FOUND'); raise SystemExit(1)\nt = t.replace(old, new, 1)\nio.open(p, 'w', encoding='utf-8').write(t)\n\
+        print('patched')\nPY\n"
+    - name: 放 uefi-sheng 树（payload 的 panic 屏要 Font.h）
+      working-directory: unixnu
+      run: "set -x\nT=out/fuxi/tree/uefi-sheng\nif [ ! -d \"$T/Silicon/Silicium/SiliciumPkg/Library/FrameBufferSerialPortLib\" ]; then\n  rm -rf \"$T\"\n  git clone --depth 1 https://github.com/hanzi123-bilp/uefi-fuxi.git\
+        \ \"$T\" 2>&1 | tail -3\nfi\nls -l \"$T/Silicon/Silicium/SiliciumPkg/Library/FrameBufferSerialPortLib/Font.h\" || echo \"FONT MISSING\"\n"
+    - name: 改链接地址并编内核（套我们 loader 的地址空间）
+      working-directory: unixnu
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: "set -x\nmkdir -p \"$GITHUB_WORKSPACE/ourrepo/ci-logs-hackios\"\nLOG=\"$GITHUB_WORKSPACE/ourrepo/ci-logs-hackios/build.log\"\n: > \"$LOG\"\n{\n  echo '=== 原始链接地址 ==='\n  grep -n 'ARM64_LINK_ADDR\\\
+        |ARM64_PLKSEG_ADDR' out/fuxi/tree/scripts/build-xnu-4k-baseline.sh | head -5\n  echo '=== 改成我们 loader 的布局 ==='\n  sed -i 's/ARM64_LINK_ADDR=0xfffffff007004000/ARM64_LINK_ADDR=0xfffffe0007004000/g;\
+        \ s/ARM64_PLKSEG_ADDR=0xfffffff004004000/ARM64_PLKSEG_ADDR=0xfffffe0004004000/g' out/fuxi/tree/scripts/build-xnu-4k-baseline.sh\n  grep -n 'ARM64_LINK_ADDR\\|ARM64_PLKSEG_ADDR' out/fuxi/tree/scripts/build-xnu-4k-baseline.sh\
+        \ | head -5\n  echo '=== 编内核 ==='\n  ./unixnu build kernel\n  echo \"KERNEL_EXIT=$?\"\n  ls -l out/fuxi/kernel/kernel.macho 2>/dev/null\n} >> \"$LOG\" 2>&1\n"
+    - name: 推内核到 Release + 日志到 ci-logs
+      if: always()
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: "set +e\nTAG=\"hackios-$(date +%Y%m%d-%H%M%S)\"\ncp unixnu/out/fuxi/kernel/kernel.macho \"$GITHUB_WORKSPACE/ourrepo/ci-logs-hackios/\" 2>/dev/null\necho \"$TAG\" > \"$GITHUB_WORKSPACE/ourrepo/ci-logs-hackios/tag.txt\"\
+        \ngh release create \"$TAG\" unixnu/out/fuxi/kernel/kernel.macho \\\n  --repo \"$GITHUB_REPOSITORY\" --title \"fuxi hackios kernel $TAG\" \\\n  --notes \"UniXNU kernel relinked to 0xfffffe0007004000\
+        \ for the fuxi-loader\" || echo 'release failed'\ncd ourrepo\ngit config user.name xnu-bot\ngit config user.email xnu-bot@users.noreply.github.com\ngit checkout -f --orphan hackios-logs\ngit add\
+        \ -f ci-logs-hackios\ngit commit -qm 'hackios kernel' || true\ngit push -f origin HEAD:hackios-logs || echo 'push failed'\n"

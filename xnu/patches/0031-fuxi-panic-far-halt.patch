@@ -1,0 +1,27 @@
+diff --git a/osfmk/kern/debug.c b/osfmk/kern/debug.c
+index 1111111..2222222 100644
+--- a/osfmk/kern/debug.c
++++ b/osfmk/kern/debug.c
+@@ -1074,7 +1074,22 @@ panic_trap_to_debugger(const char *panic_format_str, va_list *panic_args, unsign
+ {
+ #pragma clang diagnostic pop
+ 
++#if defined(__arm64__)
++	/* fuxi: print fault regs then halt forever (do not reboot) */
++	{
++		uint64_t _far, _esr, _elr;
++		__asm__ volatile("mrs %0, far_el1" : "=r"(_far));
++		__asm__ volatile("mrs %0, esr_el1" : "=r"(_esr));
++		__asm__ volatile("mrs %0, elr_el1" : "=r"(_elr));
++		kprintf("FX-FAR=%016llx ESR=%08x ELR=%016llx\n", _far, _esr, _elr);
++		kprintf("FX-msg=%s\n", panic_format_str ? panic_format_str : "(null)");
++	}
++	for (;;) {
++		__asm__ volatile("wfe");
++	}
++#endif
++
+ #if defined(ARM64_BOARD_CONFIG_FUXI)
+ 	/* No CPU/thread/debugger state is required for this first panic copy. */
+ 	fuxi_early_panic(panic_format_str, panic_args);
+ #endif

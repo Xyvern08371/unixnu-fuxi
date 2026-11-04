@@ -1,0 +1,62 @@
+name: build-fuxi-shim
+
+# 裸机 shim 路线：不用 UEFI，直接把自己伪装成内核让 ABL 启动。
+# 产物：boot-fuxi-shim.img（fastboot flash boot）
+
+on:
+  push:
+    paths:
+      - "loader-shim-fuxi/**"
+      - "tools/mkshim_bootimg.py"
+      - "tools/mkadt_fuxi.py"
+      - "tools/mkpayload_fuxi.py"
+      - "rom/xnu/**"
+      - ".github/workflows/build-fuxi-shim.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 交叉编译器
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu python3
+          aarch64-linux-gnu-gcc --version | head -1
+
+      - name: 生成 XNU payload（ADT + 段表）
+        run: |
+          set -x
+          python3 tools/adt_fix_fuxi.py rom/xnu/kalama.adt rom/xnu/fuxi.adt
+          python3 tools/mkpayload_fuxi.py rom/xnu/kernel.development.fuxi rom/xnu/fuxi.adt rom/xnu/payload.bin \
+            --cmdline "debug=0xc serial=3 cpus=1 keepsyms=1 -v"
+          ls -l rom/xnu/payload.bin
+
+      - name: 编译 shim（内嵌 payload）
+        run: |
+          chmod +x loader-shim-fuxi/build-shim.sh
+          PAYLOAD_FILE=../rom/xnu/payload.bin bash loader-shim-fuxi/build-shim.sh 2>&1 | tee shim-build.log
+          ls -l loader-shim-fuxi/out-shim/Image
+
+      - name: 打包 boot.img
+        run: |
+          set -x
+          gzip -9 -n -c loader-shim-fuxi/out-shim/Image > loader-shim-fuxi/out-shim/Image.gz
+          ls -l loader-shim-fuxi/out-shim/Image.gz
+          python3 tools/mkshim_bootimg.py \
+            --kernel loader-shim-fuxi/out-shim/Image.gz \
+            --dtb rom/device/fuxi_runtime.dtb \
+            --output boot-fuxi-shim.img
+          ls -l boot-fuxi-shim.img
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fuxi-shim-boot
+          path: |
+            boot-fuxi-shim.img
+            shim-build.log
+            loader-shim-fuxi/out-shim/shim.elf
+          if-no-files-found: warn
+          retention-days: 14

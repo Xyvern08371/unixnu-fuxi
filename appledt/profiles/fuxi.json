@@ -1,0 +1,104 @@
+{
+  "_comment": [
+    "fuxi (Xiaomi 13 / SM8550 kalama) 目标设备树 profile。",
+    "本文件是【数据】不是代码: 属性名和取值都集中在这里, 便于对照参考转储修正。",
+    "带 _verified 的字段已从真机固件核实; 带 _unverified 的仍是推测。",
+    "_verified 数据来源: PixelOS_fuxi-17.0-20260929 的 vendor_boot.img + dtbo.img",
+    "提取命令: python tools/bootimg.py extract vendor_boot.img -o out/vb"
+  ],
+  "_verified": [
+    "root.#address-cells / #size-cells: 2/2",
+    "chosen.dram-base: 0x80000000 (由 /reserved-memory 最低区 gunyah_hyp_region@80000000 推得)",
+    "uart0.reg: 0xa9c000, size 0x4000, compatible qcom,geni-debug-uart",
+    "gic.dist: 0x17100000 size 0x10000; gic.redist: 0x17180000 size 0x200000",
+    "cpus: 8 核, reg 0x0/0x100/.../0x700",
+    "cmdline 里的 console=ttyMSM0,115200n8 (对应 uart0)"
+  ],
+  "_unverified": [
+    "root.compatible 在 iOS 语境下的取值 (这里是 Android 的 qcom,kalama)",
+    "chosen.boot-args 的实际拼写与所需 flag",
+    "product.model 与 target-type 的对应关系",
+    "arm-io 下 XNU 真正要求的子节点集合",
+    "实际 RAM 容量 (8G/12G 未定; 0x1_0000_0000 以上还有高位内存)"
+  ],
+  "name": "",
+  "props": {
+    "#address-cells": { "u32": 2 },
+    "#size-cells": { "u32": 2 },
+    "model": { "str": "iPhone10,3" },
+    "target-type": { "str": "iPhone10,3" },
+    "compatible": { "strs": ["AppleARM64Platform"] },
+    "clock-frequency": { "u32": "0x16e3600" }
+  },
+  "children": [
+    {
+      "name": "chosen",
+      "props": {
+        "boot-args": { "str": "-v keepsyms=1 debug=0x8" },
+        "dram-base": { "u64": "0x80000000" },
+        "random-seed": { "hex": "00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff" },
+        "firmware-version": { "str": "iBoot-8422.100.650" }
+      }
+    },
+    {
+      "name": "product",
+      "props": {
+        "model": { "str": "iPhone10,3" },
+        "region-info": { "u32": 0 },
+        "security-domain": { "u32": 1 },
+        "chip-id": { "u32": "0x8020" }
+      }
+    },
+    {
+      "name": "cpus",
+      "props": {
+        "#address-cells": { "u32": 1 },
+        "#size-cells": { "u32": 0 }
+      },
+      "children": [
+        { "name": "cpu@0", "props": { "device_type": { "str": "cpu" }, "reg": { "u32": "0x0" }, "state": { "str": "running" } } },
+        { "name": "cpu@100", "props": { "device_type": { "str": "cpu" }, "reg": { "u32": "0x100" }, "state": { "str": "running" } } },
+        { "name": "cpu@200", "props": { "device_type": { "str": "cpu" }, "reg": { "u32": "0x200" }, "state": { "str": "running" } } },
+        { "name": "cpu@300", "props": { "device_type": { "str": "cpu" }, "reg": { "u32": "0x300" }, "state": { "str": "running" } } },
+        { "name": "cpu@400", "props": { "device_type": { "str": "cpu" }, "reg": { "u32": "0x400" }, "state": { "str": "running" } } },
+        { "name": "cpu@500", "props": { "device_type": { "str": "cpu" }, "reg": { "u32": "0x500" }, "state": { "str": "running" } } },
+        { "name": "cpu@600", "props": { "device_type": { "str": "cpu" }, "reg": { "u32": "0x600" }, "state": { "str": "running" } } },
+        { "name": "cpu@700", "props": { "device_type": { "str": "cpu" }, "reg": { "u32": "0x700" }, "state": { "str": "running" } } }
+      ]
+    },
+    {
+      "name": "memory",
+      "props": {
+        "device_type": { "str": "memory" },
+        "reg": { "u64s": ["0x80000000", "0x80000000"] }
+      }
+    },
+    {
+      "name": "arm-io",
+      "props": {
+        "compatible": { "strs": ["AppleARMIODevice"] },
+        "#address-cells": { "u32": 2 },
+        "#size-cells": { "u32": 2 }
+      },
+      "children": [
+        {
+          "name": "uart0",
+          "props": {
+            "compatible": { "strs": ["qcom,geni-debug-uart"] },
+            "reg": { "u64s": ["0x00a9c000", "0x4000"] },
+            "interrupts": { "u32s": [0] }
+          }
+        },
+        {
+          "name": "gic",
+          "props": {
+            "compatible": { "strs": ["arm,gic-v3"] },
+            "reg": { "u64s": ["0x17100000", "0x10000", "0x17180000", "0x200000"] },
+            "interrupt-controller": { "bool": true },
+            "#interrupt-cells": { "u32": 3 }
+          }
+        }
+      ]
+    }
+  ]
+}

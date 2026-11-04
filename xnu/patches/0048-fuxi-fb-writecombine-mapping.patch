@@ -1,0 +1,29 @@
+diff --git a/osfmk/arm64/start.s b/osfmk/arm64/start.s
+--- a/osfmk/arm64/start.s
++++ b/osfmk/arm64/start.s
+@@ -677,6 +677,21 @@
+ 	MOV64	x0, 0xB8000000
+-	MOV64	x4, 0xB8000000
+-	mov	x5, #(0x02000000 >> ARM_TT_L2_SHIFT)
+-	mov	x3, x25
+-	create_bootstrap_mapping x0, x4, x5, x3, x2, x6, x9, x10, x11, x12
++	MOV64	x10, 0xB8000000
++	MOV64	x11, (ARM_TTE_TYPE_BLOCK | ARM_TTE_VALID | ARM_TTE_BLOCK_SH(SH_OUTER_MEMORY) | ARM_TTE_BLOCK_ATTRINDX(CACHE_ATTRINDX_WRITECOMB) | ARM_TTE_BLOCK_AF | ARM_TTE_BLOCK_PNX | ARM_TTE_BLOCK_NX)
++	/* own L2 table: two mappings above used x25+2P and x25+3P */
++	add	x13, x25, #(4 * PGBYTES)
++	create_l1_table_entry x10, x25, x13, x6, x9, x12
++	mov	x6, xzr
++	mov	x9, #(TTE_PGENTRIES)
++	mov	x12, x13
++Lfuxi_fb_zero:
++	str	x6, [x12], #8
++	subs	x9, x9, #1
++	b.ne	Lfuxi_fb_zero
++	orr	x11, x11, x10
++	mov	x9, #(0x02000000 >> ARM_TT_L2_SHIFT)
++Lfuxi_fb_fill:
++	str	x11, [x13], #8
++	add	x11, x11, #(1 << ARM_TT_L2_SHIFT)
++	subs	x9, x9, #1
++	b.ne	Lfuxi_fb_fill
+ #endif /* ARM64_BOARD_CONFIG_FUXI && !__ARM_16K_PG__ */

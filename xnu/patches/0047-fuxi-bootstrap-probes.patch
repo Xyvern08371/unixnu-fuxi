@@ -1,0 +1,45 @@
+diff --git a/osfmk/arm64/start.s b/osfmk/arm64/start.s
+--- a/osfmk/arm64/start.s
++++ b/osfmk/arm64/start.s
+@@ -487,3 +487,20 @@
+ 	add		x0, x0, EXT(LowExceptionVectorBase)@pageoff
+ 	MSR_VBAR_EL1_X0
++	/* 0047 probe A: solid bar at y=1500 */
++	MOV64	x0, (0xB8000000 + 1500 * 4320)
++	mov	w1, #-1
++	mov	x2, #24
++	mov	x4, #4320
++Lfuxi_probeA_row:
++	mov	x3, #300
++	mov	x5, x0
++Lfuxi_probeA_pixel:
++	str	w1, [x5], #4
++	subs	x3, x3, #1
++	b.ne	Lfuxi_probeA_pixel
++	add	x0, x0, x4
++	subs	x2, x2, #1
++	b.ne	Lfuxi_probeA_row
++	dsb	sy
++
+ 
+@@ -798,3 +798,20 @@
+ 	// Enable caches, MMU, ROP and JOP
++	/* 0047 probe B: solid bar at y=1300 */
++	MOV64	x0, (0xB8000000 + 1300 * 4320)
++	mov	w1, #-1
++	mov	x2, #24
++	mov	x4, #4320
++Lfuxi_probeB_row:
++	mov	x3, #300
++	mov	x5, x0
++Lfuxi_probeB_pixel:
++	str	w1, [x5], #4
++	subs	x3, x3, #1
++	b.ne	Lfuxi_probeB_pixel
++	add	x0, x0, x4
++	subs	x2, x2, #1
++	b.ne	Lfuxi_probeB_row
++	dsb	sy
++
+ 	MOV64   x0, SCTLR_EL1_DEFAULT
+ 	MSR_SCTLR_EL1_X0

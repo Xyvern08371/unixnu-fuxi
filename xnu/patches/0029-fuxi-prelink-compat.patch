@@ -1,0 +1,41 @@
+diff --git a/bsd/sys/mount.h b/bsd/sys/mount.h
+index 3e08395..00afcbc 100644
+--- a/bsd/sys/mount.h
++++ b/bsd/sys/mount.h
+@@ -1280,6 +1280,9 @@ void    vfs_getnewfsid(struct mount *mp);
+  */
+ mount_t vfs_getvfs(fsid_t *fsid);
+ 
++/* fuxi: 供 iOS 16.7 kernelcache kext 使用的兼容接口 */
++struct mount *vfs_getvfs_with_vfsops(fsid_t *fsid, const struct vfsops *vfsops);
++
+ /*!
+  *  @function vfs_mountedon
+  *  @abstract Check whether a given block device has a filesystem mounted on it.
+diff --git a/bsd/vfs/vfs_subr.c b/bsd/vfs/vfs_subr.c
+index f64d8c6..5b6b719 100644
+--- a/bsd/vfs/vfs_subr.c
++++ b/bsd/vfs/vfs_subr.c
+@@ -1944,6 +1944,22 @@ vfs_getvfs(fsid_t *fsid)
+ 	return mount_list_lookupby_fsid(fsid, 0, 0);
+ }
+ 
++/*
++ * fuxi: iOS 16.7 kernelcache 里的 kext（xnu-8796.142 构建）导入此符号，
++ * 而我们的源码树（8796.101.5）还没有它。语义：按 fsid 找挂载点，
++ * 但要求它的 vfsops 与调用者期望的一致。
++ */
++struct mount *
++vfs_getvfs_with_vfsops(fsid_t *fsid, const struct vfsops *vfsops)
++{
++	struct mount *mp = vfs_getvfs(fsid);
++
++	if (mp != NULL && mp->mnt_op != vfsops) {
++		mp = NULL;
++	}
++	return mp;
++}
++
+ static struct mount *
+ vfs_getvfs_locked(fsid_t *fsid)
+ {

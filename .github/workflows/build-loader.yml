@@ -1,0 +1,77 @@
+name: build-loader
+
+# 目的: 本机没有任何 aarch64 工具链(已验证), 所以用 GitHub 的机器编。
+# 推上去 → Actions 跑 → 从 Artifacts 下载 FuxiLoader.efi。
+#
+# 踩过的坑:
+#   1. edk2 里有失效子模块(UnitTestFrameworkPkg/Library/SubhookLib/subhook),
+#      `git submodule update --init` 不带路径会整步失败 —— 必须显式指定路径。
+#   2. BaseTools 要先单独编一次。
+#   3. AARCH64 交叉前缀用环境变量传, 比改 Conf 文件稳。
+
+on:
+  push:
+    paths:
+      - ".github/workflows/build-loader.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装依赖
+        run: |
+          set -x
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential uuid-dev nasm python3 acpica-tools \
+            gcc-aarch64-linux-gnu
+
+      - name: 拉 edk2
+        run: |
+          set -x
+          git clone --depth 1 --branch edk2-stable202408 https://github.com/tianocore/edk2.git
+          cd edk2
+          # MdePkg.dec 引用 MipiSysTLib 的头文件目录, 所以子模块必须拉全。
+          # 但 edk2 里有个失效子模块(UnitTestFrameworkPkg/Library/SubhookLib/subhook
+          # 指向已不存在的仓库), 单独把它设为不更新, 其余递归拉。
+          git config --local submodule.UnitTestFrameworkPkg/Library/SubhookLib/subhook.update none
+          git submodule update --init --recursive --depth 1 --jobs 4 || true
+          echo "--- 仍未初始化的子模块 ---"
+          git submodule status --recursive | awk '$1 ~ /^-/ {print $2}' | head -20 || true
+
+      - name: 编译 BaseTools
+        run: |
+          set -x
+          cd edk2
+          make -C BaseTools -j"$(nproc)"
+
+      - name: 装 python 依赖（edk2 的 build 脚本可能要用）
+        run: |
+          set -x
+          python3 -m pip install --upgrade pip || true
+          [ -f edk2/pip-requirements.txt ] && python3 -m pip install -r edk2/pip-requirements.txt || true
+
+      - name: 编译 FuxiLoader
+        run: |
+          set -x
+          cd edk2
+          source edksetup.sh BaseTools
+          export PACKAGES_PATH="$PWD:$GITHUB_WORKSPACE"
+          export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-
+          build -p "$GITHUB_WORKSPACE/loader/FuxiLoader.dsc" -a AARCH64 -t GCC5 -b RELEASE -n "$(nproc)"
+
+      - name: 检查产物
+        run: |
+          set -x
+          find edk2/Build -iname "*.efi" | head
+          ls -l edk2/Build/FuxiLoader/RELEASE_GCC5/AARCH64/ || true
+
+      - name: 上传产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: FuxiLoader-efi
+          path: edk2/Build/FuxiLoader/RELEASE_GCC5/AARCH64/FuxiLoader.efi
+          if-no-files-found: error

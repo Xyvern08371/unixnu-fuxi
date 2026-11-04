@@ -1,0 +1,396 @@
+name: build-fuxi-uefi
+
+# 目标: 用 edk2-porting/edk2-msm 的源码, 给小米 13 (fuxi, SM8550) 编出 UEFI 固件。
+#
+# 背景: Renegade 项目从来没有发布过 fuxi 的镜像, 但源码里有
+#       Platform/Xiaomi/sm8550/fuxi.dsc —— 所以可以自己编。
+#
+# 产物: boot-fuxi.img  (fastboot flash boot boot-fuxi.img)
+#
+# 注意: 这个镜像是我们自己编的, 没有经过任何真机验证。刷机前确认能回滚。
+
+concurrency:
+  group: fuxi-uefi-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  # xnu 内核构建完成后自动重编固件（省掉一次人工等待）
+  push:
+    paths:
+      - "loader/**"
+      - "payload/**"
+      - "tools/**"
+      - "rom/xnu/**"
+      - ".github/workflows/build-fuxi-uefi.yml"
+  workflow_dispatch:
+
+env:
+  PAYLOAD_ENABLED: "on"   # 诊断: off=不嵌 XNU
+
+permissions:
+  contents: read
+  actions: read   # 读其它 workflow 的产物
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装依赖
+        run: |
+          set -x
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential git python3 uuid-dev nasm acpica-tools \
+            clang lld llvm gcc-aarch64-linux-gnu \
+            device-tree-compiler libfdt-dev zlib1g-dev \
+            gettext gperf pkg-config libssl-dev
+
+      - name: 取 edk2-msm
+        run: |
+          set -euo pipefail
+          set -x
+          git clone --depth 1 https://github.com/edk2-porting/edk2-msm.git
+          cd edk2-msm
+          git log --oneline -1
+          ls
+
+      - name: 编最小内核（独立程序，稍后被编进固件）
+        run: |
+          set -euo pipefail
+          cd payload
+          # 不用 -pie、也不用自定义链接脚本（两者都会触发 PHDR 相关问题）。
+          # 直接让 .text 落在地址 0；entry.S 放在编译命令最前，
+          # 所以 _start 就是文件第一个字节。
+          aarch64-linux-gnu-gcc -ffreestanding -nostdlib -static \
+            -fno-pic -fno-pie -fno-stack-protector -fno-builtin -mcmodel=small -O2 \
+            -Wl,-Ttext=0 -Wl,--build-id=none \
+            -o kernel.elf entry.S kernel.c
+          aarch64-linux-gnu-objcopy -O binary kernel.elf kernel.bin
+          echo "--- 入口应该在 .text 开头 ---"
+          aarch64-linux-gnu-objdump -d kernel.elf | sed -n '1,12p'
+          ls -l kernel.elf kernel.bin
+          aarch64-linux-gnu-objdump -h kernel.bin 2>/dev/null | head -5 || true
+          cd ..
+      - name: 取最新 XNU 内核并生成 payload（嵌入固件，失败不影响固件构建）
+        run: |
+          # 这一步是"尽力而为"：拿不到内核就跳过，固件照常编（只是不带 XNU）
+          set +e
+          exec > >(tee -a xnu-payload.log) 2>&1
+          set -x
+          mkdir -p rom/xnu
+
+          # 诊断开关：设为 off 时完全不嵌入 XNU，用来区分"模块太大导致的崩溃"
+          if [ "${PAYLOAD_ENABLED:-on}" = "off" ]; then
+            echo "PAYLOAD_ENABLED=off，跳过 XNU 嵌入（保持占位）"
+            cp xnu-payload.log ../xnu-payload.log 2>/dev/null || true
+            exit 0
+          fi
+
+          # 优先用仓库里锁定的内核：API 取"最新产物"会拿到旧提交的结果
+          # （新提交构建失败时，"最新成功产物"就是旧的），导致固件里的内核
+          # 和本地测试的内核不是同一个。锁定文件就没这个问题。
+          if [ -f rom/xnu/kernel.development.fuxi ]; then
+            echo "=== 用仓库里锁定的内核（不查 API）==="
+            KERNEL=rom/xnu/kernel.development.fuxi
+            ART=local
+          else
+          echo "=== 找最新的 xnu-kernel 产物 ==="
+          API="https://api.github.com/repos/${{ github.repository }}/actions/artifacts?per_page=100"
+          curl -s -H "Authorization: Bearer ${{ github.token }}" "$API" -o /tmp/arts.json
+          head -c 300 /tmp/arts.json; echo
+          ART=$(python3 -c "
+          import json
+          d = json.load(open('/tmp/arts.json'))
+          a = [x for x in d.get('artifacts', []) if x['name'] == 'xnu-kernel' and not x['expired']]
+          a.sort(key=lambda x: x['created_at'])
+          print(a[-1]['archive_download_url'] if a else '')
+          ")
+          echo "artifact url: [$ART]"
+          if [ -z "$ART" ]; then
+            echo "API 拿不到产物（权限不足）"
+            if [ -f rom/xnu/kernel.development.fuxi ]; then
+              echo "改用仓库里的内核"
+              KERNEL=rom/xnu/kernel.development.fuxi
+              ART=local
+            else
+              echo "仓库里也没有内核，跳过"
+              cp xnu-payload.log ../xnu-payload.log
+              exit 0
+            fi
+          fi
+
+          fi
+
+          if [ "$ART" != local ]; then
+            curl -sL -H "Authorization: Bearer ${{ github.token }}" "$ART" -o /tmp/k.zip
+            ls -l /tmp/k.zip
+            rm -rf /tmp/k; mkdir -p /tmp/k
+            unzip -oq /tmp/k.zip -d /tmp/k || echo "解压失败"
+            KERNEL=$(find /tmp/k -type f -name "kernel.*" | head -1)
+          fi
+          echo "kernel: [$KERNEL]"
+          if [ -f "$KERNEL" ]; then
+            echo "内核指纹: $(stat -c%s "$KERNEL") 字节  sha256=$(sha256sum "$KERNEL" | cut -c1-16)"
+          fi
+          if [ -z "$KERNEL" ]; then echo "产物里没有内核文件"; cp xnu-payload.log ../xnu-payload.log; exit 0; fi
+
+          echo "=== 准备 Apple 设备树 ==="
+          if [ -f rom/xnu/kalama.adt ]; then
+            echo "用 kalama.adt 生成 fuxi 版（改节点名 + dram 锚点）"
+            python3 tools/adt_fix_fuxi.py rom/xnu/kalama.adt rom/xnu/fuxi.adt || echo "adt_fix 失败"
+          elif [ -f rom/xnu/fuxi.adt ]; then
+            echo "用仓库里的 fuxi.adt"
+          else
+            echo "没有 ADT 源，现场生成"
+            python3 tools/mkadt_fuxi.py rom/xnu/fuxi.adt || echo "mkadt 失败"
+          fi
+          ls -l rom/xnu/fuxi.adt
+
+          echo "=== 生成 payload ==="
+          python3 tools/mkpayload_fuxi.py "$KERNEL" rom/xnu/fuxi.adt rom/xnu/payload.bin \
+            --cmdline "debug=0xc serial=3 cpus=1 keepsyms=1 -v" || echo "mkpayload 失败"
+          ls -l rom/xnu/payload.bin
+
+          if [ -f rom/xnu/payload.bin ]; then
+            echo "=== 生成可刷进 dtbo 的镜像（不嵌进 EFI）==="
+            python3 tools/mkpayload_img.py rom/xnu/payload.bin rom/xnu/payload-blob.img
+            ls -l rom/xnu/payload-blob.img
+          else
+            echo "没有 payload.bin"
+          fi
+
+          cp xnu-payload.log ../xnu-payload.log
+          exit 0
+
+
+      - name: 注入探针驱动
+        run: |
+          set -euo pipefail
+          set -x
+          # fuxi 这版固件没有输入驱动, 菜单/Shell 都操作不了。
+          # 所以把探针编进固件, 由 BDS 自动加载, 不需要任何按键。
+          probe=edk2-msm/Platform/Xiaomi/sm8550/probe
+          mkdir -p "$probe"
+          cp loader/Probe.c loader/Probe.inf \
+             loader/XnuBoot.c loader/XnuLoad.c loader/XnuMem.c loader/XnuMmu.c loader/XnuFv.c loader/XnuUfs.c loader/xnu_jump.S loader/xnu_payload.S "$probe"/
+          # 把真机导出的设备树编进驱动：这版固件不把 DT 放进 EFI 配置表，
+          # 所以内核启动时只能靠我们自带的一份。
+          python3 tools/gen_dtb_blob.py rom/device/fuxi_runtime.dtb "$probe/fuxi_dtb.c"
+          python3 tools/gen_blob.py payload/kernel.bin "$probe/kernel_blob.c" gKernel
+          ls -l "$probe"
+
+          # ① [Components] 必须插进"已有的"段里; 新追加一个段会被静默忽略。
+          #    而且不能瞎 grep: 别的机型的 DSC 也有这个段。必须顺着 fuxi.dsc 的
+          #    !include 链找, 否则插到无关文件里, build 会报 F001 NOT found in DSC。
+          comp="$(python3 tools/find_components_file.py edk2-msm edk2-msm/Platform/Xiaomi/sm8550/fuxi.dsc || true)"
+          echo "components file: [$comp]"
+          if [ -z "$comp" ]; then
+            echo "!! 沿 include 链没找到 [Components, 构建几乎肯定失败"
+            exit 1
+          fi
+          # 用 Python 插入: sed 的 & 不含结尾的 ], 会把段头写坏
+          python3 tools/patch_dsc.py "$comp" Platform/Xiaomi/sm8550/probe/Probe.inf
+          echo "--- 确认 Components ---"
+          grep -n -A5 -i '^\[components' "$comp" | head -12
+
+          # ② FDF: sm8550.fdf 不使用 DEVICE_DXE_FV_COMPONENTS, 必须直接插进 [FV.FvMain]
+          sed -i '/INF MdeModulePkg\/Universal\/BdsDxe\/BdsDxe.inf/a\  INF Platform/Xiaomi/sm8550/probe/Probe.inf' \
+            edk2-msm/Platform/Qualcomm/sm8550/sm8550.fdf
+
+          echo "=== 把 XNU payload 作为 RAW section 塞进 FV ==="
+          if [ -f rom/xnu/payload-blob.img ]; then
+            cp rom/xnu/payload-blob.img edk2-msm/Platform/Xiaomi/sm8550/probe/xnu_payload.bin
+            ls -l edk2-msm/Platform/Xiaomi/sm8550/probe/xnu_payload.bin
+            python3 tools/add_fv_payload.py \
+              edk2-msm/Platform/Qualcomm/sm8550/sm8550.fdf \
+              Platform/Xiaomi/sm8550/probe/xnu_payload.bin
+            echo "--- 确认 FDF ---"
+            grep -n -A3 "XNU PAYLOAD" edk2-msm/Platform/Qualcomm/sm8550/sm8550.fdf || true
+          else
+            echo "没有 payload-blob.img，跳过 FV 注入"
+          fi
+          echo "--- 确认 FDF(探针) ---"
+          grep -n "probe/Probe.inf" edk2-msm/Platform/Qualcomm/sm8550/sm8550.fdf
+
+          # ③ 顺手补 USB 键盘驱动: 原列表里只有 UsbBus/UsbMouse/UsbMassStorage,
+          #    没有 UsbKbDxe, 所以插 OTG 键盘也没反应。加上它, 插键盘就能选菜单。
+          sed -i '/INF MdeModulePkg\/Bus\/Usb\/UsbMassStorageDxe\/UsbMassStorageDxe.inf/a\  INF MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf' \
+            edk2-msm/Platform/Qualcomm/sm8550/sm8550.fdf
+          echo "--- 确认 FDF(键盘) ---"
+          grep -n "UsbKbDxe" edk2-msm/Platform/Qualcomm/sm8550/sm8550.fdf
+
+
+          echo "=== 查找可用的块设备驱动 ==="
+          UFS=$(find edk2-msm -iname "Ufs*Dxe*.inf" -o -iname "*UfsDxe*.inf" 2>/dev/null | head -1)
+          PART=$(find edk2-msm -iname "PartitionDxe.inf" 2>/dev/null | head -1)
+          FAT=$(find edk2-msm -iname "Fat.inf" -o -iname "FatDxe.inf" 2>/dev/null | head -1)
+          echo "UFS   = [$UFS]"
+          echo "PART  = [$PART]"
+          echo "FAT   = [$FAT]"
+          echo "=== 已在 FDF 里的相关驱动 ==="
+          grep -inE "ufs|partition|fat" edk2-msm/Platform/Qualcomm/sm8550/sm8550.fdf | head -20 || true
+
+          FDF=edk2-msm/Platform/Qualcomm/sm8550/sm8550.fdf
+          for INF in "$UFS" "$PART" "$FAT"; do
+            if [ -n "$INF" ]; then
+              REL=$(echo "$INF" | sed "s|^edk2-msm/||")
+              if ! grep -q "$REL" "$FDF"; then
+                sed -i "/INF MdeModulePkg\/Universal\/BdsDxe\/BdsDxe.inf/a\\  INF $REL" "$FDF"
+                echo "已加入 FDF: $REL"
+              else
+                echo "FDF 里已有: $REL"
+              fi
+            fi
+          done
+          echo "=== 确认 ==="
+          grep -inE "ufs|partition|fat" "$FDF" | head -20 || true
+
+      - name: 固件补丁：放宽 DxeCore 检查（实验性）
+        run: |
+          # Common/edk2 是子模块, clone --depth 1 不会拉, 必须先初始化
+          ( cd edk2-msm && git submodule update --init --recursive --depth 1 ) || true
+          ls edk2-msm/Common/edk2/MdePkg/Include/AArch64/ProcessorBind.h || echo "子模块未就绪"
+          # 补丁1: RUNTIME_PAGE_ALLOCATION_GRANULARITY 0x10000 -> 1
+          #        (AArch64 为 64KB 粒度, 高通平台按 4KB 布局, 导致退出失败)
+          # 补丁2: CoreTerminateMemoryMap 的 MapKey 比对改为恒真
+          #        (EXIT_BOOT_SERVICES 回调会改变内存图, 使 key 立即失效)
+          python3 tools/patch_firmware.py edk2-msm
+          echo "--- 复核(幂等, 再跑一次) ---"
+          python3 tools/patch_firmware.py edk2-msm
+
+      - name: 编 fuxi UEFI
+        run: |
+          set +e                    # 关键: GitHub 用 bash -e, 否则 build.sh 一失败就吞掉日志
+          cd edk2-msm
+          export CROSS_COMPILE=aarch64-linux-gnu-
+          # 不要加 --skip-rootfs-gen: SimpleInitRootFS.inf 需要 build/rootfs.c
+          ./build.sh -d fuxi -r RELEASE > build.log 2>&1
+          rc=$?
+          set -e
+          echo "=== build.sh 退出码: $rc ==="
+          tail -150 build.log
+          cp build.log ../build.log
+          exit $rc
+
+      - name: 诊断（结果写进 diag.txt, 随 artifact 下载）
+        if: always()
+        run: |
+          exec > >(tee edk2-msm/diag.txt) 2>&1
+          echo "### date: $(date -u)"
+          echo "### DEVICE_DXE_FV_COMPONENTS 出现在哪"
+          grep -rn "DEVICE_DXE_FV_COMPONENTS" edk2-msm/Platform edk2-msm/Silicon 2>/dev/null | head -5 || true
+          echo
+          echo "### fuxi.fdf.inc 内容"
+          cat edk2-msm/Platform/Xiaomi/sm8550/fuxi.fdf.inc || true
+          echo
+          echo "### sm8550.fdf 里的 FV / INF / 宏"
+          grep -n "^\[\|INF \|DEVICE_DXE\|!include" edk2-msm/Platform/Qualcomm/sm8550/sm8550.fdf 2>/dev/null | head -60 || true
+          echo
+          echo "### sm8550.fdf 前 80 行"
+          head -80 edk2-msm/Platform/Qualcomm/sm8550/sm8550.fdf 2>/dev/null || true
+          echo
+          echo "### fuxi.dsc 尾部（我们追加的 [Components]）"
+          tail -12 edk2-msm/Platform/Xiaomi/sm8550/fuxi.dsc || true
+          echo
+          echo "### 所有含 [Components 的文件"
+          grep -rln '^\[Components' edk2-msm/Platform edk2-msm/Silicon 2>/dev/null | head -10 || true
+          echo
+          echo "### 所有引用了 probe/Probe.inf 的位置"
+          grep -rn "probe/Probe.inf" edk2-msm/Platform edk2-msm/Silicon 2>/dev/null | head -10 || true
+          echo
+          echo "### build.log 里与 probe 相关的行"
+          grep -in "probe" build.log 2>/dev/null | head -25 || true
+          echo
+          echo "### build.log 里与 Components 相关的行"
+          grep -in "Component" build.log 2>/dev/null | head -15 || true
+          echo
+          echo "### 生成产物列表"
+          find edk2-msm -maxdepth 5 \( -name "*.Fv" -o -name "*.fv" -o -name "*.fd" -o -name "*.img" \) 2>/dev/null | head -30 || true
+          echo
+          echo "### 编译输出里有没有 FuxiProbe"
+          find edk2-msm/Build -iname "*FuxiProbe*" 2>/dev/null | head -10 || true
+          ls -l edk2-msm/Build/*/*/AARCH64/ 2>/dev/null | head -10 || true
+          echo
+          echo
+          echo "### 源码里出现 EFI_MEMORY_RUNTIME 的文件"
+          grep -rln "EFI_MEMORY_RUNTIME" edk2-msm/Silicon edk2-msm/Platform 2>/dev/null | head -20 || true
+          echo
+          echo "### EFI_MEMORY_RUNTIME 的具体用法(前 40 条)"
+          grep -rn "EFI_MEMORY_RUNTIME" edk2-msm/Silicon edk2-msm/Platform 2>/dev/null | head -40 || true
+          echo
+          echo "### 内存图/属性表相关文件"
+          find edk2-msm/Silicon edk2-msm/Platform -iname "*MemoryMap*" -o -iname "*MemoryAttribute*" -o -iname "*MemMap*" 2>/dev/null | head -20 || true
+          echo
+          echo "### 可疑的非页对齐常量(0x8F0xxxx 之类)"
+          grep -rn "0x8F0\|0x8F09\|0x8F03" edk2-msm/Silicon edk2-msm/Platform 2>/dev/null | head -20 || true
+          echo
+          echo
+          echo "### 报错原文出自哪个文件"
+          grep -rn "proper alignment" edk2-msm 2>/dev/null | head -10 || true
+          echo
+          echo "### DxeCore CoreTerminateMemoryMap 的完整逻辑"
+          pc=edk2-msm/Common/edk2/MdeModulePkg/Core/Dxe/Mem/Page.c
+          if [ -f "$pc" ]; then
+            n=$(grep -n "proper alignment" "$pc" | head -1 | cut -d: -f1)
+            s=$((n-70)); [ $s -lt 1 ] && s=1
+            echo "--- Page.c 第 $s 行到 $((n+15)) 行 ---"
+            sed -n "${s},$((n+15))p" "$pc"
+          fi
+          echo
+          echo
+          echo "### RUNTIME_PAGE_ALLOCATION_GRANULARITY 的定义与引用"
+          grep -rnE "define[[:space:]]+RUNTIME_PAGE_ALLOCATION_GRANULARITY" edk2-msm/Common/edk2 2>/dev/null | head -5 || echo "（没有定义，可能来自 PCD 或头文件）"
+          grep -rn "RUNTIME_PAGE_ALLOCATION_GRANULARITY" edk2-msm/Common/edk2 2>/dev/null | head -15 || true
+          echo
+          echo "### boot-fuxi.img 里找探针 GUID"
+          python3 tools/find_probe.py edk2-msm/boot-fuxi.img || true
+          echo
+          echo "### diag 结束"
+
+          echo '=== 导出 Probe.efi 并反汇编 ==='
+          PROBE=$(find edk2-msm/workspace -name 'Probe.efi' -type f | head -1)
+          echo "Probe.efi: [$PROBE]"
+          if [ -n "$PROBE" ]; then
+            cp "$PROBE" . 2>/dev/null || true
+            ls -l Probe.efi 2>/dev/null || true
+            (aarch64-linux-gnu-objdump -d "$PROBE" | head -4000 > probe.dis) 2>/dev/null || true
+            ls -l probe.dis 2>/dev/null || true
+          fi
+
+      - name: 写 version.txt（这个产物对应哪个提交、补丁是否打上）
+        run: |
+          PATCH=$(python3 tools/patch_firmware.py edk2-msm | tail -1)
+          cd edk2-msm
+          {
+            echo "commit: ${{ github.sha }}"
+            echo "run:    ${{ github.run_number }}"
+            echo "date:   $(date -u)"
+            echo "$PATCH"
+            echo "img-size: $(stat -c%s boot-fuxi.img 2>/dev/null)"
+          } > version.txt
+          cat version.txt
+      - name: 检查产物
+        run: |
+          ls -lh edk2-msm/*.img || true
+          test -f edk2-msm/boot-fuxi.img
+          ls -l edk2-msm/boot-fuxi.img edk2-msm/diag.txt
+
+      - name: 上传
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuxi-uefi-${{ github.run_number }}
+          path: |
+            edk2-msm/boot-fuxi.img
+            edk2-msm/uefi-fuxi*.img
+            edk2-msm/diag.txt
+            edk2-msm/version.txt
+            build.log
+            rom/xnu/payload-blob.img
+            probe.dis
+            Probe.efi
+            xnu-payload.log
+          if-no-files-found: warn
