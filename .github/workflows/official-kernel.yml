@@ -62,11 +62,14 @@ jobs:
 
       - name: 装依赖
         run: |
-          brew install llvm lld mtools dtc unifdef || true
+          brew install llvm lld mtools dtc unifdef make || true
           if ! command -v unifdef >/dev/null; then
             echo "$(brew --prefix unifdef)/bin" >> "$GITHUB_PATH"
           fi
           echo "$(brew --prefix llvm)/bin" >> "$GITHUB_PATH"
+          # macOS 自带 GNU make 3.81 不编译 .cpo（pattern rule 行为差异），
+          # 用 Homebrew 的 make 4.x 替代（gnubin 优先）。
+          echo "$(brew --prefix make)/libexec/gnubin" >> "$GITHUB_PATH"
 
       - name: 报告工具链
         run: |
@@ -75,6 +78,7 @@ jobs:
           xcodebuild -version || true
           xcrun --sdk iphoneos --show-sdk-version || true
           xcrun --sdk iphoneos --find mig || true
+          make --version | head -1
           for t in git make clang cmake ninja unifdef ld.lld mformat mcopy dtc; do
             printf '%-10s %s\n' "$t" "$(command -v "$t" || echo MISSING)"
           done
