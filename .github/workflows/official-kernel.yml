@@ -202,22 +202,42 @@ jobs:
           import io, sys, re
           p = sys.argv[1]
           t = io.open(p, encoding='utf-8').read()
-          if '-undefined,suppress' in t or '-undefined suppress' in t:
+          if '-undefined,suppress' in t:
               print('already patched'); raise SystemExit(0)
-          # macOS ld 对内核静态链接放行未定义符号要用 -undefined suppress
-          pat = re.compile(r'(DEPLOYMENT_LINKER_FLAGS="-Wl,-ios_version_min,[^"]*")')
-          m = pat.search(t)
-          assert m, 'no DEPLOYMENT_LINKER_FLAGS line found in ' + p
-          old = m.group(1)
-          new = old[:-1] + ' -Wl,-undefined,suppress"'
-          t = t.replace(old, new)
-          io.open(p, 'w', encoding='utf-8', newline='\n').write(t)
-          print('patched', p)
+          # makedefs 链接实际用的是 DEPLOYMENT_TARGET_FLAGS（iOS 分支），
+          # 不是 DEPLOYMENT_LINKER_FLAGS。给 iOS 的 DEPLOYMENT_TARGET_FLAGS 追加
+          # -Wl,-undefined,suppress 放行 archive 阶段才提供的未定义符号。
+          # 但 DEPLOYMENT_TARGET_FLAGS 在 makedefs/MakeInc.def，不在 baseline.sh。
+          # baseline.sh 通过 make 变量 DEPLOYMENT_LINKER_FLAGS 传给 make，
+          # 而 make 里定义 DEPLOYMENT_TARGET_FLAGS 时会覆盖。所以这里改为直接改
+          # makedefs/MakeInc.def 的 iOS 分支。
+          print('baseline.sh 不承载 DEPLOYMENT_TARGET_FLAGS，改走 MakeInc.def')
           PY
-          grep -n 'DEPLOYMENT_LINKER_FLAGS=' "$BL"
+          # 真正的链接变量在 .cache/xnu-work/makedefs/MakeInc.def（tree 生成后）。
+          # tree 由 unixnu 生成，路径是 out/fuxi/ipados-17.7.11-21H461/fuxi/tree。
+          # 在 PASS1 前无法预知，所以这里用 find 在所有 MakeInc.def 上打补丁。
+          # 但 PASS1 的 tree 还没生成，先跑 defconfig + fetch 让 tree 出来。
           mkdir -p "$GITHUB_WORKSPACE/ourrepo/ci-logs-official"
           LOG2="$GITHUB_WORKSPACE/ourrepo/ci-logs-official/pass2.log"
           : > "$LOG2"
+          echo "=== 让 tree 生成（defconfig + fetch） ===" | tee -a "$LOG2"
+          ./unixnu defconfig fuxi_defconfig 2>&1 | tee -a "$LOG2"
+          ./unixnu fetch 2>&1 | tee -a "$LOG2"
+          echo "=== patch makedefs/MakeInc.def 的 DEPLOYMENT_TARGET_FLAGS ===" | tee -a "$LOG2"
+          python3 - <<'PY' 2>&1 | tee -a "$LOG2"
+          import io, glob
+          for p in glob.glob('out/fuxi/**/tree/.cache/xnu-work/makedefs/MakeInc.def', recursive=True):
+              t = io.open(p, encoding='utf-8').read()
+              if '-undefined,suppress' in t:
+                  print('already patched', p); continue
+              old = 'DEPLOYMENT_TARGET_FLAGS = -miphoneos-version-min=$(SDKVERSION) -DXNU_TARGET_OS_IOS'
+              new = 'DEPLOYMENT_TARGET_FLAGS = -miphoneos-version-min=$(SDKVERSION) -DXNU_TARGET_OS_IOS -Wl,-undefined,suppress'
+              if old not in t:
+                  print('anchor not found in', p); continue
+              t = t.replace(old, new, 1)
+              io.open(p, 'w', encoding='utf-8', newline='\n').write(t)
+              print('patched', p)
+          PY
           echo "=== PASS1: fuxi_defconfig ===" | tee -a "$LOG2"
           ./unixnu build kernel 2>&1 | tee -a "$LOG2"
           echo "PASS1_EXIT=$?" | tee -a "$LOG2"
