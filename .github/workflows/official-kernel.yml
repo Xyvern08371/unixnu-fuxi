@@ -191,6 +191,12 @@ jobs:
           UNIXNU_UNIQUE_CHIP_ID: "0123456789ABCDEF"
         run: |
           set -x
+          # baseline 链接要允许未定义符号（native_*/sheng_*/mockfs_* 由后续 archive 提供）
+          BL=out/fuxi/tree/scripts/build-xnu-4k-baseline.sh
+          if [ -f "$BL" ]; then
+            sed -i '' 's|-Wl,-ios_version_min,\$IOS_VERSION|-Wl,-ios_version_min,\$IOS_VERSION -Wl,-undefined,dynamic_lookup|' "$BL"
+            grep -n 'undefined,dynamic_lookup' "$BL" || echo "(未找到 DEPLOYMENT_LINKER_FLAGS 行)"
+          fi
           mkdir -p "$GITHUB_WORKSPACE/ourrepo/ci-logs-official"
           LOG2="$GITHUB_WORKSPACE/ourrepo/ci-logs-official/pass2.log"
           : > "$LOG2"
