@@ -1,0 +1,20 @@
+name: gen-data-seed
+
+on:
+  workflow_dispatch:
+
+jobs:
+  gen:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate 20G APFS Data seed
+        run: bash gen-seed-macos.sh
+
+      - name: Upload seed
+        uses: actions/upload-artifact@v4
+        with:
+          name: scratch-data-20g
+          path: out/scratch-data-20g.img
