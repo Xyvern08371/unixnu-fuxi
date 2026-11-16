@@ -15,9 +15,14 @@ hdiutil create -size "${SIZE_GB}g" -layout NONE -fs APFS -volname Data -ov "$DMG
 
 echo "=== 2) 挂载并写 skip-setup prefs ==="
 ATTACH=$(hdiutil attach -nobrowse -noverify -noautofsck "$DMG")
-MNT=$(echo "$ATTACH" | awk '{for(i=1;i<=NF;i++) if($i ~ /^\/Volumes\//) print $i; exit}')
+echo "$ATTACH"
+# 卷名固定为 Data，挂载点就是 /Volumes/Data；兜底从 attach 输出里解析
+MNT="/Volumes/Data"
+if [ ! -d "$MNT" ]; then
+  MNT=$(echo "$ATTACH" | grep -oE '/Volumes/[A-Za-z0-9_ .-]+' | head -1)
+fi
 echo "挂载点: $MNT"
-[ -n "$MNT" ]
+[ -n "$MNT" ] && [ -d "$MNT" ]
 
 mkdir -p "$MNT/private/var/mobile/Library/Preferences"
 mkdir -p "$MNT/private/var/containers/Shared/SystemGroup"
