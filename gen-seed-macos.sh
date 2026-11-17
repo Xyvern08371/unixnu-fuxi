@@ -56,10 +56,10 @@ p = "$DMG"
 d = bytearray(open(p,'rb').read())
 i = d.find(b'APSB')
 assert i >= 0, '找不到 APSB（volume superblock）'
-print('APSB @ 0x%x, 原 UUID = %s' % (i, uuid.UUID(bytes=bytes(d[i+0xF0:i+0x100]))))
-d[i+0xF0:i+0x100] = uuid.UUID("$VOL_UUID").bytes
+print('APSB @ 0x%x, 原 0xd0 UUID = %s' % (i, uuid.UUID(bytes=bytes(d[i+0xD0:i+0xE0]))))
+d[i+0xD0:i+0xE0] = uuid.UUID("$VOL_UUID").bytes
 open(p,'wb').write(d)
-print('新 UUID = %s' % uuid.UUID(bytes=bytes(d[i+0xF0:i+0x100])))
+print('新 0xd0 UUID = %s' % uuid.UUID(bytes=bytes(d[i+0xD0:i+0xE0])))
 PY
 
 echo "=== 5) packed DBRDISK1 ==="
