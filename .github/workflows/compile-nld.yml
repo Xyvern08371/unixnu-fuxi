@@ -12,11 +12,12 @@ jobs:
         run: |
           mkdir -p /tmp/tree
           cp nld/xnu-deps.tar.gz /tmp/xnu-deps.tar.gz
-          cd /tmp && tar xzf xnu-deps.tar.gz && ls -la
+          cd /tmp/tree && tar xzf /tmp/xnu-deps.tar.gz
+          ls -la /tmp/tree
+          ls -la /tmp/tree/build/native-legacy-display/ | head -20
       - name: Compile NativeLegacyDisplay
         run: |
           cp nld/macos-compile-nld.sh /tmp/macos-compile-nld.sh
-          sed -i '' 's#/tmp/tree#/tmp/tree#g' /tmp/macos-compile-nld.sh 2>/dev/null || true
           bash /tmp/macos-compile-nld.sh || true
           ls -la /tmp/tree/build/native-legacy-display/NativeLegacyDisplay.o 2>/dev/null || true
       - name: Upload .o
