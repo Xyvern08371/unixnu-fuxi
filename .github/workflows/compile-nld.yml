@@ -1,0 +1,26 @@
+name: compile-nld
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare deps
+        run: |
+          mkdir -p /tmp/tree
+          cp nld/xnu-deps.tar.gz /tmp/xnu-deps.tar.gz
+          cd /tmp && tar xzf xnu-deps.tar.gz && ls -la
+      - name: Compile NativeLegacyDisplay
+        run: |
+          cp nld/macos-compile-nld.sh /tmp/macos-compile-nld.sh
+          sed -i '' 's#/tmp/tree#/tmp/tree#g' /tmp/macos-compile-nld.sh 2>/dev/null || true
+          bash /tmp/macos-compile-nld.sh || true
+          ls -la /tmp/tree/build/native-legacy-display/NativeLegacyDisplay.o 2>/dev/null || true
+      - name: Upload .o
+        uses: actions/upload-artifact@v4
+        with:
+          name: NativeLegacyDisplay-o
+          path: /tmp/tree/build/native-legacy-display/NativeLegacyDisplay.o
