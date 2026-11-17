@@ -1,5 +1,5 @@
 #!/bin/bash
-# macOS: 解包 20G packed -> raw -> 挂载改 disabled.plist -> 重新打包
+# macOS: 解包 20G packed -> raw -> 挂载 APFS 卷改 disabled.plist -> 重新打包
 set -eux
 cd "$(dirname "$0")"
 
@@ -28,22 +28,30 @@ out.truncate(logical)
 out.close()
 print('raw written')
 PY
-ls -la /tmp/seed20.raw
 
 echo "=== 2. hdiutil attach ==="
 hdiutil attach -nomount -imagekey diskimage-class=CRawDiskImage /tmp/seed20.raw > /tmp/attach.txt 2>&1 || true
 cat /tmp/attach.txt
-DEV=$(grep -oE '/dev/disk[0-9]+' /tmp/attach.txt | head -1)
-echo "DEV=$DEV"
 
-echo "=== 3. 挂载 Data 卷 ==="
-diskutil mount "${DEV}s1" 2>&1 || true
+echo "=== 3. 找 APFS 卷（diskNs1）==="
+VOL=$(diskutil list | grep -E '^\s+[0-9]+:.*Apple_APFS' | head -1 | awk '{print $NF}')
+if [ -z "$VOL" ]; then
+  # 尝试从 diskutil list 找所有卷
+  diskutil list
+  VOL=$(grep -oE '/dev/disk[0-9]+s1' /tmp/attach.txt | tail -1)
+fi
+echo "VOL=$VOL"
+[ -n "$VOL" ] || { echo "no APFS volume found"; exit 1; }
+
+echo "=== 4. 挂载卷 ==="
+diskutil mount "$VOL"
 sleep 2
-ls /Volumes/ 2>/dev/null
+ls /Volumes/
 
-echo "=== 4. 改 disabled.plist ==="
+echo "=== 5. 改 disabled.plist ==="
 PLIST=/Volumes/Data/db/com.apple.xpc.launchd/disabled.plist
 if [ -f "$PLIST" ]; then
+  echo "=== old ==="
   cat "$PLIST"
   cat > "$PLIST" <<'XML'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -61,18 +69,20 @@ if [ -f "$PLIST" ]; then
 </dict>
 </plist>
 XML
-  echo "=== 新内容 ==="
+  echo "=== new ==="
   cat "$PLIST"
 else
   echo "NOT FOUND: $PLIST"
   ls -la /Volumes/Data/db/com.apple.xpc.launchd/ 2>/dev/null || true
+  ls /Volumes/ 2>/dev/null
 fi
 
-echo "=== 5. detach ==="
-diskutil unmount "/Volumes/Data" 2>&1 || true
-hdiutil detach "$DEV" -force || true
+echo "=== 6. detach ==="
+diskutil unmount force "/Volumes/Data" 2>&1 || true
+hdiutil detach /dev/disk7 -force 2>&1 || true
+hdiutil detach /dev/disk8 -force 2>&1 || true
 
-echo "=== 6. 重新打包 ==="
+echo "=== 7. 重新打包 ==="
 python3 packed_ramdisk.py /tmp/seed20.raw /tmp/seed20-new.img
 mkdir -p out
 cp /tmp/seed20-new.img out/scratch-data-20g.img
