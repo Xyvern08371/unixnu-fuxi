@@ -1,0 +1,17 @@
+name: fix-disabled
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fix:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fix disabled.plist
+        run: bash fix-disabled-macos.sh
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: scratch-20g-fixed-disabled
+          path: out/scratch-data-20g.img
