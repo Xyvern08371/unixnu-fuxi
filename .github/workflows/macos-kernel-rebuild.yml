@@ -1,0 +1,62 @@
+name: macos-kernel-rebuild
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'why this rebuild'
+        required: false
+        default: 'restart hook'
+
+jobs:
+  rebuild:
+    runs-on: macos-15
+    timeout-minutes: 120
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download tree and archives
+        run: |
+          set -eux
+          curl -sL -o tree.tar.gz \
+            "https://github.com/Xyvern08371/unixnu-fuxi/releases/download/untagged-f5b2a1c3ac295e61058f/tree-src-mac.tar.gz"
+          curl -sL -o archives.tar.gz \
+            "https://github.com/Xyvern08371/unixnu-fuxi/releases/download/untagged-f5b2a1c3ac295e61058f/build-archives.tar.gz"
+          ls -la tree.tar.gz archives.tar.gz
+
+      - name: Extract
+        run: |
+          set -eux
+          mkdir -p tree
+          tar xzf tree.tar.gz -C tree
+          tar xzf archives.tar.gz -C tree
+          ls tree | head -20
+
+      - name: Show SDK and toolchain
+        run: |
+          set -eux
+          xcrun --show-sdk-path
+          xcrun clang --version
+          sw_vers
+
+      - name: Rebuild kernel
+        run: |
+          set -eux
+          cd tree
+          export UNIXNU_DEVICE="$PWD/../device-ios17"
+          export CLT_PREFIX="$(xcode-select -p)"
+          export UNIXNU_XNU_ARCH=arm64e
+          export UNIXNU_IOS_VERSION=17.0
+          export XNU_NATIVE_AES_ARCHIVE="$PWD/build/software-aes/libSoftwareAES.a"
+          python3 scripts/build-cpu-desktop-kernel.py 2>&1 | tail -40
+          echo "kernel rc=$?"
+          ls -la build/xnu/ios-obj/DEVELOPMENT_ARM64_BCM2837/mach.development.bcm2837
+          shasum -a 256 build/xnu/ios-obj/DEVELOPMENT_ARM64_BCM2837/mach.development.bcm2837
+
+      - name: Upload kernel
+        uses: actions/upload-artifact@v4
+        with:
+          name: kernel-macos
+          path: tree/build/xnu/ios-obj/DEVELOPMENT_ARM64_BCM2837/mach.development.bcm2837
+          retention-days: 7
