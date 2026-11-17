@@ -1,0 +1,17 @@
+name: resize-seed-20g
+
+on:
+  workflow_dispatch:
+
+jobs:
+  resize:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Shrink 48G to 20G with diskutil resizeVolume
+        run: bash resize-macos.sh
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        with:
+          name: scratch-data-20g-resized
+          path: out/scratch-data-20g.img
