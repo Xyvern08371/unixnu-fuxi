@@ -1,13 +1,33 @@
 #!/bin/bash
-# 在 macOS 上用 diskutil resizeVolume 把 48G APFS seed 缩到 20G（正规缩容）
+# macOS: 解包 48G packed -> raw -> diskutil resize 20G -> 打包
 set -eux
 cd "$(dirname "$0")"
 
-echo "=== 0. 查看 packed_ramdisk.py CLI ==="
-python3 packed_ramdisk.py --help 2>&1 | head -20 || true
-
-echo "=== 1. 解包 48G packed seed 成 raw ==="
-python3 packed_ramdisk.py unpack seed/scratch-data.img /tmp/seed48.raw
+echo "=== 1. 解包 48G packed seed 成 raw（自己写解包）==="
+python3 - <<'PY'
+import struct
+src = 'seed/scratch-data.img'
+dst = '/tmp/seed48.raw'
+d = open(src, 'rb').read()
+magic, ver, page, logical, count = struct.unpack_from('<8sIIQQ', d, 0)
+assert magic == b'DBRDISK1', magic
+print('logical=%d (%.2f GiB), extents=%d' % (logical, logical/2**30, count))
+extents = []
+off = 40
+for i in range(count):
+    e_off, e_len = struct.unpack_from('<QQ', d, off)
+    off += 16
+    extents.append((e_off, e_len))
+data_off = 40 + count*16
+out = open(dst, 'wb')
+for e_off, e_len in extents:
+    out.seek(e_off)
+    out.write(d[data_off:data_off+e_len])
+    data_off += e_len
+out.truncate(logical)
+out.close()
+print('raw written:', dst)
+PY
 ls -la /tmp/seed48.raw
 python3 - <<'PY'
 import struct
@@ -43,7 +63,7 @@ f.close()
 PY
 
 echo "=== 6. 打包 packed ==="
-python3 packed_ramdisk.py pack /tmp/seed48.raw /tmp/seed20.img
+python3 packed_ramdisk.py /tmp/seed48.raw /tmp/seed20.img
 mkdir -p out
 cp /tmp/seed20.img out/scratch-data-20g.img
 ls -la out/
