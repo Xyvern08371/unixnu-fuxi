@@ -1,0 +1,17 @@
+name: fix-mgcache
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fix:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fix mgcache
+        run: bash fix-mgcache-macos.sh || true
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: seed20-mgcache
+          path: out/scratch-data-20g.img
