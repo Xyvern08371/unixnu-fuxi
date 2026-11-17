@@ -1,9 +1,9 @@
 #!/bin/bash
-# macOS: 解包 48G packed -> raw -> diskutil resize 20G -> 打包
+# macOS: 解包 48G packed -> raw -> diskutil apfs resizeContainer 20G -> 打包
 set -eux
 cd "$(dirname "$0")"
 
-echo "=== 1. 解包 48G packed seed 成 raw（自己写解包）==="
+echo "=== 1. 解包 48G packed seed（header=32 字节）==="
 python3 - <<'PY'
 import struct
 src = 'seed/scratch-data.img'
@@ -13,12 +13,12 @@ magic, ver, page, logical, count = struct.unpack_from('<8sIIQQ', d, 0)
 assert magic == b'DBRDISK1', magic
 print('logical=%d (%.2f GiB), extents=%d' % (logical, logical/2**30, count))
 extents = []
-off = 40
+off = 32   # header = 8+4+4+8+8 = 32
 for i in range(count):
     e_off, e_len = struct.unpack_from('<QQ', d, off)
     off += 16
     extents.append((e_off, e_len))
-data_off = 40 + count*16
+data_off = 32 + count*16
 out = open(dst, 'wb')
 for e_off, e_len in extents:
     out.seek(e_off)
@@ -34,7 +34,7 @@ import struct
 f = open('/tmp/seed48.raw','rb')
 d = f.read(0x1000)
 i = d.find(b'NXSB')
-print('NXSB block_count =', struct.unpack_from('<Q', d, i+8)[0])
+print('NXSB @0x%x block_count =' % i, struct.unpack_from('<Q', d, i+8)[0])
 f.close()
 PY
 
@@ -44,9 +44,10 @@ cat /tmp/attach.txt
 DEV=$(grep -oE '/dev/disk[0-9]+' /tmp/attach.txt | head -1)
 echo "DEV=$DEV"
 test -n "$DEV"
+diskutil list "$DEV" || true
 
-echo "=== 3. diskutil resizeVolume 到 20G ==="
-diskutil resizeVolume "$DEV" 20g
+echo "=== 3. diskutil apfs resizeContainer 到 20G ==="
+diskutil apfs resizeContainer "$DEV" 20g
 
 echo "=== 4. detach ==="
 hdiutil detach "$DEV" -force || true
