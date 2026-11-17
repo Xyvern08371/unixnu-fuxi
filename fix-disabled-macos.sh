@@ -33,15 +33,10 @@ echo "=== 2. hdiutil attach ==="
 hdiutil attach -nomount -imagekey diskimage-class=CRawDiskImage /tmp/seed20.raw > /tmp/attach.txt 2>&1 || true
 cat /tmp/attach.txt
 
-echo "=== 3. 找 APFS 卷（diskNs1）==="
-VOL=$(diskutil list | grep -E '^\s+[0-9]+:.*Apple_APFS' | head -1 | awk '{print $NF}')
-if [ -z "$VOL" ]; then
-  # 尝试从 diskutil list 找所有卷
-  diskutil list
-  VOL=$(grep -oE '/dev/disk[0-9]+s1' /tmp/attach.txt | tail -1)
-fi
+echo "=== 3. 从 attach 输出取 APFS 卷（diskNs1）==="
+VOL=$(grep -oE '/dev/disk[0-9]+s1' /tmp/attach.txt | tail -1)
 echo "VOL=$VOL"
-[ -n "$VOL" ] || { echo "no APFS volume found"; exit 1; }
+[ -n "$VOL" ] || { echo "no APFS volume in attach output"; exit 1; }
 
 echo "=== 4. 挂载卷 ==="
 diskutil mount "$VOL"
@@ -75,6 +70,7 @@ else
   echo "NOT FOUND: $PLIST"
   ls -la /Volumes/Data/db/com.apple.xpc.launchd/ 2>/dev/null || true
   ls /Volumes/ 2>/dev/null
+  exit 1
 fi
 
 echo "=== 6. detach ==="
